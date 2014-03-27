@@ -55,6 +55,9 @@ define(function () {
     this._debug = Quill._debug
     this.max = 100
 
+    this.stack = []
+    this.length = 0
+
     // Bound functions are being used as event listeners; they are
     // kept here so we can remove them upon destroying.
     this.onFocus = onFocus.bind(this)
@@ -65,10 +68,6 @@ define(function () {
     this.elem.addEventListener('keydown', this.onKeydown)
     this.Quill.on('change', this.onChange)
   }
-
-  // Previous states are stored here.
-  History.prototype.stack = []
-  History.prototype.length = 0
 
   History.prototype.push = function (item) {
     this.stack.push(item)
@@ -85,8 +84,7 @@ define(function () {
   History.prototype.undo = function () {
     if (this.length <= 1) return
 
-    var content = this.stack[this.length - 2]
-    this.elem.innerHTML = content
+    this.elem.innerHTML = this.stack[this.length - 2]
     this.Quill.selection.selectMarkers()
 
     this.length -= 1
