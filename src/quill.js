@@ -7,7 +7,8 @@ define([
   'throttle'],
   function (EventEmitter, Selection, History, Throttle) {
 
-  var defaultPlugins = [Selection, History, Throttle]
+  var defaultPlugins = [Selection, History, Throttle],
+      allPlugins = [Selection, History, Throttle]
 
   function Quill (elem, opts) {
     if (!(this instanceof Quill))
@@ -95,6 +96,15 @@ define([
     else defaultPlugins.push(Plugin)
 
     return true
+  }
+
+  Quill.getPlugin = function (name) {
+    var i
+
+    for (i = 0; i < allPlugins.length; i += 1)
+      if (allPlugins[i].plugin === name) return allPlugins[i]
+
+    return false
   }
 
   return Quill
