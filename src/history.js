@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/* global define, console, navigator, clearTimeout, setTimeout */
-=======
 /* global define, console, navigator */
->>>>>>> plugins
 
 define(function () {
 
@@ -13,36 +9,8 @@ define(function () {
     return e.ctrlKey
   }
 
-<<<<<<< HEAD
-  function scheduleSave () {
-    var history = this
-
-    if (history.scheduled)
-      clearTimeout(history.scheduled)
-
-    // Force a state save every so often.
-    if (!history.forced)
-      history.forced = setTimeout(function () {
-
-        // Don't save twice.
-        clearTimeout(history.scheduled)
-        history.forced = null
-        history.push(history.elem.innerHTML)
-      }, 320)
-
-    // Schedule a state save once the user finishes typing.
-    history.scheduled = setTimeout(function () {
-
-      history.forced = clearTimeout(history.forced)
-      history.push(history.elem.innerHTML)
-    }, 150)
-  }
-
-  function onKeyUp (e) {
-=======
   // Used to intercept Cmd/Ctrl-z.
   function onKeyDown (e) {
->>>>>>> plugins
     if (e.keyCode === 90 && modKey(e)) {
       e.preventDefault()
       if (e.shiftKey) this.redo()
@@ -50,34 +18,24 @@ define(function () {
     }
   }
 
-<<<<<<< HEAD
-  function History (Venti) {
-    this.elem = Venti.elem
-=======
   function onChange () {
-    this.Venti.selection.placeMarkers()
+    this.Quill.selection.placeMarkers()
     this.push(this.elem.innerHTML)
-    this.Venti.selection.removeMarkers()
+    this.Quill.selection.removeMarkers()
   }
 
-  function History (Venti) {
-    this.elem = Venti.elem
-    this.Venti = Venti
->>>>>>> plugins
-    this._debug = Venti._debug
+  function History (Quill) {
+    this.elem = Quill.elem
+    this.Quill = Quill
+    this._debug = Quill._debug
     this.max = 100
 
     // Add initial state.
     this.stack.push(this.elem.innerHTML)
     this.length += 1
 
-<<<<<<< HEAD
-    this.elem.addEventListener('input', scheduleSave.bind(this))
-    this.elem.addEventListener('keydown', onKeyUp.bind(this))
-=======
     this.elem.addEventListener('keydown', onKeyDown.bind(this))
-    this.Venti.on('change', onChange.bind(this))
->>>>>>> plugins
+    this.Quill.on('change', onChange.bind(this))
   }
 
   History.prototype.stack = []
@@ -100,10 +58,7 @@ define(function () {
 
     var content = this.stack[this.length - 2]
     this.elem.innerHTML = content
-<<<<<<< HEAD
-=======
-    this.Venti.selection.selectMarkers()
->>>>>>> plugins
+    this.Quill.selection.selectMarkers()
 
     this.length -= 1
   }
@@ -113,37 +68,23 @@ define(function () {
 
     var content = this.stack[this.length]
     this.elem.innerHTML = content
-<<<<<<< HEAD
-=======
-    this.Venti.selection.selectMarkers()
->>>>>>> plugins
+    this.Quill.selection.selectMarkers()
 
     this.length += 1
   }
 
   History.prototype.destroy = function () {
-<<<<<<< HEAD
-    this.elem.removeEventListener('input', scheduleSave)
-    this.elem.removeEventListener('keydown', onKeyUp)
-
-    delete this.elem
-=======
-    this.Venti.off('change', onChange)
+    this.Quill.off('change', onChange)
     this.elem.removeEventListener('keydown', onKeyDown)
 
     delete this.elem
-    delete this.Venti
->>>>>>> plugins
+    delete this.Quill
 
     return
   }
 
   // Plugin name:
-<<<<<<< HEAD
-  History.name = 'history'
-=======
   History.plugin = 'history'
->>>>>>> plugins
 
   return History
 })

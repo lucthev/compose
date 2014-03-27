@@ -15,26 +15,26 @@ define(function () {
         // Don't save twice.
         clearTimeout(throttle.scheduled)
         throttle.forced = null
-        throttle.Venti.trigger('change')
+        throttle.Quill.trigger('change')
       }, throttle.min)
 
-    if (!throttle.max) return throttle.Venti.trigger('change')
+    if (!throttle.max) return throttle.Quill.trigger('change')
 
     // Schedule a state save once the user finishes typing.
     throttle.scheduled = setTimeout(function () {
 
       throttle.forced = clearTimeout(throttle.forced)
-      throttle.Venti.trigger('change')
+      throttle.Quill.trigger('change')
     }, throttle.max)
   }
 
-  function Throttle (Venti) {
-    this.Venti = Venti
+  function Throttle (Quill) {
+    this.Quill = Quill
 
     this.max = 150
     this.min = 320
 
-    this.Venti.elem.addEventListener('input', scheduleSave.bind(this))
+    this.Quill.elem.addEventListener('input', scheduleSave.bind(this))
   }
 
   Throttle.prototype.setSpeed = function (max, min) {
@@ -47,9 +47,9 @@ define(function () {
   }
 
   Throttle.prototype.destroy = function () {
-    this.Venti.elem.removeEventListener('input', scheduleSave)
+    this.Quill.elem.removeEventListener('input', scheduleSave)
 
-    delete this.Venti
+    delete this.Quill
 
     return null
   }

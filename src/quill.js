@@ -1,12 +1,5 @@
 /* global console, document, define */
 
-<<<<<<< HEAD
-define(['vendor/eventEmitter/EventEmitter', 'history'], function (EventEmitter, History) {
-  'use strict';
-
-  var defaultPlugins = [History],
-      unnamedCounter = 0
-=======
 define([
   'vendor/eventEmitter/EventEmitter',
   'selection',
@@ -15,11 +8,10 @@ define([
   function (EventEmitter, Selection, History, Throttle) {
 
   var defaultPlugins = [Selection, History, Throttle]
->>>>>>> plugins
 
-  function Venti (elem, opts) {
-    if (!(this instanceof Venti))
-      return new Venti(elem, opts)
+  function Quill (elem, opts) {
+    if (!(this instanceof Quill))
+      return new Quill(elem, opts)
 
     var p
 
@@ -46,22 +38,17 @@ define([
     }.bind(this))
   }
 
-  Venti.prototype = Object.create(EventEmitter.prototype)
+  Quill.prototype = Object.create(EventEmitter.prototype)
 
-  Venti.prototype.plugins = []
-  Venti.prototype.use = function (Plugin) {
+  Quill.prototype.plugins = []
+  Quill.prototype.use = function (Plugin) {
     if (!Plugin) return
 
-<<<<<<< HEAD
-    var name = Plugin.name || 'x' + unnamedCounter
-
-=======
     var name = Plugin.plugin
 
     if (!name)
       throw new Error('Plugin should be named via a plugin property.')
 
->>>>>>> plugins
     if (!(name in this)) {
       try {
         this[name] = new Plugin(this)
@@ -70,17 +57,17 @@ define([
         if (this._debug) console.log(e)
       }
     } else if (this._debug) {
-      console.log('Venti already has a property %s', name)
+      console.log('Quill already has a property %s', name)
     }
   }
 
   /**
-   * Venti.destroy() removes event listeners and deletes references
+   * Quill.destroy() removes event listeners and deletes references
    * to elements etc.
    *
    * @return null
    */
-  Venti.prototype.destroy = function () {
+  Quill.prototype.destroy = function () {
     if (this._destroyed) return
 
     this.plugins.forEach(function (name) {
@@ -97,7 +84,7 @@ define([
     return null
   }
 
-  Venti.addDefault = function (Plugin) {
+  Quill.addDefault = function (Plugin) {
     if (!Plugin) return false
 
     if (!defaultPlugins)
@@ -107,5 +94,5 @@ define([
     return true
   }
 
-  return Venti
+  return Quill
 })

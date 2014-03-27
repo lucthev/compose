@@ -1,4 +1,4 @@
-/* global document, define, window, Node, console */
+/* global document, define, window, Node */
 
 /**
  * Much of this file was inspired by the Guardian's Scribe
@@ -21,9 +21,9 @@
 
 define(function () {
 
-  function Selection (Venti) {
-    this.elem = Venti.elem
-    this._debug = Venti._debug
+  function Selection (Quill) {
+    this.elem = Quill.elem
+    this._debug = Quill._debug
   }
 
   Selection.prototype.placeMarkers = function () {
@@ -38,8 +38,8 @@ define(function () {
       range = sel.getRangeAt(0)
     } else return
 
-    start.classList.add('venti-marker')
-    end.classList.add('venti-marker')
+    start.classList.add('Quill-marker')
+    end.classList.add('Quill-marker')
 
     endRange = range.cloneRange()
     endRange.collapse()
@@ -69,7 +69,7 @@ define(function () {
   }
 
   Selection.prototype.getMarkers = function () {
-    return this.elem.querySelectorAll('.venti-marker')
+    return this.elem.querySelectorAll('.Quill-marker')
   }
 
   Selection.prototype.removeMarkers = function () {

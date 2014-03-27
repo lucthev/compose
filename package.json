@@ -1,8 +1,8 @@
 {
-  "name": "venti",
+  "name": "quill",
   "version": "0.0.1",
-  "description": "Contenteditable.",
-  "main": "venti.js",
+  "description": "Yet another contentEditable thing.",
+  "main": "dist/quill.min.js",
   "scripts": {
     "test": "./node_modules/.bin/grunt jasmine",
     "grunt": "./node_modules/.bin/grunt",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/lucthev/venti"
+    "url": "git://github.com/lucthev/quill"
   },
   "author": "Luc Thevenard <lucthevenard@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lucthev/venti/issues"
+    "url": "https://github.com/lucthev/quill/issues"
   },
-  "homepage": "https://github.com/lucthev/venti",
+  "homepage": "https://github.com/lucthev/quill",
   "devDependencies": {
     "grunt": "^0.4.4",
     "grunt-cli": "^0.1.13",

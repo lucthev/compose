@@ -1,12 +1,12 @@
 {
-  "name": "venti",
+  "name": "quill",
   "version": "0.0.1",
-  "homepage": "https://github.com/lucthev/venti",
+  "homepage": "https://github.com/lucthev/quill",
   "authors": [
     "Luc Thevenard <lucthevenard@gmail.com>"
   ],
   "description": "Yet another contentEditable thing.",
-  "main": "dist/venti.min.js",
+  "main": "dist/quill.min.js",
   "moduleType": [
     "amd",
     "globals"
@@ -14,7 +14,7 @@
   "keywords": [
     "content",
     "editable",
-    "venti"
+    "quill"
   ],
   "license": "MIT",
   "private": true,
