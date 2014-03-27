@@ -2,6 +2,13 @@
 
 define(function () {
 
+  /**
+   * modKey(event) determines if the modifier key was pressed during
+   * an event. Assumes Cmd for Mac, Ctrl for others.
+   *
+   * @param {Event} e
+   * @return Boolean
+   */
   function modKey (e) {
     if (/^Mac/i.test(navigator.platform))
       return e.metaKey
@@ -28,6 +35,7 @@ define(function () {
     this.Quill.selection.removeMarkers()
   }
 
+  // Used to push the initial state once focus has been achieved.
   function onFocus () {
     var self = this
 
@@ -48,7 +56,7 @@ define(function () {
     this.max = 100
 
     // Bound functions are being used as event listeners; they are
-    // kept here so we can remove the upon destroying.
+    // kept here so we can remove them upon destroying.
     this.onFocus = onFocus.bind(this)
     this.onKeydown = onKeydown.bind(this)
     this.onChange = onChange.bind(this)
@@ -58,6 +66,7 @@ define(function () {
     this.Quill.on('change', this.onChange)
   }
 
+  // Previous states are stored here.
   History.prototype.stack = []
   History.prototype.length = 0
 
@@ -102,6 +111,9 @@ define(function () {
   History.prototype.destroy = function () {
     this.Quill.off('change', this.onChange)
     this.elem.removeEventListener('keydown', this.onKeydown)
+
+    // Try removing onFocus; maybe we are getting destroyed before
+    // focus was ever achieved.
     this.elem.removeEventListener('focus', this.onFocus)
 
     delete this.onFocus

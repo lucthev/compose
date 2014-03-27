@@ -15,6 +15,7 @@ define([
 
     var p
 
+    opts = opts || {}
     if (typeof elem === 'string')
       elem = document.querySelector(elem)
 
@@ -32,6 +33,7 @@ define([
     this.elem = elem
     this.inline = !!opts.inline
     this._debug = opts.debug
+    this.plugins = []
 
     defaultPlugins.forEach(function (Plugin) {
       this.use(Plugin)
@@ -40,7 +42,6 @@ define([
 
   Quill.prototype = Object.create(EventEmitter.prototype)
 
-  Quill.prototype.plugins = []
   Quill.prototype.use = function (Plugin) {
     if (!Plugin) return
 
@@ -72,7 +73,7 @@ define([
 
     this.plugins.forEach(function (name) {
 
-      if (this[name].destroy)
+      if (this[name] && this[name].destroy)
         this[name].destroy()
 
       delete this[name]

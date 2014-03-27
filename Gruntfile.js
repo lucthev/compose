@@ -1,3 +1,5 @@
+/* jshint ignore:start */
+
 module.exports = function (grunt) {
 
   grunt.initConfig({
@@ -5,11 +7,10 @@ module.exports = function (grunt) {
 
     jasmine: {
       test: {
-        src: 'src/*.js',
+        src: 'dist/<%= pkg.name %>.min.js',
         options: {
           specs: 'test/*.spec.js',
           helpers: 'test/utils/*.js',
-          styles: 'dist/*.css',
           keepRunner: true
         }
       }
