@@ -34,7 +34,10 @@ define(function () {
     this.max = 150
     this.min = 320
 
-    this.Quill.elem.addEventListener('input', scheduleSave.bind(this))
+    // Saving bound event listener to remove it later.
+    this.scheduleSave = scheduleSave.bind(this)
+
+    Quill.elem.addEventListener('input', this.scheduleSave)
   }
 
   Throttle.prototype.setSpeed = function (max, min) {
@@ -47,8 +50,9 @@ define(function () {
   }
 
   Throttle.prototype.destroy = function () {
-    this.Quill.elem.removeEventListener('input', scheduleSave)
+    this.Quill.elem.removeEventListener('input', this.scheduleSave)
 
+    delete this.scheduleSave
     delete this.Quill
 
     return null

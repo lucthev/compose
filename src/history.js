@@ -1,4 +1,4 @@
-/* global define, console, navigator */
+/* global define, console, navigator, setTimeout */
 
 define(function () {
 
@@ -10,7 +10,7 @@ define(function () {
   }
 
   // Used to intercept Cmd/Ctrl-z.
-  function onKeyDown (e) {
+  function onKeydown (e) {
     if (e.keyCode === 90 && modKey(e)) {
       e.preventDefault()
       if (e.shiftKey) this.redo()
@@ -18,10 +18,27 @@ define(function () {
     }
   }
 
-  function onChange () {
+  function onChange (ignore) {
+
+    // See @History.undo()
+    if (ignore === 'ignore') return
+
     this.Quill.selection.placeMarkers()
     this.push(this.elem.innerHTML)
     this.Quill.selection.removeMarkers()
+  }
+
+  function onFocus () {
+    var self = this
+
+    // Wait until the caret has been placed.
+    setTimeout(function () {
+      self.Quill.selection.placeMarkers()
+      self.push(self.elem.innerHTML)
+      self.Quill.selection.removeMarkers()
+    }, 0)
+
+    this.elem.removeEventListener('focus', this.onFocus)
   }
 
   function History (Quill) {
@@ -30,12 +47,15 @@ define(function () {
     this._debug = Quill._debug
     this.max = 100
 
-    // Add initial state.
-    this.stack.push(this.elem.innerHTML)
-    this.length += 1
+    // Bound functions are being used as event listeners; they are
+    // kept here so we can remove the upon destroying.
+    this.onFocus = onFocus.bind(this)
+    this.onKeydown = onKeydown.bind(this)
+    this.onChange = onChange.bind(this)
 
-    this.elem.addEventListener('keydown', onKeyDown.bind(this))
-    this.Quill.on('change', onChange.bind(this))
+    this.elem.addEventListener('focus', this.onFocus)
+    this.elem.addEventListener('keydown', this.onKeydown)
+    this.Quill.on('change', this.onChange)
   }
 
   History.prototype.stack = []
@@ -61,6 +81,10 @@ define(function () {
     this.Quill.selection.selectMarkers()
 
     this.length -= 1
+
+    // We pass 'ignore' as a parameter to prevent ourselves
+    // from pushing the changes we just undid.
+    this.Quill.trigger('change', ['ignore'])
   }
 
   History.prototype.redo = function () {
@@ -71,12 +95,18 @@ define(function () {
     this.Quill.selection.selectMarkers()
 
     this.length += 1
+
+    this.Quill.trigger('change', ['ignore'])
   }
 
   History.prototype.destroy = function () {
-    this.Quill.off('change', onChange)
-    this.elem.removeEventListener('keydown', onKeyDown)
+    this.Quill.off('change', this.onChange)
+    this.elem.removeEventListener('keydown', this.onKeydown)
+    this.elem.removeEventListener('focus', this.onFocus)
 
+    delete this.onFocus
+    delete this.onKeydown
+    delete this.onFocus
     delete this.elem
     delete this.Quill
 

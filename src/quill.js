@@ -57,7 +57,7 @@ define([
         if (this._debug) console.log(e)
       }
     } else if (this._debug) {
-      console.log('Quill already has a property %s', name)
+      console.log('Quill already has a plugin %s', name)
     }
   }
 
@@ -71,13 +71,15 @@ define([
     if (this._destroyed) return
 
     this.plugins.forEach(function (name) {
+
       if (this[name].destroy)
         this[name].destroy()
 
       delete this[name]
-    })
+    }.bind(this))
     delete this.plugins
 
+    this.elem.contentEditable = false
     delete this.elem
 
     this._destroyed = true
