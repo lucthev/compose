@@ -1,0 +1,25 @@
+{
+  "name": "venti",
+  "version": "0.0.1",
+  "homepage": "https://github.com/lucthev/venti",
+  "authors": [
+    "Luc Thevenard <lucthevenard@gmail.com>"
+  ],
+  "description": "Yet another contentEditable thing.",
+  "main": "dist/venti.min.js",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "keywords": [
+    "content",
+    "editable",
+    "venti"
+  ],
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "almond": "~0.2.9",
+    "eventEmitter": "~4.2.7"
+  }
+}
