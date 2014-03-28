@@ -3,6 +3,5 @@
   "quotmark": "single",
   "undef": true,
   "unused": true,
-  "eqeqeq": true,
-  "validthis": true
+  "eqeqeq": true
 }

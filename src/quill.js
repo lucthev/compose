@@ -23,31 +23,30 @@ define([
     if (!elem) return
 
     this.elem = elem
-    this.mode = opts.mode
+    this.mode = opts.mode || 'rich'
     this._debug = opts.debug
-
-    elem.contentEditable = true
-    elem.setAttribute('data-mode', this.mode)
 
     // Plugin names are kept in here:
     this.plugins = []
 
-    defaultPlugins.forEach(function (Plugin) {
-      this.use(Plugin)
-    }.bind(this))
+    elem.contentEditable = true
+    elem.setAttribute('data-mode', this.mode)
 
-    // TODO: abstract so people can define their modes.
     if (this.isInline())
       this.use(Inline)
     else this.use(Rich)
+
+    defaultPlugins.forEach(function (Plugin) {
+      this.use(Plugin)
+    }.bind(this))
   }
 
   Quill.prototype = Object.create(EventEmitter.prototype)
 
   /**
    * Quill.isInline() determines if the editor is in inline mode.
-   * This might seem silly, as one could just check Quill.inline,
-   * but that could change in the future.
+   * This might seem silly, as one could just check Quill.mode,
+   * but this ensures backwards compatibility if that ever changes.
    *
    * @return Boolean
    */
