@@ -23,7 +23,6 @@ define(function () {
 
   function Selection (Quill) {
     this.elem = Quill.elem
-    this._debug = Quill._debug
   }
 
   Selection.prototype.placeMarkers = function () {

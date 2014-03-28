@@ -1,0 +1,39 @@
+/* global define */
+
+define(function () {
+
+  function onKeydown (e) {
+    if (e.keyCode === 13)
+      e.preventDefault()
+  }
+
+  function Inline (Quill) {
+    var children,
+        i
+
+    if (!Quill.isInline())
+      throw new Error('The inline plugin should only be used in inline mode.')
+
+    this.elem = Quill.elem
+    this.elem.addEventListener('keydown', onKeydown)
+
+    // Remove all (presumably) unwanted elements.
+    if (this.elem.children.length) {
+      children = this.elem.children
+      for (i = 0; i < children.length; i += 1)
+        this.elem.removeChild(children[i])
+    }
+  }
+
+  Inline.prototype.destroy = function () {
+    this.elem.removeEventListener('keydown', onKeydown)
+
+    delete this.elem
+
+    return null
+  }
+
+  Inline.plugin = 'inline'
+
+  return Inline
+})

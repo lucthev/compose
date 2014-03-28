@@ -4,8 +4,10 @@ define([
   'vendor/eventEmitter/EventEmitter',
   'selection',
   'history',
-  'throttle'],
-  function (EventEmitter, Selection, History, Throttle) {
+  'throttle',
+  'inlineMode',
+  'richMode'],
+  function (EventEmitter, Selection, History, Throttle, Inline, Rich) {
 
   var defaultPlugins = [Selection, History, Throttle],
       allPlugins = [Selection, History, Throttle]
@@ -14,34 +16,44 @@ define([
     if (!(this instanceof Quill))
       return new Quill(elem, opts)
 
-    var p
-
     opts = opts || {}
     if (typeof elem === 'string')
       elem = document.querySelector(elem)
 
     if (!elem) return
 
-    elem.contentEditable = true
-    elem.setAttribute('data-mode', opts.inline ? 'inline' : 'rich')
-
-    if (!opts.inline && !elem.firstElementChild) {
-      p = document.createElement('p')
-      p.appendChild(document.createElement('br'))
-      elem.appendChild(p)
-    }
-
     this.elem = elem
-    this.inline = !!opts.inline
+    this.mode = opts.mode
     this._debug = opts.debug
+
+    elem.contentEditable = true
+    elem.setAttribute('data-mode', this.mode)
+
+    // Plugin names are kept in here:
     this.plugins = []
 
     defaultPlugins.forEach(function (Plugin) {
       this.use(Plugin)
     }.bind(this))
+
+    // TODO: abstract so people can define their modes.
+    if (this.isInline())
+      this.use(Inline)
+    else this.use(Rich)
   }
 
   Quill.prototype = Object.create(EventEmitter.prototype)
+
+  /**
+   * Quill.isInline() determines if the editor is in inline mode.
+   * This might seem silly, as one could just check Quill.inline,
+   * but that could change in the future.
+   *
+   * @return Boolean
+   */
+  Quill.prototype.isInline = function () {
+    return this.mode === 'inline'
+  }
 
   Quill.prototype.use = function (Plugin) {
     if (!Plugin) return
@@ -49,7 +61,7 @@ define([
     var name = Plugin.plugin
 
     if (!name)
-      throw new Error('Plugin should be named via a plugin property.')
+      throw new Error('Plugins should be named via a \'plugin\' property.')
 
     if (!(name in this)) {
       try {
@@ -58,9 +70,7 @@ define([
       } catch (e) {
         if (this._debug) console.log(e)
       }
-    } else if (this._debug) {
-      console.log('Quill already has a plugin %s', name)
-    }
+    } else throw new Error('Quill is already using a plugin %s', name)
   }
 
   /**
