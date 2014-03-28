@@ -3,15 +3,15 @@
 /**
  * Much of this file was inspired by the Guardian's Scribe
  * (https://github.com/guardian/scribe), so here's the license for that:
-
+ *
  * Copyright 2014 Guardian News & Media Ltd
-
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
-
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
-
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,33 @@ define(function () {
 
   function Selection (Quill) {
     this.elem = Quill.elem
+    this.inline = Quill.isInline()
+  }
+
+  /**
+   * Selection.getContaining() gets the direct child of the editor
+   * element which the caret is in, or undefined if none exist.
+   *
+   * @return Element || Undefined
+   */
+  Selection.prototype.getContaining = function () {
+    var sel = window.getSelection(),
+        node = sel.anchorNode,
+        parent
+
+    // If we're in inline mode, there should be no block elements
+    // in the element.
+    if (this.inline) return
+
+    while (node) {
+      parent = node.parentNode
+      if (parent && parent.hasAttribute && parent.hasAttribute('data-mode'))
+        break
+
+      node = parent
+    }
+
+    return node
   }
 
   Selection.prototype.placeMarkers = function () {
@@ -58,6 +85,7 @@ define(function () {
       startRange.collapse(true)
       startRange.insertNode(start)
 
+      // See above.
       if (start.nextSibling && start.nextSibling.nodeType === Node.TEXT_NODE &&
          !start.nextSibling.data)
         start.parentNode.removeChild(start.nextSibling)
@@ -96,6 +124,21 @@ define(function () {
 
     sel.removeAllRanges()
     sel.addRange(range)
+  }
+
+  /**
+   * Selection.isNewLine() determines if the containing element is a
+   * new line (blank paragraph, in rich mode, or no text content in
+   * inline).
+   *
+   * @return Boolean
+   */
+  Selection.prototype.isNewLine = function () {
+    var elem = this.getContaining()
+
+    if (elem)
+      return elem.nodeName === 'P' && !elem.textContent
+    else return !elem.textContent
   }
 
   Selection.prototype.destroy = function () {

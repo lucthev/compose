@@ -1,9 +1,52 @@
-/* global define, document */
+/* global define, document, window */
 
 define(function () {
 
-  function onKeydown () {
+  /**
+   * appendParagraph(elem, focus) appends an empty paragraph to elem
+   * and optionally gives it focus.
+   *
+   * @param {Element} elem
+   * @param {Boolean} focus
+   */
+  function appendParagraph (elem, focus) {
+    var p = document.createElement('p'),
+        range,
+        sel
 
+    p.appendChild(document.createElement('br'))
+    elem.appendChild(p)
+
+    if (focus) {
+      sel = window.getSelection()
+      range = document.createRange()
+      range.setStart(p, 0)
+      range.setEnd(p, 0)
+      sel.removeAllRanges()
+      sel.addRange(range)
+    }
+  }
+
+  function onKeydown (e) {
+    var container = this.selection.getContaining(),
+        newLine = this.selection.isNewLine()
+
+    // Prevent deletion of the first paragraph.
+    if (e.keyCode === 8 && newLine &&
+        container === this.elem.firstElementChild)
+      e.preventDefault()
+
+    // Prevent newline creation when already on a new line.
+    if (e.keyCode === 13 && newLine)
+      e.preventDefault()
+  }
+
+  function onKeyup () {
+    var container = this.selection.getContaining()
+
+    // If we're not within a paragraph for whatever reason, create one.
+    if (!container)
+      appendParagraph(this.elem, true)
   }
 
   function Rich (Quill) {
@@ -11,23 +54,28 @@ define(function () {
       throw new Error('Rich mode plugin should only be used in rich mode.')
 
     this.elem = Quill.elem
-    this.elem.addEventListener('keydown', onKeydown)
 
-    if (!this.elem.firstElementChild) {
-      var p = document.createElement('p')
-      p.appendChild(document.createElement('br'))
-      this.elem.appendChild(p)
-    }
+    // Store bound handlers for later removal.
+    this.onKeyup = onKeyup.bind(Quill)
+    this.onKeydown = onKeydown.bind(Quill)
+
+    this.elem.addEventListener('keyup', this.onKeyup)
+    this.elem.addEventListener('keydown', this.onKeydown)
+
+    if (!this.elem.firstElementChild)
+      appendParagraph(this.elem)
   }
 
   Rich.prototype.destroy = function() {
-    this.elem.removeEventListener('keydown', onKeydown)
+    this.elem.removeEventListener('keydown', this.onKeyup)
+    this.elem.removeEventListener('keydown', this.onKeydown)
 
     delete this.elem
 
     return null
   }
 
+  // Plugin name.
   Rich.plugin = 'rich'
 
   return Rich

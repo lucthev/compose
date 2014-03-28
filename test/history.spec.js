@@ -115,7 +115,6 @@ describe('The History (undo) Plugin', function () {
     expect(quill.trigger).toHaveBeenCalledWith('change', jasmine.any(Array))
   })
 
-  // Sort of a flaky test.
   it('should ignore the change events it emits.', function () {
 
     for (var i = 0; i < 3; i += 1)
@@ -124,9 +123,12 @@ describe('The History (undo) Plugin', function () {
     var realLength = history.stack.length,
         length = history.length
 
+    spyOn(history, 'push').and.callThrough()
+
     history.undo()
     history.undo()
 
+    expect(history.push).not.toHaveBeenCalled()
     expect(quill.trigger).toHaveBeenCalled()
     expect(history.stack.length).toEqual(realLength)
     expect(history.length).toEqual(length - 2) // We undid twice.
