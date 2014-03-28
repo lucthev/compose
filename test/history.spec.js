@@ -51,6 +51,22 @@ describe('The History (undo) Plugin', function () {
     }, 0)
   })
 
+  // I don't know how to test this. Anecdotally, it works.
+  xit('should place the caret in the correct position (Firefox).', function () {
+    var sel = window.getSelection(),
+        range = document.createRange()
+
+    elem.innerHTML = '<p><br></p>'
+
+    // Place caret outside block elements, at beginning.
+    range.selectNodeContents(elem)
+    range.collapse(true)
+
+    fireEvent(elem, 'focus')
+
+    expect(window.getSelection().anchorNode).toEqual(elem.firstChild)
+  })
+
   it('should save state on change.', function (done) {
     spyOn(history, 'push').and.callThrough()
 

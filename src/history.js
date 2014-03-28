@@ -1,4 +1,4 @@
-/* global define, console, navigator, setTimeout */
+/* global define, console, navigator, setTimeout, window */
 
 define(function () {
 
@@ -37,7 +37,9 @@ define(function () {
 
   // Used to push the initial state once focus has been achieved.
   function onFocus () {
-    var self = this
+    var self = this,
+        firefoxBug,
+        node
 
     // Wait until the caret has been placed.
     setTimeout(function () {
@@ -45,6 +47,31 @@ define(function () {
       self.push(self.elem.innerHTML)
       self.Quill.selection.removeMarkers()
     }, 0)
+
+    // In FF, the caret is placed outside all block elements when
+    // tabbing in. Place the caret in the right place.
+    if (window.getSelection().rangeCount) {
+      this.Quill.selection.placeMarkers()
+      firefoxBug = !this.Quill.isInline() &&
+        /^<em class="Quill-marker"><\/em>/.test(this.elem.innerHTML)
+      this.Quill.selection.removeMarkers()
+
+      if (firefoxBug) {
+        node = this.elem.firstElementChild
+
+        while (node) {
+          if (node.nodeName === 'BR') {
+            node = node.parentNode
+            break
+          }
+
+          node = node.firstElementChild
+        }
+
+        // Note that if the paragraph is empty, it keeps the <br>.
+        this.Quill.selection.placeCaret(node)
+      }
+    }
 
     this.elem.removeEventListener('focus', this.onFocus)
   }

@@ -128,17 +128,31 @@ define(function () {
 
   /**
    * Selection.isNewLine() determines if the containing element is a
-   * new line (blank paragraph, in rich mode, or no text content in
-   * inline).
+   * new line (only applies in rich mode).
    *
    * @return Boolean
    */
   Selection.prototype.isNewLine = function () {
     var elem = this.getContaining()
 
-    if (elem)
-      return elem.nodeName === 'P' && !elem.textContent
-    else return !elem.textContent
+    return elem && elem.nodeName === 'P' && !elem.textContent
+  }
+
+  /**
+   * Selection.placeCaret(node) places the caret at the beginning of
+   * the node.
+   *
+   * @param {Node} node
+   */
+  Selection.prototype.placeCaret = function (node) {
+    var sel = window.getSelection(),
+        range = document.createRange()
+
+    range.setStart(node, 0)
+    range.setEnd(node, 0)
+
+    sel.removeAllRanges()
+    sel.addRange(range)
   }
 
   Selection.prototype.destroy = function () {
