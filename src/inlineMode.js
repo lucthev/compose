@@ -1,4 +1,4 @@
-/* global define */
+/* global define, document */
 
 define(function () {
 
@@ -23,6 +23,10 @@ define(function () {
       for (i = 0; i < children.length; i += 1)
         this.elem.removeChild(children[i])
     }
+
+    // Insert initial <br>
+    if (!this.textContent)
+      this.elem.appendChild(document.createElement('br'))
   }
 
   Inline.prototype.destroy = function () {

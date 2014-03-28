@@ -32,13 +32,13 @@ define(function () {
         newLine = this.selection.isNewLine()
 
     // Prevent deletion of the first paragraph.
-    if (e.keyCode === 8 && newLine &&
+    if ((e.keyCode === 8 || e.keyCode === 46) && newLine &&
         container === this.elem.firstElementChild)
-      e.preventDefault()
+      return e.preventDefault()
 
     // Prevent newline creation when already on a new line.
     if (e.keyCode === 13 && newLine)
-      e.preventDefault()
+      return e.preventDefault()
   }
 
   function onKeyup () {
