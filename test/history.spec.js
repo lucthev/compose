@@ -3,7 +3,7 @@
 describe('The History (undo) Plugin', function () {
 
   var History = Quill.getPlugin('history'),
-      selection,
+      Selection = Quill.getPlugin('selection'),
       callback,
       history,
       quill,
@@ -14,14 +14,15 @@ describe('The History (undo) Plugin', function () {
     document.body.appendChild(elem)
 
     // Make our fake Quill
-    selection = jasmine.createSpyObj('selection',
-      ['placeMarkers', 'removeMarkers', 'selectMarkers'])
     quill = jasmine.createSpyObj('quill', ['on', 'off', 'trigger'])
-    quill.selection = selection
+    quill.isInline = function () {}
+    spyOn(quill, 'isInline').and.returnValue(false)
     quill.elem = elem
+    quill.selection = new Selection(quill)
 
     history = new History(quill)
 
+    // This is the change listener:
     callback = quill.on.calls.argsFor(0)[1]
   })
 
@@ -51,20 +52,24 @@ describe('The History (undo) Plugin', function () {
     }, 0)
   })
 
-  // I don't know how to test this. Anecdotally, it works.
-  xit('should place the caret in the correct position (Firefox).', function () {
+  it('should place the caret in the correct position (Firefox).', function (done) {
     var sel = window.getSelection(),
         range = document.createRange()
 
     elem.innerHTML = '<p><br></p>'
 
     // Place caret outside block elements, at beginning.
-    range.selectNodeContents(elem)
-    range.collapse(true)
+    range.setStartBefore(elem.firstChild)
+    range.setEndBefore(elem.firstChild)
+    sel.removeAllRanges()
+    sel.addRange(range)
 
     fireEvent(elem, 'focus')
 
-    expect(window.getSelection().anchorNode).toEqual(elem.firstChild)
+    setTimeout(function () {
+      expect(window.getSelection().anchorNode).toEqual(elem.firstChild)
+      done()
+    }, 0)
   })
 
   it('should save state on change.', function (done) {
