@@ -9,8 +9,7 @@ define([
   'richMode'],
   function (EventEmitter, Selection, History, Throttle, Inline, Rich) {
 
-  var defaultPlugins = [Selection, History, Throttle],
-      allPlugins = [Selection, History, Throttle]
+  var defaultPlugins = [Selection, History, Throttle]
 
   function Quill (elem, opts) {
     if (!(this instanceof Quill))
@@ -109,11 +108,19 @@ define([
     return true
   }
 
+  /**
+   * Quill.getPlugin(name) gets the plugin with name 'name' from the
+   * array of default plugins. Useful mainly for testing.
+   *
+   * @param {String} name
+   * @return Function || false
+   */
   Quill.getPlugin = function (name) {
     var i
 
-    for (i = 0; i < allPlugins.length; i += 1)
-      if (allPlugins[i].plugin === name) return allPlugins[i]
+    // TODO: separate all plugins and defaults?
+    for (i = 0; i < defaultPlugins.length; i += 1)
+      if (defaultPlugins[i].plugin === name) return defaultPlugins[i]
 
     return false
   }

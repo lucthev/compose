@@ -92,4 +92,93 @@ describe('Quill', function () {
     quill.destroy()
     expect(quill.elem).not.toEqual(this.elem)
   })
+
+  describe('has a plugin system which', function () {
+
+    function fakePlugin (Quill) {}
+    fakePlugin.prototype.destroy = function () {}
+
+    var quill,
+        elem
+
+    beforeEach(function () {
+      elem = document.createElement('div')
+      document.body.appendChild(elem)
+
+      fakePlugin.plugin = 'fake'
+
+      quill = new Quill(elem)
+    })
+
+    afterEach(function () {
+      if (!quill._destroyed)
+        quill.destroy()
+    })
+
+    it('can add plugins via the \'use\' method.', function () {
+      expect(quill.use).toEqual(jasmine.any(Function))
+    })
+
+    it('should only accept plugins named via a \'plugin\' property.', function () {
+      expect(function () {
+        quill.use(fakePlugin)
+      }).not.toThrow()
+
+      delete fakePlugin.plugin
+      expect(function () {
+        new Quill.use(fakePlugin)
+      }).toThrow()
+    })
+
+    it('should reject plugins with the same name.', function () {
+      quill.use(fakePlugin)
+
+      function newPlugin (Quill) {}
+      newPlugin.plugin = 'fake'
+
+      expect(function () {
+        quill.use(newPlugin)
+      }).toThrow()
+    })
+
+    it('should add a property matching the plugin name.', function () {
+      fakePlugin.plugin = 'fake'
+      quill.use(fakePlugin)
+
+      expect(quill.fake).not.toBeUndefined()
+      expect(quill.fake).toEqual(jasmine.any(fakePlugin))
+    })
+
+    it('should call a plugin\'s destroy method upon destruction.', function () {
+      var temp = new fakePlugin()
+      quill.plugins.push(fakePlugin.plugin)
+      quill.fake = temp
+
+      spyOn(temp, 'destroy')
+
+      quill.destroy()
+
+      expect(temp.destroy).toHaveBeenCalled()
+      expect(quill.fake).toBeUndefined()
+    })
+
+    it('can add default plugins for all future Quills to use.', function () {
+      Quill.addDefault(fakePlugin)
+
+      var temp = new Quill(elem)
+
+      expect(temp.fake).toEqual(jasmine.any(fakePlugin))
+    })
+
+    it('should not fail if a plugin fails.', function () {
+      function sillyPlugin (Quill) {
+        throw new Error('This plugin sucks.')
+      }
+      sillyPlugin.plugin = 'silly'
+
+      expect(function () {
+        quill.use(sillyPlugin)
+      }).not.toThrow()
+    })
+  })
 })
