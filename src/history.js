@@ -97,7 +97,7 @@ define(function () {
   }
 
   History.prototype.push = function (item) {
-    this.stack.push(item)
+    this.stack[this.length] = item
     this.length += 1
 
     if (this.stack.length > this.max) {

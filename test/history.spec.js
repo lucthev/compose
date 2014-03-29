@@ -94,7 +94,8 @@ describe('The History (undo) Plugin', function () {
     elem.innerHTML = different
     callback()
 
-    // I have no idea how to actually fire Cmd/Ctrl-z.
+    // I have no idea how to actually fire Cmd/Ctrl-Z.
+    // Doesn't really matter.
     history.undo()
 
     expect(elem.innerHTML).toEqual(content)
@@ -102,6 +103,24 @@ describe('The History (undo) Plugin', function () {
 
     history.redo()
     expect(elem.innerHTML).toEqual(different)
+  })
+
+  it('should accurately manage states.', function () {
+    var states = ['<p>A</p>', '<p>B</p>']
+
+    for (var i = 0; i < states.length; i += 1) {
+      elem.innerHTML = states[i]
+      callback()
+    }
+
+    history.undo()
+    elem.innerHTML = '<p>C</p>'
+    callback()
+    elem.innerHTML = '<p>D</p>'
+    callback()
+
+    history.undo()
+    expect(elem.innerHTML).toEqual('<p>C</p>')
   })
 
   it('should only keep a certain number of states.', function () {
