@@ -70,6 +70,8 @@ define([
         if (this._debug) console.log(e)
       }
     } else throw new Error('Quill is already using a plugin %s', name)
+
+    return this
   }
 
   /**

@@ -3,50 +3,69 @@
 define(function () {
 
   /**
-   * appendParagraph(elem, focus) appends an empty paragraph to elem
-   * and optionally gives it focus.
+   * appendParagraph(elem) appends an empty paragraph to elem.
    *
    * @param {Element} elem
-   * @param {Boolean} focus
    */
-  function appendParagraph (elem, focus) {
-    var p = document.createElement('p'),
-        range,
-        sel
+  function appendParagraph (elem) {
+    var p = document.createElement('p')
 
     p.appendChild(document.createElement('br'))
     elem.appendChild(p)
+  }
 
-    if (focus) {
-      sel = window.getSelection()
-      range = document.createRange()
-      range.setStart(p, 0)
-      range.setEnd(p, 0)
-      sel.removeAllRanges()
-      sel.addRange(range)
-    }
+  /**
+   * toHTML(range) converts the contents of a range to HTML.
+   *
+   * @param {Range} range
+   * @return String
+   */
+  function toHTML (range) {
+    var div = document.createElement('div')
+    div.appendChild(range.cloneContents())
+    return div.innerHTML
+  }
+
+  /**
+   * isAllSelected(elem, range) determines if the given ranges contains
+   * all of elem.
+   *
+   * @param {Node} elem
+   * @param {Range} range
+   * @return Boolean
+   */
+  function isAllSelected (elem, range) {
+    var allContent = document.createRange()
+    allContent.selectNodeContents(elem)
+
+    return toHTML(allContent) === toHTML(range)
   }
 
   function onKeydown (e) {
     var container = this.selection.getContaining(),
-        newLine = this.selection.isNewLine()
+        newLine = this.selection.isNewLine(),
+        sel = window.getSelection()
 
     // Prevent deletion of the first paragraph.
     if ((e.keyCode === 8 || e.keyCode === 46) && newLine &&
         container === this.elem.firstElementChild)
       return e.preventDefault()
 
+    // Prevents FF bug where select all + delete escapes paragraph mode.
+    if ((e.keyCode === 8 || e.keyCode === 46) && sel.rangeCount &&
+        isAllSelected(this.elem, sel.getRangeAt(0))) {
+      e.preventDefault()
+
+      this.elem.innerHTML = '<p><em class="Quill-marker"></em><br></p>'
+      this.selection.selectMarkers()
+
+      // Make sure to save state.
+      return this.trigger('change')
+    }
+
     // Prevent newline creation when already on a new line.
     if (e.keyCode === 13 && newLine)
       return e.preventDefault()
-  }
-
-  function onKeyup () {
-    var container = this.selection.getContaining()
-
-    // If we're not within a paragraph for whatever reason, create one.
-    if (!container)
-      appendParagraph(this.elem, true)
   }
 
   function Rich (Quill) {
@@ -56,10 +75,8 @@ define(function () {
     this.elem = Quill.elem
 
     // Store bound handlers for later removal.
-    this.onKeyup = onKeyup.bind(Quill)
     this.onKeydown = onKeydown.bind(Quill)
 
-    this.elem.addEventListener('keyup', this.onKeyup)
     this.elem.addEventListener('keydown', this.onKeydown)
 
     if (!this.elem.firstElementChild)
@@ -67,7 +84,6 @@ define(function () {
   }
 
   Rich.prototype.destroy = function() {
-    this.elem.removeEventListener('keydown', this.onKeyup)
     this.elem.removeEventListener('keydown', this.onKeydown)
 
     delete this.elem
