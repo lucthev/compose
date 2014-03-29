@@ -34,22 +34,44 @@ define(function () {
    */
   Selection.prototype.getContaining = function () {
     var sel = window.getSelection(),
-        node = sel.anchorNode,
-        parent
+        node = sel.anchorNode
 
     // If we're in inline mode, there should be no block elements
     // in the element.
-    if (this.inline) return
+    if (!this.inline) {
+      while (node) {
+        if (node.parentNode === this.elem)
+          return node
+        else node = node.parentNode
+      }
+    }
+  }
 
-    while (node) {
-      parent = node.parentNode
-      if (parent && parent.hasAttribute && parent.hasAttribute('data-mode'))
-        break
+  /**
+   * Selection.childOf(matcher) tests if the selection is a child of
+   * a node with name matching the provided regular expression. If
+   * so, returns the matched node; else, returns false.
+   *
+   * @param {RegExp} matcher
+   * @return Node || false
+   */
+  Selection.prototype.childOf = function (matcher) {
+    var sel = window.getSelection(),
+        node
 
-      node = parent
+    // Don't search if not given a matcher or inline.
+    if (!matcher || this.inline) return false
+
+    if (sel.rangeCount)
+      node = sel.getRangeAt(0).commonAncestorContainer
+
+    while (node && node !== this.elem) {
+      if (node.nodeName.match(matcher))
+        return node
+      else node = node.parentNode
     }
 
-    return node
+    return false
   }
 
   Selection.prototype.placeMarkers = function () {
