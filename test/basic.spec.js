@@ -113,6 +113,8 @@ describe('Quill', function () {
     afterEach(function () {
       if (!quill._destroyed)
         quill.destroy()
+
+      document.body.removeChild(elem)
     })
 
     it('can add plugins via the \'use\' method.', function () {
