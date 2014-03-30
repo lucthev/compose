@@ -2,14 +2,18 @@
 
 define([
   'vendor/eventEmitter/EventEmitter',
+  'inlineMode',
+  'richMode',
   'selection',
   'history',
   'throttle',
-  'inlineMode',
-  'richMode'],
-  function (EventEmitter, Selection, History, Throttle, Inline, Rich) {
+  'commands/bold',
+  'commands/italic',
+  'commands/underline'],
+  function (EventEmitter, Inline, Rich) {
 
-  var defaultPlugins = [Selection, History, Throttle]
+  // Note: put default plugins last so they are included in the slice.
+  var defaultPlugins = Array.prototype.slice.call(arguments, 3)
 
   function Quill (elem, opts) {
     if (!(this instanceof Quill))
@@ -68,7 +72,7 @@ define([
       } catch (e) {
         if (this._debug) console.log(e)
       }
-    } else throw new Error('Quill is already using a plugin %s', name)
+    } else throw new Error('Quill is already using a plugin ' + name)
 
     return this
   }
