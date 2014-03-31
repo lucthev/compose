@@ -285,4 +285,102 @@ describe('The Selection plugin:', function () {
       expect(this.selection.hasMultiParagraphs()).toEqual(-1)
     })
   })
+
+  describe('Selection#contains', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      this.elem.innerHTML = '<p><br></p>'
+
+      document.body.appendChild(this.elem)
+
+      // Make our fake quill.
+      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      quill = {
+        isInline: isInline,
+        elem: this.elem
+      }
+
+      this.selection = new Selection(quill)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(this.elem)
+    })
+
+    it('determines if elements are in the selection.', function () {
+      this.elem.innerHTML = '<p>Stuff <b>and things.</b></p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.contains('b')).toBe(true)
+    })
+
+    it('works even if only part of the elements are selected.', function () {
+      this.elem.innerHTML = 'Stuff and <b>things.</b>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.setStart(this.elem.firstChild, 3)
+      range.setEnd(this.elem.firstElementChild.firstChild, 2)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.contains('b')).toBe(true)
+
+      this.elem.innerHTML = '<b>Stuff</b> and things'
+
+      range.setStart(this.elem.firstChild.firstChild, 3)
+      range.setEnd(this.elem.firstChild.nextSibling, 5)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.contains('b')).toBe(true)
+    })
+
+    it('should works with deeply nested elements.', function () {
+      this.elem.innerHTML = '<ol><li>Stuff and <b>th<i>ings</i></b></li></ol>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.contains('i')).toBe(true)
+    })
+
+    it('should ignore adjacent endpoints.', function () {
+      this.elem.innerHTML = '<i>Thin</i>gs'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild.nextSibling)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.contains('i')).toBe(false)
+    })
+
+    it('should not care about the parent.', function () {
+      this.elem.innerHTML = '<i>Things</i>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.contains('i')).toBe(false)
+    })
+  })
 })

@@ -59,11 +59,10 @@ define(function () {
     var sel = window.getSelection(),
         node
 
-    // Don't search if not given a matcher or inline.
-    if (!matcher || this.inline) return false
+    // Don't search if not given a matcher, inline, or nothing selected.
+    if (!matcher || this.inline || !sel.rangeCount) return false
 
-    if (sel.rangeCount)
-      node = sel.getRangeAt(0).commonAncestorContainer
+    node = sel.getRangeAt(0).commonAncestorContainer
 
     while (node && node !== this.elem) {
       if (node.nodeName.match(matcher))
@@ -93,6 +92,24 @@ define(function () {
     if (range.commonAncestorContainer !== this.elem) return 0
 
     return range.startContainer === sel.anchorNode ? 1 : -1
+  }
+
+  /*
+   * Selection.contains(query) tests if the selection contains elements
+   * with the given query.
+   *
+   * @param {String} query
+   * @return Boolean
+   */
+  Selection.prototype.contains = function (query) {
+    var sel = window.getSelection(),
+        fragment
+
+    if (!sel.rangeCount) return false
+
+    fragment = sel.getRangeAt(0).cloneContents()
+
+    return !!fragment.querySelectorAll(query).length
   }
 
   Selection.prototype.placeMarkers = function () {
