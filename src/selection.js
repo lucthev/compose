@@ -1,5 +1,3 @@
-/* global document, define, window, Node */
-
 /**
  * Much of this file was inspired by the Guardian's Scribe
  * (https://github.com/guardian/scribe), so here's the license for that:

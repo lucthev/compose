@@ -1,5 +1,3 @@
-/* global console, document, define */
-
 define([
   'vendor/eventEmitter/EventEmitter',
   'inlineMode',

@@ -1,5 +1,3 @@
-/* global define, document, window */
-
 define(function () {
 
   /**

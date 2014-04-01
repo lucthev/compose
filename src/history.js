@@ -1,5 +1,3 @@
-/* global define, console, navigator, setTimeout, window */
-
 define(function () {
 
   /**

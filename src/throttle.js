@@ -1,5 +1,3 @@
-/* global define, clearTimeout, setTimeout */
-
 define(function () {
 
   function scheduleSave () {
