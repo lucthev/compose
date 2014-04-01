@@ -1,7 +1,10 @@
 define([
   'commands/bold',
   'commands/italic',
-  'commands/underline'],
+  'commands/underline',
+  'commands/heading',
+  'commands/link',
+  'commands/unlink'],
   function () {
 
   var formattingPlugins = Array.prototype.slice.call(arguments)
