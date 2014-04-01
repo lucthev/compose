@@ -26,23 +26,25 @@ define(function () {
 
   /**
    * Selection.getContaining() gets the direct child of the editor
-   * element which the caret is in, or undefined if none exist.
+   * element which the caret is in, or false if none exist.
    *
-   * @return Element || Undefined
+   * @return Element || false
    */
   Selection.prototype.getContaining = function () {
     var sel = window.getSelection(),
-        node = sel.anchorNode
+        node
 
-    // If we're in inline mode, there should be no block elements
-    // in the element.
-    if (!this.inline) {
-      while (node) {
-        if (node.parentNode === this.elem)
-          return node
-        else node = node.parentNode
-      }
+    if (!sel.rangeCount || this.inline) return false
+
+    node = sel.getRangeAt(0).commonAncestorContainer
+
+    while (node) {
+      if (node.parentNode === this.elem)
+        return node
+      else node = node.parentNode
     }
+
+    return false
   }
 
   /**
@@ -70,6 +72,27 @@ define(function () {
     }
 
     return false
+  }
+
+  /**
+   * Selection.hasMultiParagraphs() determines if the selection
+   * contains multiple paragraphs. Returns 0 if not, 1 if the start
+   * paragraph is before the end paragraph, and -1 if opposite.
+   *
+   * @return Number
+   */
+  Selection.prototype.hasMultiParagraphs = function () {
+    var sel = window.getSelection(),
+        range
+
+    if (!sel.rangeCount || this.inline) return 0
+
+    range = sel.getRangeAt(0)
+
+    // Multiparagraphs will have the editable element as ancestor.
+    if (range.commonAncestorContainer !== this.elem) return 0
+
+    return range.startContainer === sel.anchorNode ? 1 : -1
   }
 
   Selection.prototype.placeMarkers = function () {
