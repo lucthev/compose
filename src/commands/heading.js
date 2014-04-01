@@ -1,5 +1,3 @@
-/* global define, document */
-
 define(function () {
 
   function HeadingPlugin (Quill) {
