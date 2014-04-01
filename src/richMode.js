@@ -1,4 +1,10 @@
-define(function () {
+define([
+  'commands/bold',
+  'commands/italic',
+  'commands/underline'],
+  function () {
+
+  var formattingPlugins = Array.prototype.slice.call(arguments)
 
   /**
    * appendParagraph(elem) appends an empty paragraph to elem.
@@ -69,6 +75,10 @@ define(function () {
   function Rich (Quill) {
     if (Quill.isInline())
       throw new Error('Rich mode plugin should only be used in rich mode.')
+
+    formattingPlugins.forEach(function (Plugin) {
+      Quill.use(Plugin)
+    })
 
     this.elem = Quill.elem
 

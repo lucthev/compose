@@ -4,10 +4,7 @@ define([
   'richMode',
   'selection',
   'history',
-  'throttle',
-  'commands/bold',
-  'commands/italic',
-  'commands/underline'],
+  'throttle'],
   function (EventEmitter, Inline, Rich) {
 
   // Note: put default plugins last so they are included in the slice.
