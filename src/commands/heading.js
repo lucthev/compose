@@ -3,34 +3,12 @@ define(function () {
   function HeadingPlugin (Quill) {
 
     function heading (level) {
-      var multi = Quill.selection.hasMultiParagraphs(),
-          start,
-          end
-
       level = level ? '<h' + level + '>' : '<p>'
 
-      if (multi) {
-        console.log(multi)
-        Quill.selection.placeMarkers()
-
-        start = Quill.selection.getContaining()
-        end = Quill.selection.getContaining(true)
-
-        // We'll cycle through all affected nodes and format them
-        // one by one.
-        while (1) {
-          Quill.selection.placeCaret(start)
-          document.execCommand('formatBlock', false, level)
-
-          if (start === end) break
-
-          start = Quill.selection.getContaining()
-          start = multi > 0 ? start.nextSibling : start.previousSibling
-        }
-
-        Quill.selection.selectMarkers()
-      } else
+      Quill.selection.forEachBlock(function (block) {
+        Quill.selection.placeCaret(block)
         document.execCommand('formatBlock', false, level)
+      })
     }
 
     heading.getState = function (level) {

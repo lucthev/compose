@@ -79,23 +79,71 @@ define(function () {
 
   /**
    * Selection.hasMultiParagraphs() determines if the selection
-   * contains multiple paragraphs. Returns 0 if not, 1 if the start
-   * paragraph is before the end paragraph, and -1 if opposite.
+   * contains multiple paragraphs.
    *
-   * @return Number
+   * @return Boolean
    */
   Selection.prototype.hasMultiParagraphs = function () {
     var sel = window.getSelection(),
         range
 
-    if (!sel.rangeCount || this.inline) return 0
+    if (!sel.rangeCount || this.inline) return false
 
     range = sel.getRangeAt(0)
 
     // Multiparagraphs will have the editable element as ancestor.
-    if (range.commonAncestorContainer !== this.elem) return 0
+    return range.commonAncestorContainer === this.elem
+  }
 
-    return range.startContainer === sel.anchorNode ? 1 : -1
+  /**
+   * Selection.forEachBlock(action) perform an action on each top-
+   * level block element in the selection.
+   *
+   * @param {Function} action
+   */
+  Selection.prototype.forEachBlock = function (action) {
+    var sel = window.getSelection(),
+        blocks = [],
+        selStart,
+        range,
+        start,
+        end
+
+    if (!sel.rangeCount || this.inline) return
+
+    // Only one elem in selection:
+    if (sel.isCollapsed) return action(this.getContaining())
+
+    // Save the selection.
+    this.placeMarkers()
+    // console.log(this.elem.innerHTML)
+
+    range = sel.getRangeAt(0)
+    start = range.startContainer
+
+    // Determine what's the start and what's the end.
+    while (start) {
+      if (start.parentNode === this.elem)
+        break
+      else start = start.parentNode
+    }
+
+    selStart = this.getContaining()
+    end = start === selStart ? this.getContaining(true) : start
+    if (start === end) start = selStart
+
+    // Push all elements between start end end, inclusive, into array.
+    while (start !== end) {
+      blocks.push(start)
+
+      start = start.nextElementSibling
+    }
+    blocks.push(end)
+
+    blocks.forEach(action)
+
+    // Restore selection.
+    this.selectMarkers()
   }
 
   /*

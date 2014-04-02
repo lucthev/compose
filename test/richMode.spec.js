@@ -27,6 +27,24 @@ describe('Rich mode', function () {
     expect(this.elem.children.length).toEqual(1)
   })
 
+  it('can convert a single paragraph into a heading.', function () {
+    var quill = new Quill(this.elem),
+        sel = window.getSelection(),
+        range = document.createRange()
+
+    this.elem.innerHTML = '<p>Stuff</p>'
+
+    range.selectNodeContents(this.elem.firstChild)
+    range.collapse()
+    sel.removeAllRanges()
+    sel.addRange(range)
+
+    quill.heading(2)
+
+    expect(this.elem.innerHTML)
+      .toEqual('<h2>Stuff</h2>')
+  })
+
   it('should properly convert multiple paragraphs to headings.', function () {
     this.elem.innerHTML = '<p>Stuff</p><p>Things</p>'
 

@@ -234,10 +234,10 @@ describe('The Selection plugin:', function () {
       sel.removeAllRanges()
       sel.addRange(range)
 
-      expect(this.selection.hasMultiParagraphs()).toBeTruthy()
+      expect(this.selection.hasMultiParagraphs()).toBe(true)
     })
 
-    it('returns 0 if the selection does not contain multiple paragraphs.', function () {
+    it('returns false if the selection does not contain multiple paragraphs.', function () {
       var sel = window.getSelection(),
           range = document.createRange()
 
@@ -245,22 +245,22 @@ describe('The Selection plugin:', function () {
       sel.removeAllRanges()
       sel.addRange(range)
 
-      expect(this.selection.hasMultiParagraphs()).toEqual(0)
+      expect(this.selection.hasMultiParagraphs()).toBe(false)
 
       range.setStart(document.querySelector('#first').firstChild, 1)
       range.setEnd(document.querySelector('#first').firstChild, 4)
       sel.removeAllRanges()
       sel.addRange(range)
 
-      expect(this.selection.hasMultiParagraphs()).toEqual(0)
+      expect(this.selection.hasMultiParagraphs()).toBe(false)
     })
 
-    it('returns 0 if the selection is not in the editable element.', function () {
+    it('returns false if the selection is not in the editable element.', function () {
       var sel = window.getSelection(),
           range = document.createRange()
 
       sel.removeAllRanges()
-      expect(this.selection.hasMultiParagraphs()).toEqual(0)
+      expect(this.selection.hasMultiParagraphs()).toBe(false)
 
       var e = document.createElement('article')
       e.innerHTML = '<p>Stuff</p>'
@@ -269,12 +269,12 @@ describe('The Selection plugin:', function () {
       range.selectNodeContents(e.firstChild)
       sel.addRange(range)
 
-      expect(this.selection.hasMultiParagraphs()).toEqual(0)
+      expect(this.selection.hasMultiParagraphs()).toBe(false)
 
       document.body.removeChild(e)
     })
 
-    it('returns 1 if the start of the selection is before the end.', function () {
+    it('returns true if the start of the selection is before the end.', function () {
       var sel = window.getSelection(),
           range = document.createRange()
 
@@ -283,10 +283,10 @@ describe('The Selection plugin:', function () {
       sel.removeAllRanges()
       sel.addRange(range)
 
-      expect(this.selection.hasMultiParagraphs()).toEqual(1)
+      expect(this.selection.hasMultiParagraphs()).toBe(true)
     })
 
-    it('returns -1 if the end of the selection is before the start.', function () {
+    it('returns true if the end of the selection is before the start.', function () {
       var sel = window.getSelection(),
           range = document.createRange()
 
@@ -299,7 +299,7 @@ describe('The Selection plugin:', function () {
       // they do not implement Selection.extend()
       sel.extend(document.querySelector('#first').firstChild, 2)
 
-      expect(this.selection.hasMultiParagraphs()).toEqual(-1)
+      expect(this.selection.hasMultiParagraphs()).toBe(true)
     })
   })
 
