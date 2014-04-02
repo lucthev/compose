@@ -124,9 +124,9 @@ define(function () {
         endRange,
         range
 
-    if (sel.rangeCount) {
-      range = sel.getRangeAt(0)
-    } else return
+    if (!sel.rangeCount) return
+
+    range = sel.getRangeAt(0)
 
     start.classList.add('Quill-marker')
     end.classList.add('Quill-marker')
@@ -154,9 +154,6 @@ define(function () {
          !start.nextSibling.data)
         start.parentNode.removeChild(start.nextSibling)
     }
-
-    sel.removeAllRanges()
-    sel.addRange(range)
   }
 
   Selection.prototype.getMarkers = function () {
@@ -199,7 +196,7 @@ define(function () {
   Selection.prototype.isNewLine = function () {
     var elem = this.getContaining()
 
-    return elem && elem.nodeName === 'P' && !elem.textContent
+    return elem && !elem.textContent
   }
 
   /**
