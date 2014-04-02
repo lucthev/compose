@@ -400,4 +400,76 @@ describe('The Selection plugin:', function () {
       expect(this.selection.contains('i')).toBe(false)
     })
   })
+
+  describe('Selection#isNewLine', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      this.elem.innerHTML = '<p><br></p>'
+
+      document.body.appendChild(this.elem)
+
+      // Make our fake quill.
+      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      quill = {
+        isInline: isInline,
+        elem: this.elem
+      }
+
+      this.selection = new Selection(quill)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(this.elem)
+    })
+
+    it('determines if the caret is on a new line.', function () {
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.isNewLine()).toBe(true)
+    })
+
+    it('should not care about the containing element\'s tag.', function () {
+      this.elem.innerHTML = '<h1><br></h1>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.isNewLine()).toBe(true)
+    })
+
+    it('should return false when there is no selection.', function () {
+      expect(this.selection.isNewLine()).toBe(false)
+    })
+
+    it('should return false if the containing element has text.', function () {
+      this.elem.innerHTML = '<p>Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.isNewLine()).toBe(false)
+
+      this.elem.innerHTML = '<h2>Stuff</h2>'
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.selection.isNewLine()).toBe(false)
+    })
+  })
 })
