@@ -25,18 +25,22 @@ define(function () {
   }
 
   /**
-   * Selection.getContaining() gets the direct child of the editor
-   * element which the caret is in, or false if none exist.
+   * Selection.getContaining() gets the immediate child of the editor
+   * element which the anchorNode is in, or, of focusNode is true, the
+   * element in which the focus node is in.
    *
+   * @param {Boolean} focusNode
    * @return Element || false
    */
-  Selection.prototype.getContaining = function () {
+  Selection.prototype.getContaining = function (focusNode) {
     var sel = window.getSelection(),
         node
 
     if (!sel.rangeCount || this.inline) return false
 
-    node = sel.getRangeAt(0).commonAncestorContainer
+    if (focusNode)
+      node = sel.focusNode
+    else node = sel.anchorNode
 
     while (node) {
       if (node.parentNode === this.elem)

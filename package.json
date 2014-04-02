@@ -4,7 +4,7 @@
   "description": "Yet another contentEditable thing.",
   "main": "dist/quill.min.js",
   "scripts": {
-    "test": "./node_modules/.bin/grunt jasmine",
+    "test": "npm run grunt && ./node_modules/.bin/grunt jasmine",
     "grunt": "./node_modules/.bin/grunt",
     "watch": "./node_modules/.bin/grunt watch"
   },

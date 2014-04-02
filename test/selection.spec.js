@@ -35,8 +35,25 @@ describe('The Selection plugin:', function () {
       sel.removeAllRanges()
       sel.addRange(range)
 
-      // console.log(this.selection.getContaining())
       expect(this.selection.getContaining()).toEqual(this.elem.firstChild)
+    })
+
+    it('uses anchorNode by default, but can use focusNode.', function () {
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      this.elem.innerHTML =
+       '<p>Stuff</p>\
+        <p>Things</p>'
+
+      range.selectNodeContents(this.elem.firstChild.nextSibling)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+      sel.extend(this.elem.firstChild.firstChild, 3)
+
+      expect(this.selection.getContaining()).not.toEqual(this.elem.firstChild)
+      expect(this.selection.getContaining(true)).toEqual(this.elem.firstChild)
     })
 
     it('should work even with deeply nested elements.', function () {
