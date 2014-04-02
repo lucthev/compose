@@ -10,15 +10,20 @@ define([
   var formattingPlugins = Array.prototype.slice.call(arguments)
 
   /**
-   * appendParagraph(elem) appends an empty paragraph to elem.
+   * appendParagraph(elem) appends an empty paragraph to elem. If no
+   * element is given, returns the paragraph.
    *
    * @param {Element} elem
+   * @return Element
    */
   function appendParagraph (elem) {
     var p = document.createElement('p')
 
     p.appendChild(document.createElement('br'))
-    elem.appendChild(p)
+
+    if (elem)
+      elem.appendChild(p)
+    else return p
   }
 
   /**
@@ -51,7 +56,10 @@ define([
   function onKeydown (e) {
     var container = this.selection.getContaining(),
         newLine = this.selection.isNewLine(),
-        sel = window.getSelection()
+        sel = window.getSelection(),
+        paragraph,
+        content,
+        range
 
     // Prevent deletion of the first paragraph.
     if ((e.keyCode === 8 || e.keyCode === 46) && newLine &&
@@ -73,6 +81,27 @@ define([
     // Prevent newline creation when already on a new line.
     if (e.keyCode === 13 && newLine)
       return e.preventDefault()
+
+    // Pressing enter after a heading creates divs, not paragraphs. We
+    // override this behaviour.
+    if (e.keyCode === 13 && sel.isCollapsed &&
+        /^H[1-6]$/i.test(container.nodeName)) {
+      range = sel.getRangeAt(0).cloneRange()
+      range.setEndAfter(container, 0)
+
+      content = range.cloneContents()
+
+      if (content.firstChild.textContent === '') {
+        e.preventDefault()
+
+        paragraph = appendParagraph()
+        container.parentNode
+          .insertBefore(paragraph, container.nextElementSibling)
+
+        // Note that we don't trigger the change event.
+        this.selection.placeCaret(paragraph)
+      }
+    }
   }
 
   function Rich (Quill) {
