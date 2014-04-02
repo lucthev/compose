@@ -111,12 +111,8 @@ define(function () {
 
     if (!sel.rangeCount || this.inline) return
 
-    // Only one elem in selection:
-    if (sel.isCollapsed) return action(this.getContaining())
-
     // Save the selection.
     this.placeMarkers()
-    // console.log(this.elem.innerHTML)
 
     range = sel.getRangeAt(0)
     start = range.startContainer
