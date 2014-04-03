@@ -4,7 +4,8 @@ define([
   'commands/underline',
   'commands/heading',
   'commands/link',
-  'commands/unlink'],
+  'commands/unlink',
+  'plugins/hr'],
   function () {
 
   var formattingPlugins = Array.prototype.slice.call(arguments)

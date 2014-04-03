@@ -228,9 +228,10 @@ define(function () {
    * @return Boolean
    */
   Selection.prototype.isNewLine = function () {
-    var elem = this.getContaining()
+    var sel = window.getSelection(),
+        elem = this.getContaining()
 
-    return elem && !elem.textContent
+    return elem && sel.isCollapsed && !elem.textContent
   }
 
   /**
