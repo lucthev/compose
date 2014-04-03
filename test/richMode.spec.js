@@ -166,5 +166,23 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML)
         .toEqual('<h2>Stuff</h2><h2>Things</h2>')
     })
+
+    it('should conserve attributes when converting.', function () {
+      var quill = new Quill(this.elem),
+          sel = window.getSelection(),
+          range = document.createRange()
+
+      this.elem.innerHTML =
+        '<p id="word">Stuff</p><p name="blue">Things</p>'
+
+      range.selectNodeContents(this.elem)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      quill.heading(2)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<h2 id="word">Stuff</h2><h2 name="blue">Things</h2>')
+    })
   })
 })
