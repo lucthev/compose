@@ -165,10 +165,6 @@ define(function () {
     start.classList.add('Quill-marker')
     end.classList.add('Quill-marker')
 
-    // We have to give them some content to avoid weird issues, like
-    // https://github.com/lucthev/quill/issues/7
-    start.textContent = end.textContent = ' '
-
     endRange = range.cloneRange()
     endRange.collapse()
     endRange.insertNode(end)
@@ -247,9 +243,8 @@ define(function () {
     var sel = window.getSelection(),
         range = document.createRange()
 
-    range.setStart(node, 0)
-    range.setEnd(node, 0)
-
+    range.selectNodeContents(node)
+    range.collapse(true)
     sel.removeAllRanges()
     sel.addRange(range)
   }

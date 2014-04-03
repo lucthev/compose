@@ -3,11 +3,15 @@ define(function () {
   function HeadingPlugin (Quill) {
 
     function heading (level) {
-      level = level ? '<h' + level + '>' : '<p>'
+      level = level ? 'h' + level + '' : 'p'
 
+      // We manually convert each paragraph into a heading; formatBlock
+      // introduces weird issues.
+      // (see https://github.com/lucthev/quill/issues/7)
       Quill.selection.forEachBlock(function (block) {
-        Quill.selection.placeCaret(block)
-        document.execCommand('formatBlock', false, level)
+        var elem = document.createElement(level)
+        elem.innerHTML = block.innerHTML
+        block.parentNode.replaceChild(elem, block)
       })
     }
 

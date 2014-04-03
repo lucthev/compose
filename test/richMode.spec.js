@@ -149,5 +149,22 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML)
         .toEqual('<h2>Stuff</h2>')
     })
+
+    it('should not fail when converting paragraphs to headings (4).', function () {
+      var quill = new Quill(this.elem),
+          sel = window.getSelection(),
+          range = document.createRange()
+
+      this.elem.innerHTML = '<p>Stuff</p><p>Things</p>'
+
+      range.selectNodeContents(this.elem)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      quill.heading(2)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<h2>Stuff</h2><h2>Things</h2>')
+    })
   })
 })
