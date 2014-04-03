@@ -74,24 +74,6 @@ define(function () {
   }
 
   /**
-   * Selection.hasMultiParagraphs() determines if the selection
-   * contains multiple paragraphs.
-   *
-   * @return Boolean
-   */
-  Selection.prototype.hasMultiParagraphs = function () {
-    var sel = window.getSelection(),
-        range
-
-    if (!sel.rangeCount || this.inline) return false
-
-    range = sel.getRangeAt(0)
-
-    // Multiparagraphs will have the editable element as ancestor.
-    return range.commonAncestorContainer === this.elem
-  }
-
-  /**
    * Selection.forEachBlock(action) perform an action on each top-
    * level block element in the selection.
    *

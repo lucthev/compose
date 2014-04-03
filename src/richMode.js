@@ -27,33 +27,6 @@ define([
     else return p
   }
 
-  /**
-   * toHTML(range) converts the contents of a range to HTML.
-   *
-   * @param {Range} range
-   * @return String
-   */
-  function toHTML (range) {
-    var div = document.createElement('div')
-    div.appendChild(range.cloneContents())
-    return div.innerHTML
-  }
-
-  /**
-   * isAllSelected(elem, range) determines if the given ranges contains
-   * all of elem.
-   *
-   * @param {Node} elem
-   * @param {Range} range
-   * @return Boolean
-   */
-  function isAllSelected (elem, range) {
-    var allContent = document.createRange()
-    allContent.selectNodeContents(elem)
-
-    return toHTML(allContent) === toHTML(range)
-  }
-
   function onKeydown (e) {
     var container = this.selection.getContaining(),
         newLine = this.selection.isNewLine(),
@@ -66,18 +39,6 @@ define([
     if ((e.keyCode === 8 || e.keyCode === 46) && newLine &&
         container === this.elem.firstElementChild)
       return e.preventDefault()
-
-    // Prevents FF bug where select all + delete escapes paragraph mode.
-    if ((e.keyCode === 8 || e.keyCode === 46) && sel.rangeCount &&
-        isAllSelected(this.elem, sel.getRangeAt(0))) {
-      e.preventDefault()
-
-      this.elem.innerHTML = '<p><em class="Quill-marker"></em><br></p>'
-      this.selection.selectMarkers()
-
-      // Make sure to save state.
-      return this.trigger('change')
-    }
 
     // Prevent newline creation when already on a new line.
     if (e.keyCode === 13 && newLine)
