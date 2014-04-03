@@ -99,8 +99,10 @@ define([
         container.parentNode
           .insertBefore(paragraph, container.nextElementSibling)
 
-        // Note that we don't trigger the change event.
         this.selection.placeCaret(paragraph)
+
+        if (!this.throttle.isTyping())
+          this.trigger('change')
       }
     }
   }

@@ -428,6 +428,7 @@ describe('The Selection plugin:', function () {
           range = document.createRange()
 
       range.selectNodeContents(this.elem.firstChild)
+      range.collapse(true)
       sel.removeAllRanges()
       sel.addRange(range)
 
@@ -441,6 +442,7 @@ describe('The Selection plugin:', function () {
           range = document.createRange()
 
       range.selectNodeContents(this.elem.firstChild)
+      range.collapse(true)
       sel.removeAllRanges()
       sel.addRange(range)
 

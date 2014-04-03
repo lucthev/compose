@@ -21,6 +21,9 @@ define(function () {
 
         block.parentNode.replaceChild(elem, block)
       })
+
+      if (!Quill.throttle.isTyping())
+        Quill.trigger('change')
     }
 
     heading.getState = function (level) {
