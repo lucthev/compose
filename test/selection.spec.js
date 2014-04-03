@@ -38,7 +38,7 @@ describe('The Selection plugin:', function () {
       expect(this.selection.getContaining()).toEqual(this.elem.firstChild)
     })
 
-    it('uses anchorNode by default, but can use focusNode.', function () {
+    it('uses anchorNode by default, but can use any other node.', function () {
       var sel = window.getSelection(),
           range = document.createRange()
 
@@ -53,7 +53,7 @@ describe('The Selection plugin:', function () {
       sel.extend(this.elem.firstChild.firstChild, 3)
 
       expect(this.selection.getContaining()).not.toEqual(this.elem.firstChild)
-      expect(this.selection.getContaining(true)).toEqual(this.elem.firstChild)
+      expect(this.selection.getContaining(sel.focusNode)).toEqual(this.elem.firstChild)
     })
 
     it('should work even with deeply nested elements.', function () {

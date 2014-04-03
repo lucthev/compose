@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run grunt && ./node_modules/.bin/grunt jasmine",
     "grunt": "./node_modules/.bin/grunt",
-    "watch": "./node_modules/.bin/grunt watch"
+    "dev": "./node_modules/.bin/grunt watch"
   },
   "repository": {
     "type": "git",

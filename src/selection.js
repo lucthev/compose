@@ -26,21 +26,17 @@ define(function () {
 
   /**
    * Selection.getContaining() gets the immediate child of the editor
-   * element which the anchorNode is in, or, of focusNode is true, the
-   * element in which the focus node is in.
+   * element that contains the node node. If no node is given, uses the
+   * selection anchor.
    *
-   * @param {Boolean} focusNode
+   * @param {Node} node
    * @return Element || false
    */
-  Selection.prototype.getContaining = function (focusNode) {
-    var sel = window.getSelection(),
-        node
+  Selection.prototype.getContaining = function (node) {
+    var sel = window.getSelection()
+    node = node || sel.anchorNode
 
     if (!sel.rangeCount || this.inline) return false
-
-    if (focusNode)
-      node = sel.focusNode
-    else node = sel.anchorNode
 
     while (node) {
       if (node.parentNode === this.elem)
@@ -103,40 +99,34 @@ define(function () {
    */
   Selection.prototype.forEachBlock = function (action) {
     var sel = window.getSelection(),
-        blocks = [],
-        selStart,
+        started,
+        ended,
         range,
         start,
-        end
+        end,
+        i
 
     if (!sel.rangeCount || this.inline) return
+
+    range = sel.getRangeAt(0)
+    start = this.getContaining(range.startContainer)
+    end = this.getContaining(range.endContainer)
 
     // Save the selection.
     this.placeMarkers()
 
-    range = sel.getRangeAt(0)
-    start = range.startContainer
+    for (i = 0; i < this.elem.children.length; i += 1) {
 
-    // Determine what's the start and what's the end.
-    while (start) {
-      if (start.parentNode === this.elem)
-        break
-      else start = start.parentNode
+      if (!started && this.elem.children[i] === start)
+        started = true
+
+      if (this.elem.children[i] === end)
+        ended = true
+
+      if (started) action(this.elem.children[i])
+
+      if (ended) break
     }
-
-    selStart = this.getContaining()
-    end = start === selStart ? this.getContaining(true) : start
-    if (start === end) start = selStart
-
-    // Push all elements between start end end, inclusive, into array.
-    while (start !== end) {
-      blocks.push(start)
-
-      start = start.nextElementSibling
-    }
-    blocks.push(end)
-
-    blocks.forEach(action)
 
     // Restore selection.
     this.selectMarkers()
@@ -174,6 +164,10 @@ define(function () {
 
     start.classList.add('Quill-marker')
     end.classList.add('Quill-marker')
+
+    // We have to give them some content to avoid weird issues, like
+    // https://github.com/lucthev/quill/issues/7
+    start.textContent = end.textContent = ' '
 
     endRange = range.cloneRange()
     endRange.collapse()
