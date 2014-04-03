@@ -9,8 +9,16 @@ define(function () {
       // introduces weird issues.
       // (see https://github.com/lucthev/quill/issues/7)
       Quill.selection.forEachBlock(function (block) {
-        var elem = document.createElement(level)
+        var elem = document.createElement(level),
+            attributes = Array.prototype.slice.call(block.attributes)
+
         elem.innerHTML = block.innerHTML
+
+        // Conserve attributes.
+        attributes.forEach(function (item) {
+          elem.setAttribute(item.name, item.value)
+        })
+
         block.parentNode.replaceChild(elem, block)
       })
     }
