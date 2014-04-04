@@ -105,7 +105,8 @@ define(function () {
       if (this.elem.children[i] === end)
         ended = true
 
-      if (started) action(this.elem.children[i])
+      if (started && this.elem.children[i].isContentEditable)
+        action(this.elem.children[i])
 
       if (ended) break
     }
