@@ -180,7 +180,12 @@ define(function () {
   Selection.prototype.removeMarkers = function () {
     var markers = this.getMarkers()
     Array.prototype.forEach.call(markers, function (marker) {
-      marker.parentNode.removeChild(marker)
+      var parent = marker.parentNode
+
+      parent.removeChild(marker)
+
+      // Join text nodes that may have been split by marker insertion.
+      parent.normalize()
     })
   }
 
