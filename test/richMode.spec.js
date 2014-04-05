@@ -157,7 +157,8 @@ describe('Rich mode', function () {
 
       this.elem.innerHTML = '<p>Stuff</p><p>Things</p>'
 
-      range.selectNodeContents(this.elem)
+      range.setStart(this.elem.firstChild.firstChild, 0)
+      range.setEnd(this.elem.firstChild.nextSibling.firstChild, 5)
       sel.removeAllRanges()
       sel.addRange(range)
 
@@ -175,7 +176,8 @@ describe('Rich mode', function () {
       this.elem.innerHTML =
         '<p id="word">Stuff</p><p name="blue">Things</p>'
 
-      range.selectNodeContents(this.elem)
+      range.setStart(this.elem.firstChild.firstChild, 0)
+      range.setEnd(this.elem.firstChild.nextSibling.firstChild, 5)
       sel.removeAllRanges()
       sel.addRange(range)
 

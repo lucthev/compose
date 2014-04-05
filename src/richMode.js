@@ -27,6 +27,45 @@ define([
     else return p
   }
 
+  /**
+   * fixSelection() fixes Firefox's select all behaviour by placing
+   * the caret within block elements, not outside.
+   * It is a variable so that we can do a one-time bind to Quill upon
+   * initialization, and not have to re-bind for every check.
+   */
+  var fixSelection = function () {
+    var last,
+        em
+
+    this.selection.placeMarkers()
+
+    em = this.elem.firstChild
+    if (em.classList.contains('Quill-marker')) {
+      this.elem.removeChild(em)
+
+      this.elem.firstChild
+        .insertBefore(em, this.elem.firstChild.firstChild)
+    }
+
+    em = this.elem.lastChild
+    if (em.classList.contains('Quill-marker')) {
+      this.elem.removeChild(em)
+
+      last = this.elem.lastChild
+      if (last.lastChild && last.lastChild.nodeName === 'BR')
+        last.insertBefore(em, last.lastChild)
+      else last.appendChild(em)
+    }
+
+    this.selection.selectMarkers()
+  }
+
+  function onKeyup () {
+
+    // Check for FF selectAll behaviour:
+    fixSelection()
+  }
+
   function onKeydown (e) {
     var container = this.selection.getContaining(),
         newLine = this.selection.isNewLine(),
@@ -78,10 +117,13 @@ define([
 
     this.elem = Quill.elem
 
+    fixSelection = fixSelection.bind(Quill)
     // Store bound handlers for later removal.
     this.onKeydown = onKeydown.bind(Quill)
+    this.onKeyup = onKeyup.bind(Quill)
 
     this.elem.addEventListener('keydown', this.onKeydown)
+    this.elem.addEventListener('keyup', this.onKeyup)
 
     if (!this.elem.firstElementChild)
       appendParagraph(this.elem)
@@ -89,6 +131,7 @@ define([
 
   Rich.prototype.destroy = function() {
     this.elem.removeEventListener('keydown', this.onKeydown)
+    this.elem.removeEventListener('keyup', this.onKeyup)
 
     delete this.elem
 
