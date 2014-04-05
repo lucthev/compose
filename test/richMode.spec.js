@@ -85,7 +85,7 @@ describe('Rich mode', function () {
     })
   })
 
-  describe('heading conversion bugs', function () {
+  describe('headings', function () {
 
     beforeEach(function () {
       this.elem = document.createElement('div')
@@ -185,6 +185,144 @@ describe('Rich mode', function () {
 
       expect(this.elem.innerHTML)
         .toEqual('<h2 id="word">Stuff</h2><h2 name="blue">Things</h2>')
+    })
+  })
+
+  describe('horizontal rules', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(this.elem)
+    })
+
+    it('should be inserted when pressing enter on a new line.', function () {
+      this.elem.innerHTML = '<p>Stuff</p><p><br></p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.lastChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(fireEvent(this.elem, 'keydown', 13)).toBe(true)
+      expect(this.elem.children.length).toEqual(3)
+      expect(this.elem.firstChild.nextSibling.nodeName)
+        .toEqual('HR')
+    })
+
+    it('should not be inserted if the newline is the first paragraph.', function () {
+      this.elem.innerHTML = '<p><br></p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      fireEvent(this.elem, 'keydown', 13)
+      expect(this.elem.children.length).toEqual(1)
+      expect(this.elem.firstChild.nodeName).not.toEqual('HR')
+    })
+
+    it('should not be inserted if the newline is preceded by an HR.', function () {
+      this.elem.innerHTML = '<p>Stuff</p><hr><p><br></p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.lastChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      fireEvent(this.elem, 'keydown', 13)
+      expect(this.elem.children.length).toEqual(3)
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff</p><hr><p><br></p>')
+    })
+
+    it('should be deleted as appropriate (1).', function () {
+      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.lastChild)
+      range.collapse(true)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      // Simulate backspace.
+      fireEvent(this.elem, 'keydown', 8)
+      expect(this.elem.children.length).toEqual(2)
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff</p><p>Words</p>')
+    })
+
+    it('should be deleted as appropriate (2).', function () {
+      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      // Simulate forward delete.
+      fireEvent(this.elem, 'keydown', 46)
+      expect(this.elem.children.length).toEqual(2)
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff</p><p>Words</p>')
+    })
+
+    it('should be ignored when keying around (1).', function () {
+      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.quill.selection.getContaining())
+        .toEqual(this.elem.firstChild)
+
+      // Simulate right arrow key.
+      fireEvent(this.elem, 'keydown', 39)
+      expect(this.quill.selection.getContaining())
+        .toEqual(this.elem.lastChild)
+    })
+
+    it('should be ignored when keying around (2).', function () {
+      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.lastChild)
+      range.collapse(true)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      expect(this.quill.selection.getContaining())
+        .toEqual(this.elem.lastChild)
+
+      // Simulate left arrow key.
+      fireEvent(this.elem, 'keydown', 37)
+      expect(this.quill.selection.getContaining())
+        .toEqual(this.elem.firstChild)
     })
   })
 })

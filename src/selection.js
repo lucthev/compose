@@ -219,16 +219,18 @@ define(function () {
 
   /**
    * Selection.placeCaret(node) places the caret at the beginning of
-   * the node.
+   * the node. If atEnd is truthy, place the caret at the end of the
+   * node.
    *
    * @param {Node} node
+   * @param {Boolean} atEnd
    */
-  Selection.prototype.placeCaret = function (node) {
+  Selection.prototype.placeCaret = function (node, atEnd) {
     var sel = window.getSelection(),
         range = document.createRange()
 
     range.selectNodeContents(node)
-    range.collapse(true)
+    range.collapse(!atEnd)
     sel.removeAllRanges()
     sel.addRange(range)
   }

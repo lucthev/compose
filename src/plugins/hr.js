@@ -12,21 +12,33 @@ define(function () {
           container.previousElementSibling.nodeName !== 'HR')
         this.hr.insertBefore(container)
 
-    } else if (sel.rangeCount && (e.keyCode === 8 || e.keyCode === 46)) {
+    } else if (sel.rangeCount && (e.keyCode === 8 || e.keyCode === 46 ||
+        e.keyCode === 37 || e.keyCode === 39)) {
       // We manually check if a horizontal rule is about to get deleted;
       // Firefox doesn't handle this very well.
+      // We also check for keyboard navigation; Chrome doesn't handle
+      // that very well.
 
       range = sel.getRangeAt(0).cloneRange()
       range.setEndAfter(container)
       content = range.cloneContents()
 
-      if (e.keyCode === 46 && !content.firstChild.textContent &&
-          container.nextSibling && container.nextSibling.nodeName === 'HR') {
-        e.preventDefault()
-        container.parentNode.removeChild(container.nextSibling)
+      if ((e.keyCode === 46 || e.keyCode === 39) &&
+          !content.firstChild.textContent && container.nextSibling &&
+          container.nextSibling.nodeName === 'HR') {
 
-        if (!this.throttle.isTyping())
-          this.trigger('change')
+        e.preventDefault()
+
+        if (e.keyCode === 39) {
+
+          // We place the caret at the beginning of the next block element.
+          this.selection.placeCaret(container.nextSibling.nextSibling)
+        } else {
+          container.parentNode.removeChild(container.nextSibling)
+
+          if (!this.throttle.isTyping())
+            this.trigger('change')
+        }
 
         return
       }
@@ -35,13 +47,23 @@ define(function () {
       range.setStartBefore(container)
       content = range.cloneContents()
 
-      if (e.keyCode === 8 && !content.firstChild.textContent &&
-          container.previousSibling && container.previousSibling.nodeName === 'HR') {
-        e.preventDefault()
-        container.parentNode.removeChild(container.previousSibling)
+      if ((e.keyCode === 8 || e.keyCode === 37) &&
+          !content.firstChild.textContent && container.previousSibling &&
+          container.previousSibling.nodeName === 'HR') {
 
-        if (!this.throttle.isTyping())
-          this.trigger('change')
+        e.preventDefault()
+
+        if (e.keyCode === 37) {
+
+          // Place caret at end of previous block.
+          this.selection
+            .placeCaret(container.previousSibling.previousSibling, true)
+        } else {
+          container.parentNode.removeChild(container.previousSibling)
+
+          if (!this.throttle.isTyping())
+            this.trigger('change')
+        }
       }
     }
   }
