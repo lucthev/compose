@@ -135,8 +135,8 @@ define(function () {
 
   Selection.prototype.placeMarkers = function () {
     var sel = window.getSelection(),
-        start = document.createElement('em'),
-        end = document.createElement('em'),
+        start = document.createElement('span'),
+        end = document.createElement('span'),
         startRange,
         endRange,
         range

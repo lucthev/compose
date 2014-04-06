@@ -1,18 +1,57 @@
 define(function () {
 
-  function Italic () {
-    document.execCommand('italic', false, null)
-  }
+  function ItalicPlugin (Quill) {
 
-  Italic.getState = function () {
-    return document.queryCommandState('italic')
-  }
+    /**
+     * toItalic() converts <em> tags in the selection to <i> tags.
+     */
+    function toItalic () {
+      Quill.selection.forEachBlock(function (block) {
+        var ems = block.getElementsByTagName('em')
+        ems = Array.prototype.slice.call(ems)
 
-  Italic.isEnabled = function () {
-    return document.queryCommandState('italic')
-  }
+        ems.forEach(function (em) {
+          var i = document.createElement('i')
 
-  function ItalicPlugin () {
+          i.innerHTML = em.innerHTML
+
+          em.parentNode.replaceChild(i, em)
+        })
+      })
+    }
+
+    /**
+     * toEm() converts <i> tags in the selection to <em> tags.
+     */
+    function toEm () {
+      Quill.selection.forEachBlock(function (block) {
+        var is = block.getElementsByTagName('i')
+        is = Array.prototype.slice.call(is)
+
+        is.forEach(function (i) {
+          var em = document.createElement('em')
+
+          em.innerHTML = i.innerHTML
+
+          i.parentNode.replaceChild(em, i)
+        })
+      })
+    }
+
+    function Italic () {
+      toItalic()
+      document.execCommand('italic', false, null)
+      toEm()
+    }
+
+    Italic.getState = function () {
+      return document.queryCommandState('italic')
+    }
+
+    Italic.isEnabled = function () {
+      return document.queryCommandState('italic')
+    }
+
     return Italic
   }
 

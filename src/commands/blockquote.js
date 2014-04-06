@@ -10,7 +10,6 @@ define(function () {
      * @param {Boolean || String} quote
      */
     function blockquote (quote) {
-      // console.log(quote)
       var pullQuote = typeof quote === 'string'
 
       Quill.selection.forEachBlock(function (elem) {
