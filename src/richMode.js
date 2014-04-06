@@ -36,32 +36,31 @@ define([
    */
   var fixSelection = function () {
     var sel = window.getSelection(),
-        last,
-        em
+        marker,
+        last
 
     // Dont place markers and whatnot if we dont have to; otherwise,
     // it can cause issues (https://github.com/lucthev/quill/issues/12)
-    if (!sel.rangeCount || sel.isCollapsed || this.selection.getContaining())
-      return
+    if (!sel.rangeCount || this.selection.getContaining()) return
 
     this.selection.placeMarkers()
 
-    em = this.elem.firstChild
-    if (em.classList.contains('Quill-marker')) {
-      this.elem.removeChild(em)
+    marker = this.elem.firstChild
+    if (marker.classList.contains('Quill-marker')) {
+      this.elem.removeChild(marker)
 
       this.elem.firstChild
-        .insertBefore(em, this.elem.firstChild.firstChild)
+        .insertBefore(marker, this.elem.firstChild.firstChild)
     }
 
-    em = this.elem.lastChild
-    if (em.classList.contains('Quill-marker')) {
-      this.elem.removeChild(em)
+    marker = this.elem.lastChild
+    if (marker.classList.contains('Quill-marker')) {
+      this.elem.removeChild(marker)
 
       last = this.elem.lastChild
       if (last.lastChild && last.lastChild.nodeName === 'BR')
-        last.insertBefore(em, last.lastChild)
-      else last.appendChild(em)
+        last.insertBefore(marker, last.lastChild)
+      else last.appendChild(marker)
     }
 
     this.selection.selectMarkers()
