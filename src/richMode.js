@@ -35,8 +35,14 @@ define([
    * initialization, and not have to re-bind for every check.
    */
   var fixSelection = function () {
-    var last,
+    var sel = window.getSelection(),
+        last,
         em
+
+    // Dont place markers and whatnot if we dont have to; otherwise,
+    // it can cause issues (https://github.com/lucthev/quill/issues/12)
+    if (!sel.rangeCount || sel.isCollapsed || this.selection.getContaining())
+      return
 
     this.selection.placeMarkers()
 
