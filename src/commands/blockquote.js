@@ -30,7 +30,7 @@ define(function () {
 
           block.classList.add(quote)
           block.setAttribute('data-class', quote)
-        } else if (!quote && block.hasAttribute('data-class')) {
+        } else if (block.hasAttribute('data-class')) {
           block.classList.remove(block.getAttribute('data-class'))
           block.removeAttribute('data-class')
 

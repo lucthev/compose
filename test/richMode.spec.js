@@ -442,6 +442,31 @@ describe('Rich mode', function () {
       expect(this.elem.firstChild.hasAttribute('class')).toBe(false)
     })
 
+    it('should remove the class when converting to a normal blockquote.', function () {
+      this.elem.innerHTML = '<p>Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote('test')
+
+      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
+      expect(this.elem.firstChild.className).toEqual('test')
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote(true)
+
+      expect(this.elem.innerHTML).toEqual('<blockquote>Stuff</blockquote>')
+      expect(this.elem.firstChild.hasAttribute('class')).toBe(false)
+    })
+
     it('should change the class when appropriate.', function () {
       this.elem.innerHTML = '<p class="one">Stuff</p>'
 
