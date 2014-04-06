@@ -5,6 +5,7 @@ define([
   'commands/heading',
   'commands/link',
   'commands/unlink',
+  'commands/blockquote',
   'plugins/hr'],
   function () {
 

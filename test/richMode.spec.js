@@ -325,4 +325,193 @@ describe('Rich mode', function () {
         .toEqual(this.elem.firstChild)
     })
   })
+
+  describe('blockquotes', function () {
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(this.elem)
+    })
+
+    it('can be inserted normally.', function () {
+      this.elem.innerHTML = '<p>Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote(true)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<blockquote>Stuff</blockquote>')
+
+      this.quill.blockquote(false)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff</p>')
+    })
+
+    it('can be inserted with an optional class.', function () {
+      this.elem.innerHTML = '<p>Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote('test')
+
+      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
+      expect(this.elem.firstChild.className).toEqual('test')
+    })
+
+    it('should not overwrite other classes.', function () {
+      this.elem.innerHTML = '<p class="one">Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote('test')
+
+      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
+      expect(this.elem.firstChild.className).toEqual('one test')
+    })
+
+    it('should remove the class when converting back to paragraphs (1).', function () {
+      this.elem.innerHTML = '<p class="one">Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote('test')
+
+      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
+      expect(this.elem.firstChild.className).toEqual('one test')
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote(false)
+
+      expect(this.elem.innerHTML).toEqual('<p class="one">Stuff</p>')
+    })
+
+    it('should remove the class when converting back to paragraphs (2).', function () {
+      this.elem.innerHTML = '<p>Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote('test')
+
+      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
+      expect(this.elem.firstChild.className).toEqual('test')
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote(false)
+
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
+      expect(this.elem.firstChild.hasAttribute('class')).toBe(false)
+    })
+
+    it('should change the class when appropriate.', function () {
+      this.elem.innerHTML = '<p class="one">Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote('test')
+
+      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
+      expect(this.elem.firstChild.className).toEqual('one test')
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote('word')
+
+      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
+      expect(this.elem.firstChild.className).toEqual('one word')
+    })
+
+    it('should work over multiple blocks.', function () {
+      this.elem.innerHTML = '<p>Stuff</p><p>Things</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.setStart(this.elem.firstChild.firstChild, 2)
+      range.setEnd(this.elem.lastChild.firstChild, 5)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote(true)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<blockquote>Stuff</blockquote><blockquote>Things</blockquote>')
+
+      this.quill.blockquote(false)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff</p><p>Things</p>')
+    })
+
+    it('should preserve other attributes.', function () {
+      this.elem.innerHTML = '<p name="word">Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote(true)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<blockquote name="word">Stuff</blockquote>')
+
+      range.selectNodeContents(this.elem.firstChild)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.blockquote(false)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p name="word">Stuff</p>')
+    })
+  })
 })
