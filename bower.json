@@ -20,6 +20,7 @@
   "private": true,
   "devDependencies": {
     "almond": "~0.2.9",
-    "eventEmitter": "~4.2.7"
+    "eventEmitter": "~4.2.7",
+    "sanitize.js": "*"
   }
 }
