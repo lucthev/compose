@@ -15,6 +15,8 @@ define(['vendor/sanitize/sanitize.js'], function (Sanitize) {
       }.bind(this))
     } else
       throw new TypeError('Sanitize.addElements should be passed a String or an Array.')
+
+    return this
   }
 
   /**
@@ -35,6 +37,8 @@ define(['vendor/sanitize/sanitize.js'], function (Sanitize) {
 
       this.config.attributes[key] = allowed
     }.bind(this))
+
+    return this
   }
 
   /**
@@ -48,6 +52,8 @@ define(['vendor/sanitize/sanitize.js'], function (Sanitize) {
       throw new TypeError('Sanitizing filters must be functions.')
 
     this.transformers.push(filter)
+
+    return this
   }
 
   /**
@@ -74,6 +80,8 @@ define(['vendor/sanitize/sanitize.js'], function (Sanitize) {
 
       this.config.protocols[tagName] = tag
     }.bind(this))
+
+    return this
   }
 
   // An alias for Sanitize.clean_node().
