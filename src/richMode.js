@@ -4,8 +4,8 @@ define([
   'commands/underline',
   'commands/heading',
   'commands/link',
-  'commands/unlink',
   'commands/blockquote',
+  'commands/insertHTML',
   'plugins/hr'],
   function () {
 
@@ -133,6 +133,8 @@ define([
 
     if (!this.elem.firstElementChild)
       appendParagraph(this.elem)
+
+    Quill.sanitizer.addElements('p')
   }
 
   Rich.prototype.destroy = function() {

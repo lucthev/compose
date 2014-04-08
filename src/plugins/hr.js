@@ -74,6 +74,24 @@ define(function () {
     this.elem = Quill.elem
     this.Quill = Quill
     this.elem.addEventListener('keydown', this.onKeydown)
+
+    Quill.sanitizer
+      .addElements('hr')
+      .addAttributes({
+        hr: ['contenteditable']
+      })
+      .addFilter(function (params) {
+        var node = params.node,
+            name = params.node_name,
+            hr
+
+        if (name === 'hr') {
+          hr = node.cloneNode()
+          hr.contentEditable = false
+
+          return { node: hr }
+        } else return null
+      })
   }
 
   autoHR.prototype.insertBefore = function (elem) {

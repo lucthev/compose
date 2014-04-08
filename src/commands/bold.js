@@ -57,6 +57,21 @@ define(function () {
       return document.queryCommandEnabled('bold') && !Quill.selection.childOf(/^(?:H[1-6])$/)
     }
 
+    Quill.sanitizer
+      .addElements('strong')
+      .addFilter(function (params) {
+        var node = params.node,
+            name = params.node_name,
+            strong
+
+        if (name === 'b') {
+          strong = document.createElement('strong')
+          strong.innerHTML = node.innerHTML
+
+          return { node: strong }
+        } else return null
+      })
+
     return Bold
   }
   BoldPlugin.plugin = 'bold'

@@ -12,7 +12,10 @@ define(function () {
     return document.queryCommandEnabled('underline')
   }
 
-  function UnderlinePlugin () {
+  function UnderlinePlugin (Quill) {
+
+    Quill.sanitizer.addElements('u')
+
     return Underline
   }
   UnderlinePlugin.plugin = 'underline'

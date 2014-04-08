@@ -46,6 +46,8 @@ define(function () {
 
       if (!Quill.throttle.isTyping())
         Quill.trigger('change')
+
+      Quill.sanitizer.addElements('blockquote')
     }
 
     blockquote.getState = function () {

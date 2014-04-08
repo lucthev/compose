@@ -6,7 +6,7 @@ define(function () {
       if (href) {
         href += ''
         document.execCommand('createLink', false, href)
-      }
+      } else document.execCommand('unlink', false, null)
     }
 
     /**
@@ -22,6 +22,15 @@ define(function () {
     Link.isEnabled = function () {
       return !Quill.selection.contains('a')
     }
+
+    Quill.sanitizer
+      .addElements('a')
+      .addAttributes({
+        a: ['href']
+      })
+      .addProtocols({
+        a: { href: ['http', 'https', 'mailto'] }
+      })
 
     return Link
   }
