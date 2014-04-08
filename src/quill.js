@@ -4,7 +4,8 @@ define([
   'richMode',
   'selection',
   'history',
-  'throttle'],
+  'throttle',
+  'sanitizer'],
   function (EventEmitter, Inline, Rich) {
 
   // Note: put default plugins last so they are included in the slice.
@@ -30,13 +31,13 @@ define([
     elem.contentEditable = true
     elem.setAttribute('data-mode', this.mode)
 
-    if (this.isInline())
-      this.use(Inline)
-    else this.use(Rich)
-
     defaultPlugins.forEach(function (Plugin) {
       this.use(Plugin)
     }.bind(this))
+
+    if (this.isInline())
+      this.use(Inline)
+    else this.use(Rich)
   }
 
   Quill.prototype = Object.create(EventEmitter.prototype)
