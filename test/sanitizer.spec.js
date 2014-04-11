@@ -44,6 +44,7 @@ describe('The Sanitizer plugin', function () {
   })
 
   it('can be configured to keep attributes via the addAttribute method.', function () {
+    var div = document.createElement('div')
     this.Sanitizer.addElements(['p'])
 
     this.elem.innerHTML = '<p style="color: red;" name="blue" id="x">St<i>uff</i></p>'
@@ -54,8 +55,10 @@ describe('The Sanitizer plugin', function () {
       p: ['name', 'id']
     })
 
-    expect(toHTML(this.Sanitizer.clean(this.elem)))
-      .toEqual('<p name="blue" id="x">Stuff</p>')
+    div.innerHTML = toHTML(this.Sanitizer.clean(this.elem))
+    expect(div.textContent).toEqual('Stuff')
+    expect(/name="blue"/.test(div.innerHTML)).toBe(true)
+    expect(/id="x"/.test(div.innerHTML)).toBe(true)
   })
 
   it('can be configured to allow protocols within attributes.', function () {
