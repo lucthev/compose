@@ -135,7 +135,7 @@ define([
       appendParagraph(this.elem)
 
     Quill.sanitizer
-      .addElements('p')
+      .addElements(['p', 'br'])
       .addFilter(function (params) {
         var node = params.node,
             i

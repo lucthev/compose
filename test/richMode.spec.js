@@ -569,9 +569,7 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML).toEqual('<p>Onerous</p>')
     })
 
-    it('should match the tags of the surrounding elements.', function () {
-      // We want there to be no unwanted styling <span>s.
-
+    it('should not merge block elements with different tags.', function () {
       this.elem.innerHTML = '<h1>Stuff</h1>'
 
       var sel = window.getSelection(),
@@ -583,6 +581,23 @@ describe('Rich mode', function () {
       sel.addRange(range)
 
       this.quill.insertHTML('<p> and things</p>')
+
+      expect(this.elem.innerHTML.replace(/&nbsp;/g, ' '))
+        .toEqual('<h1>Stuff</h1><p> and things</p>')
+    })
+
+    it('should merge block elements with the same tag.', function () {
+      this.elem.innerHTML = '<h1>Stuff</h1>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<h1> and things</h1>')
 
       expect(this.elem.innerHTML.replace(/&nbsp;/g, ' '))
         .toEqual('<h1>Stuff and things</h1>')
@@ -603,6 +618,107 @@ describe('Rich mode', function () {
 
       expect(this.elem.innerHTML)
         .toEqual('<p>Stuff</p><hr contenteditable="false"><p>Word</p>')
+    })
+
+    it('should append inline elements.', function () {
+      this.elem.innerHTML = '<p>Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML(' and <i>things</i>')
+
+      expect(this.elem.innerHTML.replace(/&nbsp;/g, ' '))
+        .toEqual('<p>Stuff and <em>things</em></p>')
+    })
+
+    it('should merge multiple inline elements into a paragraph.', function () {
+      this.elem.innerHTML = '<h2>Stuff</h2>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<p>word</p> and <i>things</i>')
+
+      expect(this.elem.innerHTML.replace(/&nbsp;/g, ' '))
+        .toEqual('<h2>Stuff</h2><p>word</p><p> and <em>things</em></p>')
+    })
+
+    it('should ignore newlines (1).', function () {
+      this.elem.innerHTML = '<p><br></p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<p>Stuff</p><p>Things</p>')
+
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p><p>Things</p>')
+    })
+
+    it('should ignore newlines (2).', function () {
+      this.elem.innerHTML = '<p><br></p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<h2>Stuff</h2><h2>Things</h2>')
+
+      expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2><h2>Things</h2>')
+    })
+
+    it('should work across multiple blocks (1).', function () {
+      this.elem.innerHTML = '<h2>Stuff</h2><p>X</p><p>Word</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.setStart(this.elem.firstChild.firstChild, 3)
+      range.setEnd(this.elem.lastChild.firstChild, 2)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<b>ng</b><p>Absu</p>')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<h2>Stu<strong>ng</strong></h2><p>Absurd</p>')
+    })
+
+    it('should work across multiple blocks (2).', function () {
+      this.elem.innerHTML =
+        '<h2>Stuff</h2><p>Things</p><p>Word</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.setStart(this.elem.firstChild.firstChild, 3)
+      range.setEnd(this.elem.lastChild.firstChild, 2)
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<h2>ng</h2><p>Absu</p>')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<h2>Stung</h2><p>Absurd</p>')
     })
   })
 })

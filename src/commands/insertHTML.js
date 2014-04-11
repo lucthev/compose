@@ -1,15 +1,13 @@
 define(function () {
 
-  // NOTE: this is not a complete list, but it should suit our needs.
-  // Note also that it does not include <div>; we'll replace those with <p>
   var blocks = ['address', 'article', 'aside', 'figure', 'figcaption',
     'footer', 'h[1-6]', 'header', 'hr', 'ol', 'ul', 'p', 'pre', 'section']
 
   var blockRegex = new RegExp('^(' + blocks.join('|') + ')$', 'i')
 
   /**
-   * isBlock(elem) determines if an elements is a block element,
-   * according the the above RegExp
+   * isBlock(elem) determines if an elements is a block element
+   * according to the above RegExp.
    *
    * @param {Node} elem
    * @return Boolean
@@ -54,49 +52,127 @@ define(function () {
 
   function insertHTMLPlugin (Quill) {
 
+    /**
+     * We're implementing our own insertHTML command; this avoids
+     * browser inconsistencies like styling <span>s or attributes
+     * getting removed.
+     */
     function insertHTML (html) {
-      var div = document.createElement('div'),
+      var sel = window.getSelection(),
+          selRange = sel.rangeCount ? sel.getRangeAt(0) : false,
+          div = document.createElement('div'),
           cleaned,
-          spans
+          selStart,
+          selEnd,
+          startRange,
+          endRange,
+          startFrag,
+          endFrag,
+          marker,
+          first
 
+      if (!selRange) return
+
+      // We replace whitespace with appropriate characters.
+      html = html.replace(/ /g, '\u00A0').replace(/\n/g, '<br>')
       div.innerHTML = html
-
-      // Inserting whitespace-only HTML sometimes causes orphaned <p>s.
-      if (!div.textContent.trim()) return
-
-      // We wrap text beforehand so all nodes get filtered;
-      // otherwise, text nodes are ignored.
-      wrapText(div)
-
       cleaned = Quill.sanitizer.clean(div)
 
-      // Wrap any nodes that may have been orphaned by sanitization.
-      wrapText(cleaned)
+      // Make a marker.
+      marker = document.createElement('span')
+      marker.className = 'Quill-marker'
 
-      while (div.firstChild)
-        div.removeChild(div.firstChild)
+      // If the caret is on a new line, just insert wrapped HTML.
+      if (Quill.selection.isNewLine()) {
+        wrapText(cleaned)
+        cleaned.lastChild.appendChild(marker)
 
-      // We need the cleaned HTML as a string.
-      div.appendChild(cleaned)
+        Quill.elem.insertBefore(cleaned, Quill.selection.getContaining())
 
-      document.execCommand('insertHTML', false, div.innerHTML)
+        Quill.selection.forEachBlock(function (block) {
+          Quill.elem.removeChild(block)
+        })
 
-      // insertHTML may have insert styling <span>s; we remove them.
-      spans = Quill.elem.querySelectorAll('span')
-      spans = Array.prototype.slice.call(spans)
-      spans.forEach(function (span) {
+        if (!Quill.throttle.isTyping())
+          Quill.emit('change')
 
-        // We operate only on styling spans.
-        // NOTE: this obviously creates problems if people actually
-        // want to use styling spans.
-        if (!span.hasAttribute('style')) return
+        return
+      }
 
-        while (span.firstChild)
-          span.parentNode
-            .insertBefore(span.removeChild(span.firstChild), span)
+      /**
+       * We get the parts not selected in the blocks as document
+       * fragments; so, <p>Stu|ff</p><h2>Wo|rd</h2> will result in
+       * a startFrag with <p>Stu</p> and endFrag with <h2>rd</h2>.
+       */
+      selStart = Quill.selection.getContaining(selRange.startContainer)
+      selEnd = Quill.selection.getContaining(selRange.endContainer)
+      startRange = document.createRange()
+      endRange = document.createRange()
 
-        span.parentNode.removeChild(span)
+      startRange.setStartBefore(selStart)
+      startRange.setEnd(selRange.startContainer, selRange.startOffset)
+      endRange.setStart(selRange.endContainer, selRange.endOffset)
+      endRange.setEndAfter(selEnd)
+
+      startFrag = startRange.cloneContents()
+      endFrag = endRange.cloneContents()
+
+      // Place marker.
+      endFrag.firstChild
+        .insertBefore(marker, endFrag.firstChild.firstChild)
+
+      first = startFrag.firstChild
+      while (cleaned.firstChild && !isBlock(cleaned.firstChild))
+        first.appendChild(cleaned.removeChild(cleaned.firstChild))
+
+      // FIXME: should not merge start and end.
+      if (!cleaned.firstChild && selStart.nodeName === selEnd.nodeName) {
+        first = endFrag.firstChild
+
+        while (first && first.firstChild)
+          startFrag.firstChild.appendChild(first.removeChild(first.firstChild))
+
+        Quill.elem.insertBefore(startFrag, selStart)
+      } else if (!cleaned.firstChild) {
+        Quill.elem.insertBefore(startFrag, selStart)
+        Quill.elem.insertBefore(endFrag, selStart)
+      } else {
+        wrapText(cleaned)
+
+        if (selStart.nodeName === cleaned.firstChild.nodeName) {
+          first = cleaned.firstChild
+
+          while (first.firstChild) {
+            startFrag.firstChild
+              .appendChild(first.removeChild(first.firstChild))
+          }
+
+          cleaned.removeChild(first)
+        }
+
+        Quill.elem.insertBefore(startFrag, selStart)
+
+        while (cleaned.firstChild)
+          Quill.elem.insertBefore(cleaned.firstChild, selStart)
+
+        if (selStart.previousSibling.nodeName === endFrag.firstChild.nodeName ||
+            !endFrag.firstChild.textContent.trim()) {
+          first = endFrag.firstChild
+
+          while (first.firstChild) {
+            selStart.previousSibling
+              .appendChild(first.removeChild(first.firstChild))
+          }
+        } else Quill.elem.insertBefore(endFrag, selStart)
+      }
+
+      // Remove old selection and restore selection.
+      Quill.selection.forEachBlock(function (block) {
+        Quill.elem.removeChild(block)
       })
+
+      if (!Quill.throttle.isTyping())
+        Quill.emit('change')
     }
 
     insertHTML.getState = function () {
