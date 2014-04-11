@@ -81,12 +81,11 @@ define(function () {
    */
   Selection.prototype.forEachBlock = function (action) {
     var sel = window.getSelection(),
-        started,
-        ended,
         range,
+        current,
+        next,
         start,
-        end,
-        i
+        end
 
     if (!sel.rangeCount || this.inline) return
 
@@ -97,19 +96,17 @@ define(function () {
     // Save the selection.
     this.placeMarkers()
 
-    for (i = 0; i < this.elem.children.length; i += 1) {
+    next = start
+    while (next !== end) {
+      current = next
+      next = next.nextSibling
 
-      if (!started && this.elem.children[i] === start)
-        started = true
-
-      if (this.elem.children[i] === end)
-        ended = true
-
-      if (started && this.elem.children[i].isContentEditable)
-        action(this.elem.children[i])
-
-      if (ended) break
+      if (current.isContentEditable)
+        action(current)
     }
+
+    // Perform action on last block.
+    action(end)
 
     // Restore selection.
     this.selectMarkers()
