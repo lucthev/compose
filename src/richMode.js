@@ -72,6 +72,32 @@ define([
     fixSelection()
   }
 
+  /**
+   * onFocus() fixes an issue where the caret is placed outside all
+   * block element in Firefox when focusing the element.
+   */
+  function onFocus () {
+    var sel = window.getSelection(),
+        outside,
+        node
+
+    if (!sel.rangeCount) return
+
+    this.selection.placeMarkers()
+    outside = this.elem.firstChild.classList.contains('Quill-marker')
+    this.selection.removeMarkers()
+
+    if (!outside) return
+
+    node = this.elem.firstChild
+    if (this.elem.textContent.trim()) {
+      while (node.firstElementChild)
+        node = node.firstElementChild
+    }
+
+    this.selection.placeCaret(node)
+  }
+
   function onKeydown (e) {
     var container = this.selection.getContaining(),
         newLine = this.selection.isNewLine(),
@@ -125,32 +151,24 @@ define([
 
     fixSelection = fixSelection.bind(Quill)
     // Store bound handlers for later removal.
+    this.onFocus = onFocus.bind(Quill)
     this.onKeydown = onKeydown.bind(Quill)
     this.onKeyup = onKeyup.bind(Quill)
 
     this.elem.addEventListener('keydown', this.onKeydown)
     this.elem.addEventListener('keyup', this.onKeyup)
+    this.elem.addEventListener('focus', this.onFocus)
 
     if (!this.elem.firstElementChild)
       appendParagraph(this.elem)
 
-    Quill.sanitizer
-      .addElements(['p', 'br'])
-      .addFilter(function (params) {
-        var node = params.node,
-            i
-
-        for (i = 0; i < node.childNodes.length; i += 1) {
-          if (node.childNodes[i].nodeType === Node.TEXT_NODE)
-            node.childNodes[i].nodeValue =
-              node.childNodes[i].data.replace(/ /g, '\u00A0')
-        }
-      })
+    Quill.sanitizer.addElements(['p', 'br'])
   }
 
   Rich.prototype.destroy = function() {
     this.elem.removeEventListener('keydown', this.onKeydown)
     this.elem.removeEventListener('keyup', this.onKeyup)
+    this.elem.removeEventListener('focus', this.onFocus)
 
     delete this.elem
 

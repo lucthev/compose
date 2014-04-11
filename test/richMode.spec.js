@@ -83,6 +83,15 @@ describe('Rich mode', function () {
       expect(quill.selection.getContaining())
         .toEqual(this.elem.firstChild.nextSibling)
     })
+
+    it('should place the caret in the correct place when focusing.', function () {
+      var quill = new Quill(this.elem)
+
+      this.elem.focus()
+
+      expect(this.elem.firstChild.nodeName.toLowerCase()).toEqual('p')
+      expect(quill.selection.getContaining()).toEqual(this.elem.firstChild)
+    })
   })
 
   describe('headings', function () {

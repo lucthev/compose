@@ -43,17 +43,15 @@ describe('The Selection plugin:', function () {
           range = document.createRange()
 
       this.elem.innerHTML =
-       '<p>Stuff</p>\
-        <p>Things</p>'
+       '<p>Stuff</p><p>Things</p>'
 
-      range.selectNodeContents(this.elem.firstChild.nextSibling)
-      range.collapse()
+      range.setStart(this.elem.firstChild.firstChild, 3)
+      range.setEnd(this.elem.lastChild.firstChild, 3)
       sel.removeAllRanges()
       sel.addRange(range)
-      sel.extend(this.elem.firstChild.firstChild, 3)
 
-      expect(this.selection.getContaining()).not.toEqual(this.elem.firstChild)
-      expect(this.selection.getContaining(sel.focusNode)).toEqual(this.elem.firstChild)
+      expect(this.selection.getContaining()).toEqual(this.elem.firstChild)
+      expect(this.selection.getContaining(range.endContainer)).toEqual(this.elem.lastChild)
     })
 
     it('should work even with deeply nested elements.', function () {
