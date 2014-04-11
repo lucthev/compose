@@ -59,7 +59,7 @@ define(function () {
             name = params.node_name,
             em
 
-        if (name === 'b') {
+        if (name === 'i') {
           em = document.createElement('em')
           em.innerHTML = node.innerHTML
 
