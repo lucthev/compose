@@ -82,14 +82,12 @@ define(function () {
       })
       .addFilter(function (params) {
         var node = params.node,
-            name = params.node_name,
-            hr
+            name = params.node_name
 
         if (name === 'hr') {
-          hr = node.cloneNode()
-          hr.contentEditable = false
+          node.setAttribute('contenteditable', false)
 
-          return { node: hr }
+          return { node: node.cloneNode() }
         } else return null
       })
   }

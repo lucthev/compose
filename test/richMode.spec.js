@@ -539,4 +539,70 @@ describe('Rich mode', function () {
         .toEqual('<p name="word">Stuff</p>')
     })
   })
+
+  describe('insertHTML', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(this.elem)
+    })
+
+    it('should insert HTML.', function () {
+      this.elem.innerHTML = '<p>One</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('rous')
+
+      expect(this.elem.innerHTML).toEqual('<p>Onerous</p>')
+    })
+
+    it('should match the tags of the surrounding elements.', function () {
+      // We want there to be no unwanted styling <span>s.
+
+      this.elem.innerHTML = '<h1>Stuff</h1>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<p> and things</p>')
+
+      expect(this.elem.innerHTML.replace(/&nbsp;/g, ' '))
+        .toEqual('<h1>Stuff and things</h1>')
+    })
+
+    it('should add attributes where appropriate.', function () {
+      this.elem.innerHTML = '<p>Stuff</p>'
+
+      var sel = window.getSelection(),
+          range = document.createRange()
+
+      range.selectNodeContents(this.elem.firstChild)
+      range.collapse()
+      sel.removeAllRanges()
+      sel.addRange(range)
+
+      this.quill.insertHTML('<hr><p>Word</p>')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff</p><hr contenteditable="false"><p>Word</p>')
+    })
+  })
 })

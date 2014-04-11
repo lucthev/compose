@@ -134,7 +134,18 @@ define([
     if (!this.elem.firstElementChild)
       appendParagraph(this.elem)
 
-    Quill.sanitizer.addElements('p')
+    Quill.sanitizer
+      .addElements('p')
+      .addFilter(function (params) {
+        var node = params.node,
+            i
+
+        for (i = 0; i < node.childNodes.length; i += 1) {
+          if (node.childNodes[i].nodeType === Node.TEXT_NODE)
+            node.childNodes[i].nodeValue =
+              node.childNodes[i].data.replace(/ /g, '\u00A0')
+        }
+      })
   }
 
   Rich.prototype.destroy = function() {
