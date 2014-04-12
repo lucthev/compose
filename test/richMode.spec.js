@@ -102,7 +102,6 @@ describe('Rich mode', function () {
       var sel = window.getSelection(),
           range = sel.getRangeAt(0)
 
-      console.log(range.startContainer)
       expect(range.startContainer)
         .toEqual(document.querySelector('#x').firstChild)
     })
