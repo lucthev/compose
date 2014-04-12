@@ -1,4 +1,6 @@
 define([
+  'observer',
+  'formatting/wrapInline',
   'commands/bold',
   'commands/italic',
   'commands/underline',
@@ -6,9 +8,9 @@ define([
   'commands/link',
   'commands/blockquote',
   'plugins/hr'],
-  function () {
+  function (makeObserver, wrapInline) {
 
-  var formattingPlugins = Array.prototype.slice.call(arguments)
+  var formattingPlugins = Array.prototype.slice.call(arguments, 2)
 
   /**
    * appendParagraph(elem) appends an empty paragraph to elem. If no
@@ -160,13 +162,49 @@ define([
     if (!this.elem.firstElementChild)
       appendParagraph(this.elem)
 
-    Quill.sanitizer.addElements(['p', 'br'])
+    Quill.sanitizer
+      .addElements(['p', 'br'])
+      .addFilter(function (params) {
+        var node = params.node,
+            name = params.node_name,
+            p, i
+
+        if (name === 'div' && node.parentNode === Quill.elem) {
+          p = document.createElement('p')
+
+          for (i = 0; i < node.childNodes.length; i += 1) {
+            p.appendChild(node.childNodes[i].cloneNode(true))
+          }
+
+          return { node: p }
+        }
+      })
+
+    this.observer = makeObserver(Quill)
+
+    Quill.on('domChange', function () {
+      var cleaned
+
+      Quill.selection.placeMarkers()
+
+      cleaned = Quill.sanitizer.clean(Quill.elem)
+      wrapInline(cleaned)
+
+      while (Quill.elem.firstChild)
+        Quill.elem.removeChild(Quill.elem.firstChild)
+
+      Quill.elem.appendChild(cleaned)
+
+      Quill.selection.selectMarkers()
+    })
   }
 
   Rich.prototype.destroy = function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
     this.elem.removeEventListener('keyup', this.onKeyup)
     this.elem.removeEventListener('focus', this.onFocus)
+
+    this.observer.disconnect()
 
     delete this.elem
 
