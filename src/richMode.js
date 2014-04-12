@@ -5,7 +5,6 @@ define([
   'commands/heading',
   'commands/link',
   'commands/blockquote',
-  'commands/insertHTML',
   'plugins/hr'],
   function () {
 
@@ -31,8 +30,6 @@ define([
   /**
    * fixSelection() fixes Firefox's select all behaviour by placing
    * the caret within block elements, not outside.
-   * It is a variable so that we can do a one-time bind to Quill upon
-   * initialization, and not have to re-bind for every check.
    */
   var fixSelection = function () {
     var sel = window.getSelection(),
@@ -150,6 +147,7 @@ define([
     this.elem = Quill.elem
 
     fixSelection = fixSelection.bind(Quill)
+
     // Store bound handlers for later removal.
     this.onFocus = onFocus.bind(Quill)
     this.onKeydown = onKeydown.bind(Quill)
@@ -165,7 +163,7 @@ define([
     Quill.sanitizer.addElements(['p', 'br'])
   }
 
-  Rich.prototype.destroy = function() {
+  Rich.prototype.destroy = function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
     this.elem.removeEventListener('keyup', this.onKeyup)
     this.elem.removeEventListener('focus', this.onFocus)
