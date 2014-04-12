@@ -22,6 +22,15 @@ define(function () {
   function Selection (Quill) {
     this.elem = Quill.elem
     this.inline = Quill.isInline()
+
+    Quill.sanitizer.addFilter(function (params) {
+      var node = params.node,
+          name = params.node_name
+
+      if (name === 'span' && node.className === 'Quill-marker')
+        return { whitelist: true }
+      else return null
+    })
   }
 
   /**
