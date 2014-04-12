@@ -2,10 +2,10 @@ define([
   'vendor/eventEmitter/EventEmitter',
   'inlineMode',
   'richMode',
+  'formatting/sanitizer',
   'selection',
   'history',
-  'throttle',
-  'sanitizer'],
+  'throttle'],
   function (EventEmitter, Inline, Rich) {
 
   // Note: put default plugins last so they are included in the slice.
@@ -84,7 +84,7 @@ define([
 
     this.plugins.forEach(function (name) {
 
-      if (this[name] && this[name].destroy)
+      if (this[name] && typeof this[name].destroy === 'function')
         this[name].destroy()
 
       delete this[name]
@@ -118,7 +118,6 @@ define([
   Quill.getPlugin = function (name) {
     var i
 
-    // TODO: separate all plugins and defaults?
     for (i = 0; i < defaultPlugins.length; i += 1)
       if (defaultPlugins[i].plugin === name) return defaultPlugins[i]
 

@@ -1,15 +1,16 @@
 define([
+  'observer',
+  'formatting/wrapInline',
   'commands/bold',
   'commands/italic',
   'commands/underline',
   'commands/heading',
   'commands/link',
   'commands/blockquote',
-  'commands/insertHTML',
   'plugins/hr'],
-  function () {
+  function (makeObserver, wrapInline) {
 
-  var formattingPlugins = Array.prototype.slice.call(arguments)
+  var formattingPlugins = Array.prototype.slice.call(arguments, 2)
 
   /**
    * appendParagraph(elem) appends an empty paragraph to elem. If no
@@ -31,8 +32,6 @@ define([
   /**
    * fixSelection() fixes Firefox's select all behaviour by placing
    * the caret within block elements, not outside.
-   * It is a variable so that we can do a one-time bind to Quill upon
-   * initialization, and not have to re-bind for every check.
    */
   var fixSelection = function () {
     var sel = window.getSelection(),
@@ -150,6 +149,7 @@ define([
     this.elem = Quill.elem
 
     fixSelection = fixSelection.bind(Quill)
+
     // Store bound handlers for later removal.
     this.onFocus = onFocus.bind(Quill)
     this.onKeydown = onKeydown.bind(Quill)
@@ -162,13 +162,49 @@ define([
     if (!this.elem.firstElementChild)
       appendParagraph(this.elem)
 
-    Quill.sanitizer.addElements(['p', 'br'])
+    Quill.sanitizer
+      .addElements(['p', 'br'])
+      .addFilter(function (params) {
+        var node = params.node,
+            name = params.node_name,
+            p, i
+
+        if (name === 'div' && node.parentNode === Quill.elem) {
+          p = document.createElement('p')
+
+          for (i = 0; i < node.childNodes.length; i += 1) {
+            p.appendChild(node.childNodes[i].cloneNode(true))
+          }
+
+          return { node: p }
+        }
+      })
+
+    this.observer = makeObserver(Quill)
+
+    Quill.on('domChange', function () {
+      var cleaned
+
+      Quill.selection.placeMarkers()
+
+      cleaned = Quill.sanitizer.clean(Quill.elem)
+      wrapInline(cleaned)
+
+      while (Quill.elem.firstChild)
+        Quill.elem.removeChild(Quill.elem.firstChild)
+
+      Quill.elem.appendChild(cleaned)
+
+      Quill.selection.selectMarkers()
+    })
   }
 
-  Rich.prototype.destroy = function() {
+  Rich.prototype.destroy = function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
     this.elem.removeEventListener('keyup', this.onKeyup)
     this.elem.removeEventListener('focus', this.onFocus)
+
+    this.observer.disconnect()
 
     delete this.elem
 

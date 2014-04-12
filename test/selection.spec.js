@@ -14,9 +14,11 @@ describe('The Selection plugin:', function () {
 
       // Make our fake quill.
       var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
         isInline: isInline,
-        elem: this.elem
+        elem: this.elem,
+        sanitizer: sanitizer
       }
 
       this.selection = new Selection(quill)
@@ -101,9 +103,11 @@ describe('The Selection plugin:', function () {
 
       // Make our fake quill.
       var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
         isInline: isInline,
-        elem: this.elem
+        elem: this.elem,
+        sanitizer: sanitizer
       }
 
       this.selection = new Selection(quill)
@@ -208,9 +212,11 @@ describe('The Selection plugin:', function () {
 
       // Make our fake quill.
       var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
         isInline: isInline,
-        elem: this.elem
+        elem: this.elem,
+        sanitizer: sanitizer
       }
 
       this.selection = new Selection(quill)
@@ -306,9 +312,11 @@ describe('The Selection plugin:', function () {
 
       // Make our fake quill.
       var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
         isInline: isInline,
-        elem: this.elem
+        elem: this.elem,
+        sanitizer: sanitizer
       }
 
       this.selection = new Selection(quill)
