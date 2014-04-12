@@ -28,7 +28,7 @@ define(function () {
           name = params.node_name
 
       if (name === 'span' && node.className === 'Quill-marker')
-        return { whitelist: true }
+        return { whitelist: true, attr_whitelist: ['class'] }
       else return null
     })
   }
