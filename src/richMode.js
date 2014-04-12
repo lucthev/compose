@@ -91,8 +91,8 @@ define([
 
     node = this.elem.firstChild
     if (this.elem.textContent.trim()) {
-      while (node.firstElementChild)
-        node = node.firstElementChild
+      while (node.firstChild)
+        node = node.firstChild
     }
 
     this.selection.placeCaret(node)

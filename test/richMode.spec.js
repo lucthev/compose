@@ -84,13 +84,40 @@ describe('Rich mode', function () {
         .toEqual(this.elem.firstChild.nextSibling)
     })
 
-    it('should place the caret in the correct place when focusing.', function () {
+    it('should place the caret in the correct place when focusing (1).', function () {
       var quill = new Quill(this.elem)
 
       this.elem.focus()
 
       expect(this.elem.firstChild.nodeName.toLowerCase()).toEqual('p')
       expect(quill.selection.getContaining()).toEqual(this.elem.firstChild)
+    })
+
+    it('should place the caret in the correct place when focusing (2).', function () {
+      var quill = new Quill(this.elem)
+      this.elem.innerHTML = '<p><i><b id="x">Stuff</b></i></p>'
+
+      this.elem.focus()
+
+      var sel = window.getSelection(),
+          range = sel.getRangeAt(0)
+
+      console.log(range.startContainer)
+      expect(range.startContainer)
+        .toEqual(document.querySelector('#x').firstChild)
+    })
+
+    it('should place the caret in the correct place when focusing (3).', function () {
+      var quill = new Quill(this.elem)
+      this.elem.innerHTML = '<p>Stuff <i><b>and things</b></i></p>'
+
+      this.elem.focus()
+
+      var sel = window.getSelection(),
+          range = sel.getRangeAt(0)
+
+      expect(range.startContainer)
+        .toEqual(this.elem.firstChild.firstChild)
     })
   })
 
