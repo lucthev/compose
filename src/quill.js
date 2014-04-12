@@ -2,7 +2,7 @@ define([
   'vendor/eventEmitter/EventEmitter',
   'inlineMode',
   'richMode',
-  'sanitizer',
+  'formatting/sanitizer',
   'selection',
   'history',
   'throttle'],

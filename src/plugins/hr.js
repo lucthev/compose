@@ -87,7 +87,7 @@ define(function () {
         if (name === 'hr') {
           node.setAttribute('contenteditable', false)
 
-          return { node: node.cloneNode() }
+          return { node: node.cloneNode(false) }
         } else return null
       })
   }
