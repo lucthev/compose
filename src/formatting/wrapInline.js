@@ -1,7 +1,8 @@
 define(function () {
 
-  var blocks = ['address', 'article', 'aside', 'figure', 'figcaption',
-    'footer', 'h[1-6]', 'header', 'hr', 'ol', 'ul', 'p', 'pre', 'section']
+  var blocks = ['address', 'article', 'aside', 'blockquote', 'figure',
+    'figcaption', 'footer', 'h[1-6]', 'header', 'hr', 'ol', 'ul', 'p',
+    'pre', 'section']
 
   var blockRegex = new RegExp('^(' + blocks.join('|') + ')$', 'i')
 
