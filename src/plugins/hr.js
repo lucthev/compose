@@ -9,7 +9,7 @@ define(function () {
     if (e.keyCode === 13 && this.selection.isNewLine()) {
 
       if (container.previousElementSibling &&
-          container.previousElementSibling.nodeName !== 'HR')
+          container.previousElementSibling.nodeName === 'P')
         this.hr.insertBefore(container)
 
     } else if (sel.rangeCount && (e.keyCode === 8 || e.keyCode === 46 ||
