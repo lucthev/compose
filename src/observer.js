@@ -45,7 +45,7 @@ define(function () {
     }
 
     function notEmptyTextNode (node) {
-      return !(node.nodeType === Node.TEXT_NODE && node.data)
+      return !(node.nodeType === Node.TEXT_NODE && !node.data)
     }
 
     allMutations = flatten(mutations.map(function (mutation) {
