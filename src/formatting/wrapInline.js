@@ -31,7 +31,9 @@ define(function () {
    */
   function wrapText (parent) {
     var node,
-        p, i
+        br,
+        p,
+        i
 
     for (i = 0; i < parent.childNodes.length; i += 1) {
       node = parent.childNodes[i]
@@ -39,8 +41,16 @@ define(function () {
       // If a block node has no text content, we make sure it has a
       // <br>. Otherwise, it may not be selectable.
       if (isBlock(node)) {
-        if (!node.textContent && !node.querySelectorAll('br').length)
-          node.appendChild(document.createElement('br'))
+        if (!node.textContent && !node.querySelectorAll('br').length) {
+          br = document.createElement('br')
+
+          while (node.lastChild && node.lastChild.nodeType === Node.ELEMENT_NODE)
+            node = node.lastChild
+
+          if (node.className !== 'Quill-marker')
+            node.appendChild(br)
+          else node.parentNode.insertBefore(br, node)
+        }
 
         continue
       }
