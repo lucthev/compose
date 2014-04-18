@@ -102,9 +102,7 @@ define([
     var container = this.selection.getContaining(),
         newLine = this.selection.isNewLine(),
         sel = window.getSelection(),
-        paragraph,
-        content,
-        range
+        paragraph
 
     // Prevent deletion of the first paragraph.
     if ((e.keyCode === 8 || e.keyCode === 46) && newLine &&
@@ -115,16 +113,13 @@ define([
     if (e.keyCode === 13 && newLine)
       return e.preventDefault()
 
-    // Pressing enter after a heading creates divs, not paragraphs. We
-    // override this behaviour.
+    // Pressing enter after an <h*> or <blockquote> creates divs or
+    // blockquotes, not paragraphs. We override this behaviour.
+    // TODO: Ideally, this would be in the plugins themselves.
     if (e.keyCode === 13 && sel.isCollapsed &&
-        /^H[1-6]$/i.test(container.nodeName)) {
-      range = sel.getRangeAt(0).cloneRange()
-      range.setEndAfter(container, 0)
+        /^H[1-6]|BLOCKQUOTE$/i.test(container.nodeName)) {
 
-      content = range.cloneContents()
-
-      if (content.firstChild.textContent === '') {
+      if (this.selection.atEndOf(container)) {
         e.preventDefault()
 
         paragraph = appendParagraph()
