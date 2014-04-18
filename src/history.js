@@ -28,31 +28,24 @@ define(function () {
     // See @History.undo()
     if (ignore === 'ignore') return
 
-    this.Quill.selection.placeMarkers()
-    this.push(this.elem.innerHTML)
-    this.Quill.selection.removeMarkers()
+    this.selection.placeMarkers()
+    this.history.push(this.elem.innerHTML)
+    this.selection.removeMarkers()
   }
 
   // Used to push the initial state once focus has been achieved.
   function onFocus () {
-    var self = this,
+    var quill = this,
         firefoxBug,
         node
-
-    // Wait until the caret has been placed.
-    setTimeout(function () {
-      self.Quill.selection.placeMarkers()
-      self.push(self.elem.innerHTML)
-      self.Quill.selection.removeMarkers()
-    }, 0)
 
     // In FF, the caret is placed outside all block elements when
     // tabbing in. Place the caret in the right place.
     if (window.getSelection().rangeCount) {
-      this.Quill.selection.placeMarkers()
-      firefoxBug = !this.Quill.isInline() &&
+      this.selection.placeMarkers()
+      firefoxBug = !this.isInline() &&
         /^<em class="Quill-marker"><\/em>/.test(this.elem.innerHTML)
-      this.Quill.selection.removeMarkers()
+      this.selection.removeMarkers()
 
       if (firefoxBug) {
         node = this.elem.firstElementChild
@@ -67,11 +60,18 @@ define(function () {
         }
 
         // Note that if the paragraph is empty, it keeps the <br>.
-        this.Quill.selection.placeCaret(node)
+        this.selection.placeCaret(node)
       }
     }
 
-    this.elem.removeEventListener('focus', this.onFocus)
+    // Wait until the caret has been placed to save state.
+    setTimeout(function () {
+      quill.selection.placeMarkers()
+      quill.history.push(quill.elem.innerHTML)
+      quill.selection.removeMarkers()
+    }, 0)
+
+    this.elem.removeEventListener('focus', this.history.onFocus)
   }
 
   function History (Quill) {
@@ -85,9 +85,9 @@ define(function () {
 
     // Bound functions are being used as event listeners; they are
     // kept here so we can remove them upon destroying.
-    this.onFocus = onFocus.bind(this)
+    this.onFocus = onFocus.bind(Quill)
     this.onKeydown = onKeydown.bind(this)
-    this.onChange = onChange.bind(this)
+    this.onChange = onChange.bind(Quill)
 
     this.elem.addEventListener('focus', this.onFocus)
     this.elem.addEventListener('keydown', this.onKeydown)
