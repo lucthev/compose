@@ -273,4 +273,96 @@ describe('The Selection plugin:', function () {
       expect(this.selection.isNewLine()).toBe(false)
     })
   })
+
+  describe('Selection#atStartOf', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      this.elem.innerHTML = '<p><br></p>'
+      document.body.appendChild(this.elem)
+
+      // Make our fake quill.
+      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
+      quill = {
+        isInline: isInline,
+        elem: this.elem,
+        sanitizer: sanitizer
+      }
+
+      this.selection = new Selection(quill)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(this.elem)
+    })
+
+    it('determines if the caret is at the start of an element.', function () {
+      setContent(this.elem, '<p>|<br></p>')
+      expect(this.selection.atStartOf(this.elem.firstChild)).toBe(true)
+
+      setContent(this.elem, '<p>|Stuff</p>')
+      expect(this.selection.atStartOf(this.elem.firstChild)).toBe(true)
+
+      setContent(this.elem, '<p>|Stu|ff</p>')
+      expect(this.selection.atStartOf(this.elem.firstChild)).toBe(false)
+
+      setContent(this.elem, '<h1>|Stuff</h1>')
+      expect(this.selection.atStartOf(this.elem.firstChild)).toBe(true)
+
+      setContent(this.elem, '<p>|Stuff</p><h1>Thi|ngs</h1>')
+      expect(this.selection.atStartOf(this.elem.firstChild)).toBe(false)
+      expect(this.selection.atStartOf(this.elem.lastChild)).toBe(false)
+
+      setContent(this.elem, '<p>St|uff</p><h1>|Things</h1>')
+      expect(this.selection.atStartOf(this.elem.firstChild)).toBe(false)
+      expect(this.selection.atStartOf(this.elem.lastChild)).toBe(false)
+    })
+  })
+
+  describe('Selection#atEndOf', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      this.elem.innerHTML = '<p><br></p>'
+      document.body.appendChild(this.elem)
+
+      // Make our fake quill.
+      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
+      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
+      quill = {
+        isInline: isInline,
+        elem: this.elem,
+        sanitizer: sanitizer
+      }
+
+      this.selection = new Selection(quill)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(this.elem)
+    })
+
+    it('determines if the caret is at the end of an element.', function () {
+      setContent(this.elem, '<p>|<br></p>')
+      expect(this.selection.atEndOf(this.elem.firstChild)).toBe(true)
+
+      setContent(this.elem, '<p>Stuff|</p>')
+      expect(this.selection.atEndOf(this.elem.firstChild)).toBe(true)
+
+      setContent(this.elem, '<p>Stu|ff|</p>')
+      expect(this.selection.atEndOf(this.elem.firstChild)).toBe(false)
+
+      setContent(this.elem, '<h1>Stuff|</h1>')
+      expect(this.selection.atEndOf(this.elem.firstChild)).toBe(true)
+
+      setContent(this.elem, '<p>Stuff|</p><h1>Things|</h1>')
+      expect(this.selection.atEndOf(this.elem.firstChild)).toBe(false)
+      expect(this.selection.atEndOf(this.elem.lastChild)).toBe(false)
+
+      setContent(this.elem, '<p>|Stuff</p><h1>Things|</h1>')
+      expect(this.selection.atEndOf(this.elem.firstChild)).toBe(false)
+      expect(this.selection.atEndOf(this.elem.lastChild)).toBe(false)
+    })
+  })
 })

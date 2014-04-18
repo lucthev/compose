@@ -229,6 +229,50 @@ define(function () {
   }
 
   /**
+   * Selection.atStartOf(elem) determines if the caret is collapsed
+   * and at the start of the given element.
+   *
+   * @param {Node} elem
+   * @return Boolean
+   */
+  Selection.prototype.atStartOf = function (elem) {
+    var sel = window.getSelection(),
+        range,
+        text
+
+    if (!sel.rangeCount || !sel.isCollapsed) return false
+
+    range = sel.getRangeAt(0).cloneRange()
+    range.setStartBefore(elem)
+
+    text = range.cloneContents()
+
+    return !text.firstChild.textContent
+  }
+
+  /**
+   * Selection.atEndOf(elem) determines if the caret is collapsed
+   * and at the end of the given element.
+   *
+   * @param {Node} elem
+   * @return Boolean
+   */
+  Selection.prototype.atEndOf = function (elem) {
+    var sel = window.getSelection(),
+        range,
+        text
+
+    if (!sel.rangeCount || !sel.isCollapsed) return false
+
+    range = sel.getRangeAt(0).cloneRange()
+    range.setEndAfter(elem)
+
+    text = range.cloneContents()
+
+    return !text.firstChild.textContent
+  }
+
+  /**
    * Selection.placeCaret(node) places the caret at the beginning of
    * the node. If atEnd is truthy, place the caret at the end of the
    * node.
