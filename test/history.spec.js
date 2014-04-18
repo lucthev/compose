@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 
-xdescribe('The History (undo) Plugin', function () {
+describe('The History (undo) Plugin', function () {
 
   var History = Quill.getPlugin('history'),
       Selection = Quill.getPlugin('selection'),
@@ -15,12 +15,14 @@ xdescribe('The History (undo) Plugin', function () {
 
     // Make our fake Quill
     quill = jasmine.createSpyObj('quill', ['on', 'off', 'trigger'])
-    quill.isInline = function () {}
-    spyOn(quill, 'isInline').and.returnValue(false)
+    quill.isInline = jasmine.createSpy('isInline').and.returnValue(false)
+    quill.sanitizer = {
+      addFilter: function () {}
+    }
     quill.elem = elem
     quill.selection = new Selection(quill)
 
-    history = new History(quill)
+    quill.history = history = new History(quill)
 
     // This is the change listener:
     callback = quill.on.calls.argsFor(0)[1]
