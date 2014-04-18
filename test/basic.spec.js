@@ -1,4 +1,5 @@
-/* jshint ignore:start */
+/* global describe, it, beforeEach, afterEach, Quill, expect,
+   jasmine, spyOn */
 
 describe('Quill', function () {
 
@@ -74,16 +75,19 @@ describe('Quill', function () {
   })
 
   // Note that this doesn't actually check that listeners were properly
-  // removed.
-  it('should remove all event listeners upon destruction.', function () {
-    spyOn(this.elem, 'addEventListener').and.callThrough()
-    spyOn(this.elem, 'removeEventListener').and.callThrough()
+  // removed. This test is ignored in PhantomJs / anywhere that doesn't
+  // support MutationObservers.
+  if (window.MutationObserver) {
+    it('should remove all event listeners upon destruction.', function () {
+      spyOn(this.elem, 'addEventListener').and.callThrough()
+      spyOn(this.elem, 'removeEventListener').and.callThrough()
 
-    new Quill('#' + id).destroy()
+      new Quill('#' + id).destroy()
 
-    expect(this.elem.addEventListener.calls.count())
-      .toEqual(this.elem.removeEventListener.calls.count())
-  })
+      expect(this.elem.addEventListener.calls.count())
+        .toEqual(this.elem.removeEventListener.calls.count())
+    })
+  }
 
   it('should delete reference to the element upon destruction.', function () {
     quill = Quill(this.elem)
@@ -95,7 +99,7 @@ describe('Quill', function () {
 
   describe('has a plugin system which', function () {
 
-    function fakePlugin (Quill) {}
+    function fakePlugin () {}
     fakePlugin.prototype.destroy = function () {}
 
     var quill,
@@ -135,7 +139,7 @@ describe('Quill', function () {
     it('should reject plugins with the same name.', function () {
       quill.use(fakePlugin)
 
-      function newPlugin (Quill) {}
+      function newPlugin () {}
       newPlugin.plugin = 'fake'
 
       expect(function () {
@@ -173,7 +177,7 @@ describe('Quill', function () {
     })
 
     it('should not fail if a plugin fails.', function () {
-      function sillyPlugin (Quill) {
+      function sillyPlugin () {
         throw new Error('This plugin sucks.')
       }
       sillyPlugin.plugin = 'silly'

@@ -66,16 +66,7 @@ xdescribe('The History (undo) Plugin', function () {
   it('should place the caret in the correct position (Firefox).',
     function (done) {
 
-    var sel = window.getSelection(),
-        range = document.createRange()
-
-    elem.innerHTML = '<p><br></p>'
-
-    // Place caret outside block elements, at beginning.
-    range.setStartBefore(elem.firstChild)
-    range.setEndBefore(elem.firstChild)
-    sel.removeAllRanges()
-    sel.addRange(range)
+    setContent(elem, '|<p><br></p>')
 
     fireEvent(elem, 'focus')
 

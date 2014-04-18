@@ -1,4 +1,5 @@
-/* jshint ignore:start */
+/* global describe, it, beforeEach, afterEach, Quill,
+   fireEvent, setContent, expect */
 
 describe('Rich mode', function () {
 
@@ -7,14 +8,17 @@ describe('Rich mode', function () {
     beforeEach(function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
     })
 
     afterEach(function () {
       document.body.removeChild(this.elem)
+
+      this.quill.destroy()
     })
 
     it('should append a paragraph to empty elements.', function () {
-      var quill = new Quill(this.elem)
 
       // Don't get too specific; FF, for example, might add <br type='moz'>,
       // so explicitly checking for <p><br></p> might not work.
@@ -22,80 +26,47 @@ describe('Rich mode', function () {
     })
 
     it('should not append paragraphs to non-empty elements.', function () {
-      this.elem.innerHTML = '<p>Stuff</p>'
+      setContent(this.elem, '<p>Stuff</p>')
 
-      var quill = new Quill(this.elem)
-
-      expect(this.elem.children.length).toEqual(1)
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
     })
 
     it('should properly convert multiple paragraphs to headings.', function () {
-      this.elem.innerHTML = '<p>Stuff</p><p>Things</p>'
+      setContent(this.elem, '<p>S|tuff</p><p>Thin|gs</p>')
 
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
-
-      range.setStart(this.elem.firstChild.firstChild, 1)
-      range.setEnd(this.elem.firstChild.nextSibling.firstChild, 4)
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      quill.heading(2)
+      this.quill.heading(2)
 
       expect(this.elem.innerHTML)
         .toEqual('<h2>Stuff</h2><h2>Things</h2>')
     })
 
     it('and headings to paragraphs.', function () {
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, '<h2>S|tuff</h2><h2>Thin|gs</h2>')
 
-      this.elem.innerHTML = '<h2>Stuff</h2><h2>Things</h2>'
-
-      range.setStart(this.elem.firstChild.firstChild, 1)
-      range.setEnd(this.elem.firstChild.nextSibling.firstChild, 4)
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      quill.heading(0)
+      this.quill.heading(0)
 
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p><p>Things</p>')
     })
 
     it('should insert paragraphs after headings.', function () {
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, '<h2>Stuff|</h2><p>Things</p>')
 
-      this.elem.innerHTML = '<h2>Stuff</h2><p>Things</p>'
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      // We expect it to be intercepted.
-      expect(fireEvent(this.elem, 'keydown', 13)).toBe(true)
+      fireEvent(this.elem, 'keydown', 13)
       expect(this.elem.innerHTML)
         .toEqual('<h2>Stuff</h2><p><br></p><p>Things</p>')
-      expect(quill.selection.getContaining())
+      expect(this.quill.selection.getContaining())
         .toEqual(this.elem.firstChild.nextSibling)
     })
 
     it('should place the caret in the correct place when focusing (1).', function () {
-      var quill = new Quill(this.elem)
-
       this.elem.focus()
 
       expect(this.elem.firstChild.nodeName.toLowerCase()).toEqual('p')
-      expect(quill.selection.getContaining()).toEqual(this.elem.firstChild)
+      expect(this.quill.selection.getContaining()).toEqual(this.elem.firstChild)
     })
 
     it('should place the caret in the correct place when focusing (2).', function () {
-      var quill = new Quill(this.elem)
-      this.elem.innerHTML = '<p><i><b id="x">Stuff</b></i></p>'
+      setContent(this.elem, '<p><i><b id="x">Stuff</b></i></p>')
 
       this.elem.focus()
 
@@ -107,8 +78,7 @@ describe('Rich mode', function () {
     })
 
     it('should place the caret in the correct place when focusing (3).', function () {
-      var quill = new Quill(this.elem)
-      this.elem.innerHTML = '<p>Stuff <i><b>and things</b></i></p>'
+      setContent(this.elem, '<p>Stuff <i><b>and things</b></i></p>')
 
       this.elem.focus()
 
@@ -125,6 +95,8 @@ describe('Rich mode', function () {
     beforeEach(function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
     })
 
     afterEach(function () {
@@ -132,91 +104,41 @@ describe('Rich mode', function () {
     })
 
     it('should not fail when converting paragraphs to headings (1).', function () {
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, '<p>Stuff|</p>')
 
-      this.elem.innerHTML = '<p>Stuff</p>'
+      this.quill.heading(2)
 
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      quill.heading(2)
-
-      expect(this.elem.innerHTML)
-        .toEqual('<h2>Stuff</h2>')
+      expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
 
     it('should not fail when converting paragraphs to headings (2).', function () {
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, '<p>|Stuff</p>')
 
-      this.elem.innerHTML = '<p>Stuff</p>'
+      this.quill.heading(2)
 
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      quill.heading(2)
-
-      expect(this.elem.innerHTML)
-        .toEqual('<h2>Stuff</h2>')
+      expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
 
     it('should not fail when converting paragraphs to headings (3).', function () {
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, '<p>St|uf|f</p>')
 
-      this.elem.innerHTML = '<p>Stuff</p>'
+      this.quill.heading(2)
 
-      range.setStart(this.elem.firstChild.firstChild, 2)
-      range.setEnd(this.elem.firstChild.firstChild, 4)
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      quill.heading(2)
-
-      expect(this.elem.innerHTML)
-        .toEqual('<h2>Stuff</h2>')
+      expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
 
     it('should not fail when converting paragraphs to headings (4).', function () {
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, '<p>|Stuff</p><p>Things|</p>')
 
-      this.elem.innerHTML = '<p>Stuff</p><p>Things</p>'
+      this.quill.heading(2)
 
-      range.setStart(this.elem.firstChild.firstChild, 0)
-      range.setEnd(this.elem.firstChild.nextSibling.firstChild, 5)
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      quill.heading(2)
-
-      expect(this.elem.innerHTML)
-        .toEqual('<h2>Stuff</h2><h2>Things</h2>')
+      expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2><h2>Things</h2>')
     })
 
     it('should conserve attributes when converting.', function () {
-      var quill = new Quill(this.elem),
-          sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, '<p id="word">|Stuff</p><p name="blue">Thing|s</p>')
 
-      this.elem.innerHTML =
-        '<p id="word">Stuff</p><p name="blue">Things</p>'
-
-      range.setStart(this.elem.firstChild.firstChild, 0)
-      range.setEnd(this.elem.firstChild.nextSibling.firstChild, 5)
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      quill.heading(2)
+      this.quill.heading(2)
 
       expect(this.elem.innerHTML)
         .toEqual('<h2 id="word">Stuff</h2><h2 name="blue">Things</h2>')
@@ -237,46 +159,22 @@ describe('Rich mode', function () {
     })
 
     it('should be inserted when pressing enter on a new line.', function () {
-      this.elem.innerHTML = '<p>Stuff</p><p><br></p>'
+      setContent(this.elem, '<p>Stuff</p><p>|<br></p>')
 
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.lastChild)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      expect(fireEvent(this.elem, 'keydown', 13)).toBe(true)
+      fireEvent(this.elem, 'keydown', 13)
       expect(this.elem.children.length).toEqual(3)
-      expect(this.elem.firstChild.nextSibling.nodeName)
-        .toEqual('HR')
+      expect(this.elem.children[1].nodeName).toEqual('HR')
     })
 
     it('should not be inserted if the newline is the first paragraph.', function () {
-      this.elem.innerHTML = '<p><br></p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>|<br></p>')
 
       fireEvent(this.elem, 'keydown', 13)
-      expect(this.elem.children.length).toEqual(1)
-      expect(this.elem.firstChild.nodeName).not.toEqual('HR')
+      expect(this.elem.innerHTML).toEqual('<p><br></p>')
     })
 
     it('should not be inserted if the newline is preceded by an HR.', function () {
-      this.elem.innerHTML = '<p>Stuff</p><hr><p><br></p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.lastChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff</p><hr><p>|<br></p>')
 
       fireEvent(this.elem, 'keydown', 13)
       expect(this.elem.children.length).toEqual(3)
@@ -285,15 +183,7 @@ describe('Rich mode', function () {
     })
 
     it('should be deleted as appropriate (1).', function () {
-      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.lastChild)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff</p><hr><p>|Words</p>')
 
       // Simulate backspace.
       fireEvent(this.elem, 'keydown', 8)
@@ -303,15 +193,7 @@ describe('Rich mode', function () {
     })
 
     it('should be deleted as appropriate (2).', function () {
-      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff|</p><hr><p>Words</p>')
 
       // Simulate forward delete.
       fireEvent(this.elem, 'keydown', 46)
@@ -321,15 +203,7 @@ describe('Rich mode', function () {
     })
 
     it('should be ignored when keying around (1).', function () {
-      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff|</p><hr><p>Words</p>')
 
       expect(this.quill.selection.getContaining())
         .toEqual(this.elem.firstChild)
@@ -341,15 +215,7 @@ describe('Rich mode', function () {
     })
 
     it('should be ignored when keying around (2).', function () {
-      this.elem.innerHTML = '<p>Stuff</p><hr><p>Words</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.lastChild)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff</p><hr><p>|Words</p>')
 
       expect(this.quill.selection.getContaining())
         .toEqual(this.elem.lastChild)
@@ -374,15 +240,7 @@ describe('Rich mode', function () {
     })
 
     it('can be inserted normally.', function () {
-      this.elem.innerHTML = '<p>Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff|</p>')
 
       this.quill.blockquote(true)
 
@@ -396,15 +254,7 @@ describe('Rich mode', function () {
     })
 
     it('can be inserted with an optional class.', function () {
-      this.elem.innerHTML = '<p>Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff|</p>')
 
       this.quill.blockquote('test')
 
@@ -413,14 +263,7 @@ describe('Rich mode', function () {
     })
 
     it('should not overwrite other classes.', function () {
-      this.elem.innerHTML = '<p class="one">Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p class="one">|Stuff|</p>')
 
       this.quill.blockquote('test')
 
@@ -429,23 +272,13 @@ describe('Rich mode', function () {
     })
 
     it('should remove the class when converting back to paragraphs (1).', function () {
-      this.elem.innerHTML = '<p class="one">Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p class="one">Stu|ff</p>')
+      this.elem.focus()
 
       this.quill.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('one test')
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
 
       this.quill.blockquote(false)
 
@@ -453,23 +286,13 @@ describe('Rich mode', function () {
     })
 
     it('should remove the class when converting back to paragraphs (2).', function () {
-      this.elem.innerHTML = '<p>Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>S|tuff|</p>')
+      this.elem.focus()
 
       this.quill.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('test')
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
 
       this.quill.blockquote(false)
 
@@ -478,23 +301,13 @@ describe('Rich mode', function () {
     })
 
     it('should remove the class when converting to a normal blockquote.', function () {
-      this.elem.innerHTML = '<p>Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>St|u|ff</p>')
+      this.elem.focus()
 
       this.quill.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('test')
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
 
       this.quill.blockquote(true)
 
@@ -503,23 +316,13 @@ describe('Rich mode', function () {
     })
 
     it('should change the class when appropriate.', function () {
-      this.elem.innerHTML = '<p class="one">Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p class="one">Stu|ff</p>')
+      this.elem.focus()
 
       this.quill.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('one test')
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
 
       this.quill.blockquote('word')
 
@@ -528,15 +331,8 @@ describe('Rich mode', function () {
     })
 
     it('should work over multiple blocks.', function () {
-      this.elem.innerHTML = '<p>Stuff</p><p>Things</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.setStart(this.elem.firstChild.firstChild, 2)
-      range.setEnd(this.elem.lastChild.firstChild, 5)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>St|uff</p><p>Thin|gs</p>')
+      this.elem.focus()
 
       this.quill.blockquote(true)
 
@@ -550,23 +346,13 @@ describe('Rich mode', function () {
     })
 
     it('should preserve other attributes.', function () {
-      this.elem.innerHTML = '<p name="word">Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p name="word">S|tuff</p>')
+      this.elem.focus()
 
       this.quill.blockquote(true)
 
       expect(this.elem.innerHTML)
         .toEqual('<blockquote name="word">Stuff</blockquote>')
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
 
       this.quill.blockquote(false)
 
