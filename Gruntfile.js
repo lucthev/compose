@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         src: 'dist/<%= pkg.name %>.min.js',
         options: {
           specs: 'test/*.spec.js',
-          helpers: 'test/utils/*.js',
+          helpers: 'test/utils.js',
           keepRunner: true
         }
       }

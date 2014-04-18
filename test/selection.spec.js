@@ -5,35 +5,6 @@ describe('The Selection plugin:', function () {
   var Selection = Quill.getPlugin('selection'),
       quill
 
-  function setContent (elem, html) {
-    var sel = window.getSelection(),
-        range = document.createRange(),
-        markers
-
-    elem.innerHTML = html.replace(/\|/g, '<span class="Quill-marker"></span>')
-
-    if (/\|/.test(html)) {
-      markers = elem.querySelectorAll('.Quill-marker')
-
-      range.setStartBefore(markers[0])
-
-      if (markers.length === 1)
-        range.setEndAfter(markers[0])
-      else range.setEndAfter(markers[1])
-
-      for (var i = 0; i < markers.length; i += 1) {
-        var parent = markers[i].parentNode
-
-        parent.removeChild(markers[i])
-
-        parent.normalize()
-      }
-
-      sel.removeAllRanges()
-      sel.addRange(range)
-    }
-  }
-
   describe('Selection#getContaining', function () {
 
     beforeEach(function () {
