@@ -7,6 +7,7 @@ define([
   'commands/heading',
   'commands/link',
   'commands/blockquote',
+  'plugins/list',
   'plugins/hr'],
   function (makeObserver, wrapInline) {
 
@@ -164,6 +165,8 @@ define([
 
     Quill.sanitizer
       .addElements(['p', 'br'])
+
+      // FIXME: duplicate functionality of wrapinline?
       .addFilter(function (params) {
         var node = params.node,
             name = params.node_name,
