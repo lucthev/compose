@@ -42,15 +42,28 @@ define(function () {
    * @return Element || false
    */
   Selection.prototype.getContaining = function (node) {
-    var sel = window.getSelection()
+    var sel = window.getSelection(),
+        range
+
     node = node || sel.anchorNode
 
     if (!sel.rangeCount || this.inline) return false
 
-    while (node) {
+    while (node && node !== this.elem) {
       if (node.parentNode === this.elem)
         return node
       else node = node.parentNode
+    }
+
+    // We check for the caret being on an HR, in which case the
+    // anchorNode is reported as being the editable element.
+    range = sel.getRangeAt(0)
+    if (range.startContainer === this.elem &&
+        range.endContainer === this.elem &&
+        range.startOffset === range.endOffset) {
+
+      node = this.elem.childNodes[range.endOffset - 1]
+      if (node && node.nodeName === 'HR') return node
     }
 
     return false

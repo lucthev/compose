@@ -2,9 +2,7 @@ define(function () {
 
   function onKeydown (e) {
     var container = this.selection.getContaining(),
-        sel = window.getSelection(),
-        content,
-        range
+        sel = window.getSelection()
 
     if (e.keyCode === 13 && this.selection.isNewLine()) {
 
@@ -12,98 +10,69 @@ define(function () {
           container.previousElementSibling.nodeName === 'P')
         this.hr.insertBefore(container)
 
-    } else if (sel.rangeCount && (e.keyCode === 8 || e.keyCode === 46 ||
-        e.keyCode === 37 || e.keyCode === 39)) {
-      // We manually check if a horizontal rule is about to get deleted;
-      // Firefox doesn't handle this very well.
-      // We also check for keyboard navigation; Chrome doesn't handle
-      // that very well.
+    } else if (sel.rangeCount && (e.keyCode === 8 || e.keyCode === 46)) {
 
-      range = sel.getRangeAt(0).cloneRange()
-      range.setEndAfter(container)
-      content = range.cloneContents()
-
-      if ((e.keyCode === 46 || e.keyCode === 39) &&
-          !content.firstChild.textContent && container.nextSibling &&
-          container.nextSibling.nodeName === 'HR') {
+      if (e.keyCode === 8 && this.selection.atStartOf(container) &&
+        container.previousSibling && container.previousSibling.nodeName === 'HR') {
 
         e.preventDefault()
 
-        if (e.keyCode === 39) {
+        container.parentNode.removeChild(container.previousSibling)
 
-          // We place the caret at the beginning of the next block element.
-          this.selection.placeCaret(container.nextSibling.nextSibling)
-        } else {
-          container.parentNode.removeChild(container.nextSibling)
+        if (!this.throttle.isTyping())
+          this.emit('change')
+      } else if (e.keyCode === 46 && this.selection.atEndOf(container) &&
+        container.nextSibling && container.nextSibling.nodeName === 'HR') {
 
-          if (!this.throttle.isTyping())
-            this.trigger('change')
-        }
+        e.preventDefault()
 
-        return
+        container.parentNode.removeChild(container.nextSibling)
+
+        if (!this.throttle.isTyping())
+          this.emit('change')
       }
+    }
+  }
 
-      range = sel.getRangeAt(0).cloneRange()
-      range.setStartBefore(container)
-      content = range.cloneContents()
+  function onKeyup (e) {
+    var container = this.selection.getContaining()
 
-      if ((e.keyCode === 8 || e.keyCode === 37) &&
-          !content.firstChild.textContent && container.previousSibling &&
-          container.previousSibling.nodeName === 'HR') {
+    if (container.nodeName === 'HR') {
 
-        e.preventDefault()
-
-        if (e.keyCode === 37) {
-
-          // Place caret at end of previous block.
-          this.selection
-            .placeCaret(container.previousSibling.previousSibling, true)
-        } else {
-          container.parentNode.removeChild(container.previousSibling)
-
-          if (!this.throttle.isTyping())
-            this.trigger('change')
-        }
+      if (e.keyCode === 37 || e.keyCode === 38) {
+        this.selection.placeCaret(container.previousSibling, true)
+      } else {
+        this.selection.placeCaret(container.nextSibling)
       }
     }
   }
 
   function autoHR (Quill) {
+
+    // Store bound event handlers for later removal.
     this.onKeydown = onKeydown.bind(Quill)
+    this.onKeyup = onKeyup.bind(Quill)
 
     this.elem = Quill.elem
     this.Quill = Quill
     this.elem.addEventListener('keydown', this.onKeydown)
+    this.elem.addEventListener('keyup', this.onKeyup)
 
-    Quill.sanitizer
-      .addElements('hr')
-      .addAttributes({
-        hr: ['contenteditable']
-      })
-      .addFilter(function (params) {
-        var node = params.node,
-            name = params.node_name
-
-        if (name === 'hr') {
-          node.setAttribute('contenteditable', false)
-
-          return { node: node.cloneNode(false) }
-        } else return null
-      })
+    Quill.sanitizer.addElements('hr')
   }
 
   autoHR.prototype.insertBefore = function (elem) {
     var hr = document.createElement('hr')
 
-    hr.contentEditable = false
     elem.parentNode.insertBefore(hr, elem)
 
     if (!this.Quill.throttle.isTyping())
-      this.Quill.trigger('change')
+      this.Quill.emit('change')
   }
 
   autoHR.prototype.destroy = function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
+    this.elem.removeEventListener('keyup', this.onKeyup)
 
     delete this.Quill
     delete this.elem
