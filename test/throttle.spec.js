@@ -10,7 +10,7 @@ describe('The Throttle plugin', function () {
     document.body.appendChild(this.elem)
     jasmine.clock().install()
 
-    quill = jasmine.createSpyObj('quill', ['trigger'])
+    quill = jasmine.createSpyObj('quill', ['emit'])
     quill.elem = this.elem
 
     this.throttle = new Throttle(quill)
@@ -33,32 +33,32 @@ describe('The Throttle plugin', function () {
 
   it('should fire change events on Quill.', function () {
     fireEvent(this.elem, 'input')
-    expect(quill.trigger).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalled()
 
     jasmine.clock().tick(21)
-    expect(quill.trigger).toHaveBeenCalledWith('change')
+    expect(quill.emit).toHaveBeenCalledWith('change')
   })
 
   it('should not fire change events too often.', function () {
     fireEvent(this.elem, 'input')
     fireEvent(this.elem, 'input')
-    expect(quill.trigger).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalled()
 
     jasmine.clock().tick(21)
 
-    expect(quill.trigger.calls.count()).toEqual(1)
+    expect(quill.emit.calls.count()).toEqual(1)
   })
 
   it('should fire multiple times when the events are spaced out.', function () {
     fireEvent(this.elem, 'input')
-    expect(quill.trigger).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalled()
 
     jasmine.clock().tick(21)
-    expect(quill.trigger.calls.count()).toEqual(1)
+    expect(quill.emit.calls.count()).toEqual(1)
     fireEvent(this.elem, 'input')
 
     jasmine.clock().tick(20)
-    expect(quill.trigger.calls.count()).toEqual(2)
+    expect(quill.emit.calls.count()).toEqual(2)
   })
 
   it('should eventually fire an event even with constant input.', function () {
@@ -67,10 +67,10 @@ describe('The Throttle plugin', function () {
     }.bind(this), 19)
 
     jasmine.clock().tick(20)
-    expect(quill.trigger).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalled()
 
     jasmine.clock().tick(81)
-    expect(quill.trigger.calls.count()).toEqual(1)
+    expect(quill.emit.calls.count()).toEqual(1)
 
     clearInterval(interval)
   })
@@ -82,8 +82,8 @@ describe('The Throttle plugin', function () {
     fireEvent(this.elem, 'input')
     fireEvent(this.elem, 'input')
 
-    expect(quill.trigger).toHaveBeenCalledWith('change')
-    expect(quill.trigger.calls.count()).toEqual(2)
+    expect(quill.emit).toHaveBeenCalledWith('change')
+    expect(quill.emit.calls.count()).toEqual(2)
   })
 
   it('can let you know if a state save is pending.', function () {

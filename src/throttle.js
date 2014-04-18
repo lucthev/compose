@@ -15,10 +15,10 @@ define(function () {
         // Don't save twice.
         clearTimeout(throttle.scheduled)
         throttle.forced = null
-        throttle.Quill.trigger('change')
+        throttle.Quill.emit('change')
       }, throttle.min)
 
-    if (!throttle.max) return throttle.Quill.trigger('change')
+    if (!throttle.max) return throttle.Quill.emit('change')
 
     throttle._typing = true
 
@@ -28,7 +28,7 @@ define(function () {
       throttle._typing = false
 
       throttle.forced = clearTimeout(throttle.forced)
-      throttle.Quill.trigger('change')
+      throttle.Quill.emit('change')
     }, throttle.max)
   }
 

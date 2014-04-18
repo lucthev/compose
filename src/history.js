@@ -88,7 +88,7 @@ define(function () {
 
     // We pass 'ignore' as a parameter to prevent ourselves
     // from pushing the changes we just undid.
-    this.Quill.trigger('change', ['ignore'])
+    this.Quill.emit('change', 'ignore')
   }
 
   History.prototype.redo = function () {
@@ -100,7 +100,7 @@ define(function () {
 
     this.length += 1
 
-    this.Quill.trigger('change', ['ignore'])
+    this.Quill.emit('change', 'ignore')
   }
 
   History.prototype.destroy = function () {

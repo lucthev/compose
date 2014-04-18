@@ -23,7 +23,7 @@ define(function () {
       })
 
       if (!Quill.throttle.isTyping())
-        Quill.trigger('change')
+        Quill.emit('change')
     }
 
     heading.getState = function (level) {

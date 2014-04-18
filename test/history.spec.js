@@ -14,7 +14,7 @@ describe('The History (undo) Plugin', function () {
     document.body.appendChild(elem)
 
     // Make our fake Quill
-    quill = jasmine.createSpyObj('quill', ['on', 'off', 'trigger'])
+    quill = jasmine.createSpyObj('quill', ['on', 'off', 'emit'])
     quill.isInline = jasmine.createSpy('isInline').and.returnValue(false)
     quill.sanitizer = {
       addFilter: function () {}
@@ -150,17 +150,17 @@ describe('The History (undo) Plugin', function () {
     callback()
     callback()
 
-    expect(quill.trigger).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalled()
 
     history.undo()
-    expect(quill.trigger)
-      .toHaveBeenCalledWith('change', jasmine.any(Array))
+    expect(quill.emit)
+      .toHaveBeenCalledWith('change', jasmine.any(String))
 
-    quill.trigger.calls.reset()
+    quill.emit.calls.reset()
 
     history.redo()
-    expect(quill.trigger)
-      .toHaveBeenCalledWith('change', jasmine.any(Array))
+    expect(quill.emit)
+      .toHaveBeenCalledWith('change', jasmine.any(String))
   })
 
   it('should ignore the change events it emits.', function () {
@@ -177,7 +177,7 @@ describe('The History (undo) Plugin', function () {
     history.undo()
 
     expect(history.push).not.toHaveBeenCalled()
-    expect(quill.trigger).toHaveBeenCalled()
+    expect(quill.emit).toHaveBeenCalled()
     expect(history.stack.length).toEqual(realLength)
     expect(history.length).toEqual(length - 2) // We undid twice.
   })
