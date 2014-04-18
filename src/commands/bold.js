@@ -44,9 +44,13 @@ define(function () {
     }
 
     function Bold () {
-      toBold()
-      document.execCommand('bold', false, null)
-      toStrong()
+      var sel = window.getSelection()
+
+      if (!sel.isCollapsed) {
+        toBold()
+        document.execCommand('bold', false, null)
+        toStrong()
+      } else document.execCommand('bold', false, null)
     }
 
     Bold.getState = function() {

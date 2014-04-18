@@ -39,9 +39,13 @@ define(function () {
     }
 
     function Italic () {
-      toItalic()
-      document.execCommand('italic', false, null)
-      toEm()
+      var sel = window.getSelection()
+
+      if (!sel.isCollapsed) {
+        toItalic()
+        document.execCommand('italic', false, null)
+        toEm()
+      } else document.execCommand('italic', false, null)
     }
 
     Italic.getState = function () {
