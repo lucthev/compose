@@ -2,17 +2,18 @@ define(function () {
 
   function onKeydown (e) {
     var container = this.selection.getContaining(),
-        sel = window.getSelection()
+        sel = window.getSelection(),
+        key = e.keyCode
 
-    if (e.keyCode === 13 && this.selection.isNewLine()) {
+    if (key === 13 && this.selection.isNewLine()) {
 
       if (container.previousElementSibling &&
           container.previousElementSibling.nodeName === 'P')
         this.hr.insertBefore(container)
 
-    } else if (sel.rangeCount && (e.keyCode === 8 || e.keyCode === 46)) {
+    } else if (sel.rangeCount && (key === 8 || key === 46)) {
 
-      if (e.keyCode === 8 && this.selection.atStartOf(container) &&
+      if (key === 8 && this.selection.atStartOf(container) &&
         container.previousSibling && container.previousSibling.nodeName === 'HR') {
 
         e.preventDefault()
@@ -21,7 +22,7 @@ define(function () {
 
         if (!this.throttle.isTyping())
           this.emit('change')
-      } else if (e.keyCode === 46 && this.selection.atEndOf(container) &&
+      } else if (key === 46 && this.selection.atEndOf(container) &&
         container.nextSibling && container.nextSibling.nodeName === 'HR') {
 
         e.preventDefault()
@@ -31,19 +32,21 @@ define(function () {
         if (!this.throttle.isTyping())
           this.emit('change')
       }
-    }
-  }
+    } else if (key >= 37 && key <= 40) {
+      // Arrow key.
 
-  function onKeyup (e) {
-    var container = this.selection.getContaining()
+      setTimeout(function () {
+        var container = this.selection.getContaining()
 
-    if (container.nodeName === 'HR') {
+        if (container.nodeName === 'HR') {
 
-      if (e.keyCode === 37 || e.keyCode === 38) {
-        this.selection.placeCaret(container.previousSibling, true)
-      } else {
-        this.selection.placeCaret(container.nextSibling)
-      }
+          if (key === 37 || key === 38) {
+            this.selection.placeCaret(container.previousSibling, true)
+          } else {
+            this.selection.placeCaret(container.nextSibling)
+          }
+        }
+      }.bind(this), 0)
     }
   }
 
@@ -51,12 +54,10 @@ define(function () {
 
     // Store bound event handlers for later removal.
     this.onKeydown = onKeydown.bind(Quill)
-    this.onKeyup = onKeyup.bind(Quill)
 
     this.elem = Quill.elem
     this.Quill = Quill
     this.elem.addEventListener('keydown', this.onKeydown)
-    this.elem.addEventListener('keyup', this.onKeyup)
 
     Quill.sanitizer.addElements('hr')
   }
@@ -72,7 +73,6 @@ define(function () {
 
   autoHR.prototype.destroy = function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
-    this.elem.removeEventListener('keyup', this.onKeyup)
 
     delete this.Quill
     delete this.elem
