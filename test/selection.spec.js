@@ -5,6 +5,35 @@ describe('The Selection plugin:', function () {
   var Selection = Quill.getPlugin('selection'),
       quill
 
+  function setContent (elem, html) {
+    var sel = window.getSelection(),
+        range = document.createRange(),
+        markers
+
+    elem.innerHTML = html.replace(/\|/g, '<span class="Quill-marker"></span>')
+
+    if (/\|/.test(html)) {
+      markers = elem.querySelectorAll('.Quill-marker')
+
+      range.setStartBefore(markers[0])
+
+      if (markers.length === 1)
+        range.setEndAfter(markers[0])
+      else range.setEndAfter(markers[1])
+
+      for (var i = 0; i < markers.length; i += 1) {
+        var parent = markers[i].parentNode
+
+        parent.removeChild(markers[i])
+
+        parent.normalize()
+      }
+
+      sel.removeAllRanges()
+      sel.addRange(range)
+    }
+  }
+
   describe('Selection#getContaining', function () {
 
     beforeEach(function () {
@@ -29,65 +58,35 @@ describe('The Selection plugin:', function () {
     })
 
     it('gets the direct child in which the caret is in.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>|<br></p>')
 
       expect(this.selection.getContaining()).toEqual(this.elem.firstChild)
     })
 
     it('uses anchorNode by default, but can use any other node.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      this.elem.innerHTML =
-       '<p>Stuff</p><p>Things</p>'
-
-      range.setStart(this.elem.firstChild.firstChild, 3)
-      range.setEnd(this.elem.lastChild.firstChild, 3)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stu|ff</p><p>Th<strong>i|n<strong>gs</p>')
 
       expect(this.selection.getContaining()).toEqual(this.elem.firstChild)
-      expect(this.selection.getContaining(range.endContainer)).toEqual(this.elem.lastChild)
+      expect(this.selection.getContaining(this.elem.querySelector('strong')))
+        .toEqual(this.elem.lastChild)
     })
 
     it('should work even with deeply nested elements.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange(),
-          targetElem
-
-      this.elem.innerHTML =
-        '<p>A paragraph</p><ol><li>Stuff <b id="target">and things</b>.</li></ol>'
-      targetElem = this.elem.querySelector('#target')
-
-      range.selectNodeContents(targetElem)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem,
+        '<p>A paragraph</p><ol><li>Stuff <b>and| things</b>.</li></ol>')
 
       expect(this.selection.getContaining()).toEqual(this.elem.firstChild.nextSibling)
     })
 
-    it('returns undefined if the caret is not in the element.', function () {
+    it('returns false if the caret is not in the element.', function () {
       expect(this.selection.getContaining()).toBe(false)
     })
 
-    it('returns undefined if in inline mode.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
+    it('returns false if in inline mode.', function () {
       quill.isInline = jasmine.createSpy('isInline').and.returnValue(true)
       this.selection = new Selection(quill)
 
-      this.elem.innerHTML = 'Stuff and things.'
-      range.setStart(this.elem.firstChild, 0)
-      range.setEnd(this.elem.firstChild, 0)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, 'St|uff and things.')
 
       expect(this.selection.getContaining()).toBe(false)
       expect(quill.isInline).toHaveBeenCalled()
@@ -118,67 +117,39 @@ describe('The Selection plugin:', function () {
     })
 
     it('determines if the selection is contained within a node.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>|<br></p>')
 
       expect(this.selection.childOf(/^(?:P)$/i)).toBeTruthy()
       expect(this.selection.childOf(/^(?:article)$/i)).toBe(false)
     })
 
     it('should return the matched element, if found.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>|<br></p>')
 
       expect(this.selection.childOf(/^(?:P)$/i)).toEqual(this.elem.firstChild)
     })
 
     it('should not account for the editable element.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>|<br></p>')
 
       expect(this.selection.childOf(/^(?:DIV)$/i)).toBe(false)
     })
 
     it('should return false in inline mode.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
+      setContent(this.elem, 'Stuff |and things')
 
       quill.isInline = jasmine.createSpy('isInline').and.returnValue(true)
       this.selection = new Selection(quill)
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
 
       expect(this.selection.childOf(/^(?:DIV)$/i)).toBe(false)
     })
 
     it('should work with deeply nested elements.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange(),
-          targetElem
+      setContent(this.elem,
+        '<p>Stuff</p><ol><li>X <strong>and <em>Y|</em></strong></li></ol>')
 
-      this.elem.innerHTML =
-        '<p>Stuff</p><ol><li>X <b>and <i id="target">Y</i></b></li></ol>'
-      targetElem = this.elem.querySelector('#target')
-
-      range.selectNodeContents(targetElem)
-      sel.removeAllRanges()
-      sel.addRange(range)
-
-      expect(this.selection.childOf(/^I$/i)).toEqual(targetElem)
+      expect(this.selection.childOf(/^EM$/i))
+        .toEqual(this.elem.querySelector('em'))
       expect(this.selection.childOf(/^(?:LI)$/i))
         .toEqual(this.elem.querySelector('li'))
       expect(this.selection.childOf(/^(?:[O|U]L)$/))
@@ -187,16 +158,7 @@ describe('The Selection plugin:', function () {
     })
 
     it('should work with strings (but less accurately).', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      this.elem.innerHTML = '<section><p id="target">Stuff</p></section>'
-      targetElem = this.elem.querySelector('#target')
-
-      range.selectNodeContents(targetElem)
-      range.collapse()
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<section><p>St|uff</p></section>')
 
       expect(this.selection.childOf('SECTION')).toEqual(this.elem.firstChild)
     })
@@ -227,76 +189,35 @@ describe('The Selection plugin:', function () {
     })
 
     it('determines if elements are in the selection.', function () {
-      this.elem.innerHTML = '<p>Stuff <b>and things.</b></p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>|Stuff <b>and things.</b>|</p>')
 
       expect(this.selection.contains('b')).toBe(true)
     })
 
     it('works even if only part of the elements are selected.', function () {
-      this.elem.innerHTML = 'Stuff and <b>things.</b>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.setStart(this.elem.firstChild, 3)
-      range.setEnd(this.elem.firstElementChild.firstChild, 2)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, 'Stu|ff and <b>thi|ngs.</b>')
 
       expect(this.selection.contains('b')).toBe(true)
 
-      this.elem.innerHTML = '<b>Stuff</b> and things'
-
-      range.setStart(this.elem.firstChild.firstChild, 3)
-      range.setEnd(this.elem.firstChild.nextSibling, 5)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<b>Stu|ff</b> and |things')
 
       expect(this.selection.contains('b')).toBe(true)
     })
 
     it('should works with deeply nested elements.', function () {
-      this.elem.innerHTML = '<ol><li>Stuff and <b>th<i>ings</i></b></li></ol>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<ol>|<li>Stuff and <b>th<i>ings</i></b></li>|</ol>')
 
       expect(this.selection.contains('i')).toBe(true)
     })
 
     it('should ignore adjacent endpoints.', function () {
-      this.elem.innerHTML = '<i>Thin</i>gs'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild.nextSibling)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<i>Thin</i>|gs|')
 
       expect(this.selection.contains('i')).toBe(false)
     })
 
     it('should not care about the parent.', function () {
-      this.elem.innerHTML = '<i>Things</i>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<i>Th|in|gs</i>')
 
       expect(this.selection.contains('i')).toBe(false)
     })
@@ -327,27 +248,13 @@ describe('The Selection plugin:', function () {
     })
 
     it('determines if the caret is on a new line.', function () {
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>|<br></p>')
 
       expect(this.selection.isNewLine()).toBe(true)
     })
 
     it('should not care about the containing element\'s tag.', function () {
-      this.elem.innerHTML = '<h1><br></h1>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      range.collapse(true)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<h1>|<br></h1>')
 
       expect(this.selection.isNewLine()).toBe(true)
     })
@@ -357,22 +264,11 @@ describe('The Selection plugin:', function () {
     })
 
     it('should return false if the containing element has text.', function () {
-      this.elem.innerHTML = '<p>Stuff</p>'
-
-      var sel = window.getSelection(),
-          range = document.createRange()
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<p>Stuff|</p>')
 
       expect(this.selection.isNewLine()).toBe(false)
 
-      this.elem.innerHTML = '<h2>Stuff</h2>'
-
-      range.selectNodeContents(this.elem.firstChild)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      setContent(this.elem, '<h2>|Stuff|</h2>')
 
       expect(this.selection.isNewLine()).toBe(false)
     })
