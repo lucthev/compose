@@ -34,7 +34,7 @@ define([
    * fixSelection() fixes Firefox's select all behaviour by placing
    * the caret within block elements, not outside.
    */
-  var fixSelection = function () {
+  function fixSelection () {
     var sel = window.getSelection(),
         marker,
         last
@@ -64,12 +64,6 @@ define([
     }
 
     this.selection.selectMarkers()
-  }
-
-  function onKeyup () {
-
-    // Check for FF selectAll behaviour:
-    fixSelection()
   }
 
   /**
@@ -144,12 +138,10 @@ define([
 
     this.elem = Quill.elem
 
-    fixSelection = fixSelection.bind(Quill)
-
     // Store bound handlers for later removal.
     this.onFocus = onFocus.bind(Quill)
     this.onKeydown = onKeydown.bind(Quill)
-    this.onKeyup = onKeyup.bind(Quill)
+    this.onKeyup = fixSelection.bind(Quill)
 
     this.elem.addEventListener('keydown', this.onKeydown)
     this.elem.addEventListener('keyup', this.onKeyup)
