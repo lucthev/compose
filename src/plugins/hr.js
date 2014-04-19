@@ -50,14 +50,26 @@ define(function () {
     }
   }
 
+  // This handles the case where clicking on an <hr> place the caret
+  // on the <hr> (see https://github.com/lucthev/quill/issues/24).
+  function onClick () {
+    var container = this.selection.getContaining()
+
+    // We just place the caret in whatever element comes after.
+    if (container.nodeName === 'HR')
+      this.selection.placeCaret(container.nextSibling)
+  }
+
   function autoHR (Quill) {
 
     // Store bound event handlers for later removal.
     this.onKeydown = onKeydown.bind(Quill)
+    this.onClick = onClick.bind(Quill)
 
     this.elem = Quill.elem
     this.Quill = Quill
     this.elem.addEventListener('keydown', this.onKeydown)
+    this.elem.addEventListener('click', this.onClick)
 
     Quill.sanitizer.addElements('hr')
   }
@@ -73,6 +85,7 @@ define(function () {
 
   autoHR.prototype.destroy = function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
+    this.elem.removeEventListener('click', this.onClick)
 
     delete this.Quill
     delete this.elem

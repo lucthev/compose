@@ -64,6 +64,11 @@ define(function () {
 
       node = this.elem.childNodes[range.endOffset - 1]
       if (node && node.nodeName === 'HR') return node
+
+      // The endOffset varies; it seems that it may depend one the
+      // direction of navigation. We check both.
+      node = this.elem.childNodes[range.endOffset]
+      if (node && node.nodeName === 'HR') return node
     }
 
     return false
