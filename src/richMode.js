@@ -150,25 +150,7 @@ define([
     if (!this.elem.firstElementChild)
       appendParagraph(this.elem)
 
-    Quill.sanitizer
-      .addElements(['p', 'br'])
-
-      // FIXME: duplicate functionality of wrapinline?
-      .addFilter(function (params) {
-        var node = params.node,
-            name = params.node_name,
-            p, i
-
-        if (name === 'div' && node.parentNode === Quill.elem) {
-          p = document.createElement('p')
-
-          for (i = 0; i < node.childNodes.length; i += 1) {
-            p.appendChild(node.childNodes[i].cloneNode(true))
-          }
-
-          return { node: p }
-        }
-      })
+    Quill.sanitizer.addElements(['p', 'br'])
 
     this.observer = makeObserver(Quill)
 
