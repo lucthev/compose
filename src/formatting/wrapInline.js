@@ -40,8 +40,10 @@ define(function () {
 
       // If a block node has no text content, we make sure it has a
       // <br>. Otherwise, it may not be selectable.
+      // TODO: we may not want <br>s in all block elements (e.g. <hr>)
       if (isBlock(node)) {
-        if (!node.textContent && !node.querySelectorAll('br').length) {
+        if (!node.textContent && !node.querySelectorAll('br').length &&
+            node.nodeName !== 'HR') {
           br = document.createElement('br')
 
           while (node.lastChild && node.lastChild.nodeType === Node.ELEMENT_NODE)
