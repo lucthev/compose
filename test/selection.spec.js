@@ -1,4 +1,5 @@
-/* jshint ignore:start */
+/* global describe, expect, it, beforeEach, afterEach,
+   Quill, setContent, jasmine */
 
 describe('The Selection plugin:', function () {
 
@@ -334,6 +335,251 @@ describe('The Selection plugin:', function () {
       setContent(this.elem, '<p>|Stuff</p><h1>Things|</h1>')
       expect(this.selection.atEndOf(this.elem.firstChild)).toBe(false)
       expect(this.selection.atEndOf(this.elem.lastChild)).toBe(false)
+    })
+  })
+
+  describe('Selection#forEachBlock', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      quill = new Quill(this.elem)
+      quill.disable('selection')
+
+      // Add some attributes used for testing.
+      quill.sanitizer.addAttributes({
+        p: ['id'],
+        h2: ['id'],
+        li: ['id']
+      })
+
+      this.selection = new Selection(quill)
+    })
+
+    afterEach(function () {
+      if (quill && !quill._destroyed)
+        quill.destroy()
+
+      document.body.removeChild(this.elem)
+    })
+
+    it('should iterate over each block element in the selection.', function () {
+      var ids = []
+
+      setContent(this.elem,
+        '<p id="x">Stu|ff</p><p id="y">Things</p><p id="z">Wor|ds</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+      })
+
+      expect(ids).toEqual(['x', 'y', 'z'])
+    })
+
+    it('should ignore items not in the selection.', function () {
+      var ids = []
+
+      setContent(this.elem,
+        '<p id="w">Stuff</p><p id="x">Th|ings</p><p id="y">Wor|ds</p><h2 id="z">Blah</h2>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+      })
+
+      expect(ids).toEqual(['x', 'y'])
+    })
+
+    it('should tolerate removal of the current block.', function () {
+      var ids = []
+
+      setContent(this.elem,
+        '<p id="w">Stu|ff</p><p id="x">Things</p><p id="y">Words</p><h2 id="z">Bl|ah</h2>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+        block.parentNode.removeChild(block)
+      })
+
+      expect(ids).toEqual(['w', 'x', 'y', 'z'])
+      expect(this.elem.textContent.trim()).toBeFalsy()
+    })
+
+    it('should iterate over list items instead of lists (1).', function () {
+      var ids = []
+
+      setContent(this.elem,
+        '<h2 id="v">Go</h2>' +
+        '<ol id="no">' +
+          '<li id="w">St|uff</li>' +
+          '<li id="x">Things</li>' +
+          '<li id="y">Wor|d</li>' +
+        '</ol>' +
+        '<p id="z">Blue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+      })
+
+      expect(ids).toEqual(['w', 'x', 'y'])
+    })
+
+    it('should iterate over list items instead of lists (2).', function () {
+      var ids = []
+
+      setContent(this.elem,
+       '<h2 id="v">G|o</h2>' +
+        '<ul id="no">' +
+          '<li id="w">Stuff</li>' +
+          '<li id="x">Things</li>' +
+          '<li id="y">Word</li>' +
+        '</ul>' +
+        '<p id="z">Bl|ue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+      })
+
+      expect(ids).toEqual(['v', 'w', 'x', 'y', 'z'])
+    })
+
+    it('should iterate over list items instead of lists (3).', function () {
+      var ids = []
+
+      setContent(this.elem,
+       '<h2 id="v">Go</h2>' +
+        '<ol id="no">' +
+          '<li id="w">Stuff</li>' +
+          '<li id="x">Th|ings</li>' +
+          '<li id="y">Word</li>' +
+        '</ol>' +
+        '<p id="z">Bl|ue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+      })
+
+      expect(ids).toEqual(['x', 'y', 'z'])
+    })
+
+    it('should tolerate removal of list items.', function () {
+      var ids = []
+
+      setContent(this.elem,
+       '<h2 id="v">G|o</h2>' +
+        '<ul id="no">' +
+          '<li id="w">Stuff</li>' +
+          '<li id="x">Things</li>' +
+          '<li id="y">Word</li>' +
+        '</ul>' +
+        '<p id="z">Bl|ue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+
+        if (block.nodeName === 'LI')
+          block.parentNode.removeChild(block)
+      })
+
+      expect(ids).toEqual(['v', 'w', 'x', 'y', 'z'])
+    })
+
+    it('should tolerate splitting of lists (1).', function () {
+      var ids = []
+
+      setContent(this.elem,
+       '<h2 id="v">G|o</h2>' +
+        '<ul id="no">' +
+          '<li id="w">Stuff</li>' +
+          '<li id="x">Things</li>' +
+          '<li id="y">Word</li>' +
+        '</ul>' +
+        '<p id="z">Bl|ue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+
+        if (block.nodeName === 'LI')
+          quill.list.splitList(block, true)
+      })
+
+      expect(ids).toEqual(['v', 'w', 'x', 'y', 'z'])
+    })
+
+    it('should tolerate splitting of lists (2).', function () {
+      var ids = []
+
+      setContent(this.elem,
+       '<h2 id="v">Go</h2>' +
+        '<ol id="no">' +
+          '<li id="w">Stuff</li>' +
+          '<li id="x">Th|ings</li>' +
+          '<li id="y">Word</li>' +
+        '</ol>' +
+        '<p id="z">Bl|ue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+
+        if (block.nodeName === 'LI')
+          quill.list.splitList(block, true)
+      })
+
+      expect(ids).toEqual(['x', 'y', 'z'])
+    })
+
+    it('should work with multiple consecutive lists (1).', function () {
+      var ids = []
+
+      setContent(this.elem,
+        '<h2 id="v">Go</h2>' +
+         '<ol id="one">' +
+           '<li id="w">Stuff</li>' +
+           '<li id="x">Th|ings</li>' +
+           '<li id="y">Word</li>' +
+         '</ol>' +
+         '<ul id="two">' +
+           '<li id="w2">Stuff</li>' +
+           '<li id="x2">Things</li>' +
+           '<li id="y2">Word</li>' +
+         '</ul>' +
+         '<p id="z">Bl|ue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+
+        if (block.nodeName === 'LI')
+          quill.list.splitList(block, true)
+      })
+
+      expect(ids).toEqual(['x', 'y', 'w2', 'x2', 'y2', 'z'])
+    })
+
+    it('should work with multiple consecutive lists (2).', function () {
+      var ids = []
+
+      setContent(this.elem,
+        '<h2 id="v">Go</h2>' +
+         '<ol id="one">' +
+           '<li id="w">Stuff</li>' +
+           '<li id="x">Th|ings</li>' +
+           '<li id="y">Word</li>' +
+         '</ol>' +
+         '<ul id="two">' +
+           '<li id="w2">Stuff</li>' +
+           '<li id="x2">Th|ings</li>' +
+           '<li id="y2">Word</li>' +
+         '</ul>' +
+         '<p id="z">Blue</p>')
+
+      this.selection.forEachBlock(function (block) {
+        ids.push(block.id)
+
+        if (block.nodeName === 'LI')
+          quill.list.splitList(block, true)
+      })
+
+      expect(ids).toEqual(['x', 'y', 'w2', 'x2'])
     })
   })
 })

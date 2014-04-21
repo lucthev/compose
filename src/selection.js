@@ -106,12 +106,15 @@ define(function () {
 
   /**
    * Selection.forEachBlock(action) perform an action on each top-
-   * level block element in the selection.
+   * level block element in the selection. In lists, it instead
+   * performs the action on each <li>.
    *
    * @param {Function} action
    */
   Selection.prototype.forEachBlock = function (action) {
     var sel = window.getSelection(),
+        listRegex = /^[OU]L$/,
+        liRegex = /^LI$/,
         range,
         current,
         next,
@@ -124,6 +127,13 @@ define(function () {
     start = this.getContaining(range.startContainer)
     end = this.getContaining(range.endContainer)
 
+    // If either the start or end are lists, we instead get the list
+    // item in which the start/end is.
+    if (listRegex.test(start.nodeName))
+      start = this.childOf(liRegex, range.startContainer)
+    if (listRegex.test(end.nodeName))
+      end = this.childOf(liRegex, range.endContainer)
+
     // Save the selection.
     this.placeMarkers()
 
@@ -131,6 +141,14 @@ define(function () {
     while (next !== end) {
       current = next
       next = next.nextSibling
+
+      // Make sure we're iterating over list item nodes, if applicable.
+      if (!next && liRegex.test(current.nodeName))
+        next = current.parentNode.nextSibling
+
+      // Order matters: next could not be a new list.
+      if (next && listRegex.test(next.nodeName))
+        next = next.firstChild
 
       if (current.isContentEditable)
         action(current)
