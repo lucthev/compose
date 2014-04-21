@@ -122,8 +122,7 @@ define([
 
         this.selection.placeCaret(paragraph)
 
-        if (!this.throttle.isTyping())
-          this.emit('change')
+        this.emit('input')
       }
     }
   }

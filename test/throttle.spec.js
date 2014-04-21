@@ -85,18 +85,6 @@ describe('The Throttle plugin', function () {
     clearInterval(interval)
   })
 
-  it('can let you know if a state save is pending.', function () {
-    expect(this.throttle.isTyping()).toBe(false)
-
-    fireEvent(this.elem, 'input')
-
-    expect(this.throttle.isTyping()).toBe(true)
-
-    jasmine.clock().tick(21)
-
-    expect(this.throttle.isTyping()).toBe(false)
-  })
-
   it('should present a destroy method.', function () {
     expect(this.throttle.destroy).toEqual(jasmine.any(Function))
   })

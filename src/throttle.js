@@ -10,8 +10,6 @@ define(function () {
     if (throttle.min && !throttle.forced)
       throttle.forced = setTimeout(function () {
 
-        throttle._typing = false
-
         // Don't save twice.
         clearTimeout(throttle.scheduled)
         throttle.forced = null
@@ -20,12 +18,8 @@ define(function () {
 
     if (!throttle.max) return throttle.Quill.emit('change')
 
-    throttle._typing = true
-
     // Schedule a state save once the user finishes typing.
     throttle.scheduled = setTimeout(function () {
-
-      throttle._typing = false
 
       throttle.forced = clearTimeout(throttle.forced)
       throttle.Quill.emit('change')
@@ -41,7 +35,6 @@ define(function () {
 
     this.max = 150
     this.min = 320
-    this._typing = false
 
     // Saving bound event listeners for later removal.
     this.scheduleSave = scheduleSave.bind(this)
@@ -49,15 +42,6 @@ define(function () {
 
     Quill.elem.addEventListener('input', this.onInput)
     Quill.on('input', this.scheduleSave)
-  }
-
-  /**
-   * Throttle.isTyping() determines if a state save is pending.
-   *
-   * @return Boolean
-   */
-  Throttle.prototype.isTyping = function () {
-    return this._typing
   }
 
   /**
