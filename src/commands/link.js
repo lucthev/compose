@@ -10,13 +10,15 @@ define(function () {
     }
 
     /**
-     * Quill.link.getState() determines if a link exists in the selection.
-     * Differs significantly from document.queryCommandState('createLink').
+     * Quill.link.getState() determines if a link exists in the selection
+     * or the selection is a child of a link. Differs significantly from
+     * document.queryCommandState('createLink').
      *
      * @return Boolean
      */
     Link.getState = function () {
-      return Quill.selection.contains('a')
+      return !!Quill.selection.childOf(/^a$/i) ||
+        Quill.selection.contains('a')
     }
 
     Link.isEnabled = function () {
