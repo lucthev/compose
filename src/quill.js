@@ -74,6 +74,31 @@ define([
   }
 
   /**
+   * Quill.disable(name) disables the plugin with name 'name'.
+   *
+   * @param {String} name
+   * @return this
+   */
+  Quill.prototype.disable = function (name) {
+    var i
+
+    if (!name) return
+
+    i = this.plugins.indexOf(name)
+    if (i < 0)
+      throw new Error('Quill is not using a plugin ' + name)
+
+    if (typeof this[name].destroy === 'function')
+      this[name].destroy()
+
+    delete this[name]
+
+    this.plugins.splice(i, 1)
+
+    return this
+  }
+
+  /**
    * Quill.destroy() removes event listeners and deletes references
    * to elements etc.
    *
