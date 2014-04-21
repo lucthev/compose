@@ -22,8 +22,7 @@ define(function () {
         block.parentNode.replaceChild(elem, block)
       })
 
-      if (!Quill.throttle.isTyping())
-        Quill.emit('change')
+      Quill.emit('input')
     }
 
     heading.getState = function (level) {

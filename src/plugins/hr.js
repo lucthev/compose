@@ -20,8 +20,7 @@ define(function () {
 
         container.parentNode.removeChild(container.previousSibling)
 
-        if (!this.throttle.isTyping())
-          this.emit('change')
+        this.emit('input')
       } else if (key === 46 && this.selection.atEndOf(container) &&
         container.nextSibling && container.nextSibling.nodeName === 'HR') {
 
@@ -29,8 +28,7 @@ define(function () {
 
         container.parentNode.removeChild(container.nextSibling)
 
-        if (!this.throttle.isTyping())
-          this.emit('change')
+        this.emit('input')
       }
     } else if (key >= 37 && key <= 40) {
       // Arrow key.
@@ -79,8 +77,7 @@ define(function () {
 
     elem.parentNode.insertBefore(hr, elem)
 
-    if (!this.Quill.throttle.isTyping())
-      this.Quill.emit('change')
+    this.Quill.emit('input')
   }
 
   autoHR.prototype.destroy = function () {

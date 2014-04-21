@@ -67,8 +67,7 @@ define(function () {
       this.selection.selectMarkers()
 
       // Trigger change if necessary.
-      if (!this.throttle.isTyping())
-        this.emit('change')
+      this.emit('input')
 
     } else if (e.keyCode === 8 || e.keyCode === 13) {
       // Backspace or enter.
@@ -84,8 +83,7 @@ define(function () {
 
         this.list.splitList(container)
 
-        if (!this.throttle.isTyping())
-          this.emit('change')
+        this.emit('input')
       }
     }
   }

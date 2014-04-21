@@ -32,8 +32,7 @@ define(function () {
         elem.parentNode.replaceChild(block, elem)
       })
 
-      if (!Quill.throttle.isTyping())
-        Quill.emit('change')
+      Quill.emit('input')
     }
 
     /**
