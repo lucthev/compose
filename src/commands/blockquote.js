@@ -17,27 +17,15 @@ define(function () {
                             document.createElement('p'),
             attributes = Array.prototype.slice.call(elem.attributes)
 
+        // Conserve attributes.
         attributes.forEach(function (attr) {
           block.setAttribute(attr.name, attr.value)
         })
 
-        if (pullQuote) {
-
-          // Remove previous class added.
-          if (block.hasAttribute('data-class'))
-            block.classList.remove(block.getAttribute('data-class'))
-
-          block.classList.add(quote)
-          block.setAttribute('data-class', quote)
-        } else if (block.hasAttribute('data-class')) {
-          block.classList.remove(block.getAttribute('data-class'))
-          block.removeAttribute('data-class')
-
-          // If there is no class leftover, we can remove the class
-          // attribute as well.
-          if (!block.className)
-            block.removeAttribute('class')
-        }
+        if (pullQuote)
+          block.className = quote
+        else
+          block.removeAttribute('class')
 
         block.innerHTML = elem.innerHTML
 
@@ -46,8 +34,6 @@ define(function () {
 
       if (!Quill.throttle.isTyping())
         Quill.emit('change')
-
-      Quill.sanitizer.addElements('blockquote')
     }
 
     /**
@@ -63,14 +49,17 @@ define(function () {
 
       if (!block) return false
 
-      if (block.hasAttribute('data-class'))
-        return blockquote.getAttribute('data-class')
-      else return true
+      return block.className ? block.className : true
     }
 
     blockquote.isEnabled = function () {
       return !Quill.isInline()
     }
+
+    Quill.sanitizer.addElements('blockquote')
+    Quill.sanitizer.addAttributes({
+      blockquote: ['class']
+    })
 
     return blockquote
   }

@@ -268,30 +268,7 @@ describe('Rich mode', function () {
       expect(this.elem.firstChild.className).toEqual('test')
     })
 
-    it('should not overwrite other classes.', function () {
-      setContent(this.elem, '<p class="one">|Stuff|</p>')
-
-      this.quill.blockquote('test')
-
-      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
-      expect(this.elem.firstChild.className).toEqual('one test')
-    })
-
-    it('should remove the class when converting back to paragraphs (1).', function () {
-      setContent(this.elem, '<p class="one">Stu|ff</p>')
-      this.elem.focus()
-
-      this.quill.blockquote('test')
-
-      expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
-      expect(this.elem.firstChild.className).toEqual('one test')
-
-      this.quill.blockquote(false)
-
-      expect(this.elem.innerHTML).toEqual('<p class="one">Stuff</p>')
-    })
-
-    it('should remove the class when converting back to paragraphs (2).', function () {
+    it('should remove the class when converting back to paragraphs.', function () {
       setContent(this.elem, '<p>S|tuff|</p>')
       this.elem.focus()
 
@@ -322,18 +299,18 @@ describe('Rich mode', function () {
     })
 
     it('should change the class when appropriate.', function () {
-      setContent(this.elem, '<p class="one">Stu|ff</p>')
+      setContent(this.elem, '<p>Stu|ff</p>')
       this.elem.focus()
 
       this.quill.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
-      expect(this.elem.firstChild.className).toEqual('one test')
+      expect(this.elem.firstChild.className).toEqual('test')
 
       this.quill.blockquote('word')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
-      expect(this.elem.firstChild.className).toEqual('one word')
+      expect(this.elem.firstChild.className).toEqual('word')
     })
 
     it('should work over multiple blocks.', function () {
