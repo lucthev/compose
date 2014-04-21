@@ -2,54 +2,15 @@ define(function () {
 
   function ItalicPlugin (Quill) {
 
-    /**
-     * toItalic() converts <em> tags in the selection to <i> tags.
-     */
-    function toItalic () {
-      Quill.selection.forEachBlock(function (block) {
-        var ems = block.getElementsByTagName('em')
-        ems = Array.prototype.slice.call(ems)
-
-        ems.forEach(function (em) {
-          var i = document.createElement('i')
-
-          i.innerHTML = em.innerHTML
-
-          em.parentNode.replaceChild(i, em)
-        })
-      })
-    }
-
-    /**
-     * toEm() converts <i> tags in the selection to <em> tags.
-     */
-    function toEm () {
-      Quill.selection.forEachBlock(function (block) {
-        var is = block.getElementsByTagName('i')
-        is = Array.prototype.slice.call(is)
-
-        is.forEach(function (i) {
-          var em = document.createElement('em')
-
-          em.innerHTML = i.innerHTML
-
-          i.parentNode.replaceChild(em, i)
-        })
-      })
-    }
-
     function Italic () {
-      var sel = window.getSelection()
-
-      if (!sel.isCollapsed) {
-        toItalic()
-        document.execCommand('italic', false, null)
-        toEm()
-      } else document.execCommand('italic', false, null)
+      document.execCommand('italic', false, null)
     }
 
     Italic.getState = function () {
-      return document.queryCommandState('italic')
+
+      // The check for <i> tags is necessary when querying immediately
+      // after calling italic(), because of tag conversion.
+      return !!Quill.selection.childOf(/^EM|I$/i)
     }
 
     Italic.isEnabled = function () {
