@@ -50,8 +50,22 @@ define(function () {
       Quill.sanitizer.addElements('blockquote')
     }
 
+    /**
+     * blockquote.getState() state of the current selection with respect
+     * to blockquotes. If the selection is not contained within a
+     * blockquote, returns false. If the blockquote is a 'pullquote'
+     * (i.e. has a class), returns the class; otherwise, returns true.
+     *
+     * @return String || Boolean
+     */
     blockquote.getState = function () {
-      return !!Quill.selection.childOf(/^blockquote$/i)
+      var block = Quill.selection.childOf(/^blockquote$/i)
+
+      if (!block) return false
+
+      if (block.hasAttribute('data-class'))
+        return blockquote.getAttribute('data-class')
+      else return true
     }
 
     blockquote.isEnabled = function () {
