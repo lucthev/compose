@@ -145,11 +145,12 @@ define(function () {
   /**
    * splitList(listItem) splits a list at the given <li>. The <li> is
    * transformed into a <p>. If no <li>s remain in the list, the list
-   * is removed.
+   * is removed. If rmSelection is true, the selection is disregarded.
    *
    * @param {Element} listItem
+   * @param {Boolean} rmSelection
    */
-  autoList.prototype.splitList = function (listItem) {
+  autoList.prototype.splitList = function (listItem, rmSelection) {
     var parent = listItem.parentNode,
         listType = parent.nodeName,
         before,
@@ -160,7 +161,8 @@ define(function () {
 
     if (!/^[OU]L$/.test(listType)) return
 
-    this.selection.placeMarkers()
+    if (!rmSelection)
+      this.selection.placeMarkers()
 
     before = document.createElement(listType)
     after = document.createElement(listType)
@@ -194,7 +196,8 @@ define(function () {
     // Replace the <li>'s parent with the new paragraph.
     parent.parentNode.replaceChild(p, parent)
 
-    this.selection.selectMarkers()
+    if (!rmSelection)
+      this.selection.selectMarkers()
 
     return p
   }
