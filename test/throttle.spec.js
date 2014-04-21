@@ -10,14 +10,19 @@ describe('The Throttle plugin', function () {
     document.body.appendChild(this.elem)
     jasmine.clock().install()
 
-    quill = jasmine.createSpyObj('quill', ['emit'])
-    quill.elem = this.elem
+    quill = new Quill(this.elem)
+    spyOn(quill, 'emit').and.callThrough()
+
+    // Disable the default throttle.
+    quill.disable('throttle')
 
     this.throttle = new Throttle(quill)
     this.throttle.setSpeed(20, 80)
   })
 
   afterEach(function () {
+    this.throttle.destroy()
+
     document.body.removeChild(this.elem)
     jasmine.clock().uninstall()
   })
@@ -33,7 +38,7 @@ describe('The Throttle plugin', function () {
 
   it('should fire change events on Quill.', function () {
     fireEvent(this.elem, 'input')
-    expect(quill.emit).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalledWith('change')
 
     jasmine.clock().tick(21)
     expect(quill.emit).toHaveBeenCalledWith('change')
@@ -42,23 +47,27 @@ describe('The Throttle plugin', function () {
   it('should not fire change events too often.', function () {
     fireEvent(this.elem, 'input')
     fireEvent(this.elem, 'input')
-    expect(quill.emit).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalledWith('change')
 
     jasmine.clock().tick(21)
 
-    expect(quill.emit.calls.count()).toEqual(1)
+    expect(quill.emit.calls.allArgs())
+      .toEqual([['input'], ['input'], ['change']])
   })
 
   it('should fire multiple times when the events are spaced out.', function () {
     fireEvent(this.elem, 'input')
-    expect(quill.emit).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalledWith('change')
 
     jasmine.clock().tick(21)
-    expect(quill.emit.calls.count()).toEqual(1)
+    expect(quill.emit.calls.allArgs())
+      .toEqual([['input'], ['change']])
+
     fireEvent(this.elem, 'input')
 
     jasmine.clock().tick(20)
-    expect(quill.emit.calls.count()).toEqual(2)
+    expect(quill.emit.calls.allArgs())
+      .toEqual([['input'], ['change'], ['input'], ['change']])
   })
 
   it('should eventually fire an event even with constant input.', function () {
@@ -67,23 +76,13 @@ describe('The Throttle plugin', function () {
     }.bind(this), 19)
 
     jasmine.clock().tick(20)
-    expect(quill.emit).not.toHaveBeenCalled()
+    expect(quill.emit).not.toHaveBeenCalledWith('change')
 
     jasmine.clock().tick(81)
-    expect(quill.emit.calls.count()).toEqual(1)
+    expect(quill.emit.calls.allArgs())
+      .toEqual([['input'], ['input'], ['input'], ['input'], ['input'], ['change']])
 
     clearInterval(interval)
-  })
-
-  it('should fire events immediately if the max/min is 0.', function () {
-    var t = new Throttle(quill)
-    t.setSpeed(0, 0)
-
-    fireEvent(this.elem, 'input')
-    fireEvent(this.elem, 'input')
-
-    expect(quill.emit).toHaveBeenCalledWith('change')
-    expect(quill.emit.calls.count()).toEqual(2)
   })
 
   it('can let you know if a state save is pending.', function () {

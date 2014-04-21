@@ -32,6 +32,10 @@ define(function () {
     }, throttle.max)
   }
 
+  function onInput () {
+    this.emit('input')
+  }
+
   function Throttle (Quill) {
     this.Quill = Quill
 
@@ -39,10 +43,12 @@ define(function () {
     this.min = 320
     this._typing = false
 
-    // Saving bound event listener to remove it later.
+    // Saving bound event listeners for later removal.
     this.scheduleSave = scheduleSave.bind(this)
+    this.onInput = onInput.bind(Quill)
 
-    Quill.elem.addEventListener('input', this.scheduleSave)
+    Quill.elem.addEventListener('input', this.onInput)
+    Quill.on('input', this.scheduleSave)
   }
 
   /**
@@ -56,24 +62,24 @@ define(function () {
 
   /**
    * Throttle.setSpeed(max, min) regulates the intervals at which
-   * states are saved. If either max or min are falsy, states will
-   * be saved upon input.
+   * states are saved.
    *
-   * @param {Number >= 0} max
-   * @param {Number >= 0} min
+   * @param {Number > 0} max
+   * @param {Number > max} min
    */
   Throttle.prototype.setSpeed = function (max, min) {
-    if (!max || !min)
-      this.max = this.min = 0
-    else {
-      this.max = max
-      this.min = min
-    }
+    if (!max || !min || max >= min) return
+
+    this.max = max
+    this.min = min
   }
 
   Throttle.prototype.destroy = function () {
-    this.Quill.elem.removeEventListener('input', this.scheduleSave)
+    this.Quill.elem.removeEventListener('input', this.onInput)
+    this.Quill.off('input', this.scheduleSave)
 
+    clearTimeout(this.scheduled)
+    clearTimeout(this.forced)
     delete this.scheduleSave
     delete this.Quill
 
