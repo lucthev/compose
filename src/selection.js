@@ -79,17 +79,21 @@ define(function () {
    * a node with name matching the provided regular expression. If
    * so, returns the matched node; else, returns false.
    *
+   * Optionally takes an element as the second parameter; in that case,
+   * it determines if the element has a parent matching the RegExp.
+   *
    * @param {RegExp} matcher
+   * @param {Node} elem
    * @return Node || false
    */
-  Selection.prototype.childOf = function (matcher) {
+  Selection.prototype.childOf = function (matcher, elem) {
     var sel = window.getSelection(),
         node
 
     // Don't search if not given a matcher, inline, or nothing selected.
     if (!matcher || this.inline || !sel.rangeCount) return false
 
-    node = sel.getRangeAt(0).commonAncestorContainer
+    node = elem || sel.getRangeAt(0).commonAncestorContainer
 
     while (node && node !== this.elem) {
       if (node.nodeName.match(matcher))
