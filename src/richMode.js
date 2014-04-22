@@ -127,6 +127,22 @@ define([
     }
   }
 
+  function onDomChange () {
+    var cleaned
+
+    this.selection.placeMarkers()
+
+    cleaned = this.sanitizer.clean(this.elem)
+    wrapInline(cleaned)
+
+    while (this.elem.firstChild)
+      this.elem.removeChild(this.elem.firstChild)
+
+    this.elem.appendChild(cleaned)
+
+    this.selection.selectMarkers()
+  }
+
   function Rich (Quill) {
 
     formattingPlugins.forEach(function (Plugin) {
@@ -151,22 +167,8 @@ define([
     Quill.sanitizer.addElements(['p', 'br'])
 
     this.observer = makeObserver(Quill)
-
-    Quill.on('domChange', function () {
-      var cleaned
-
-      Quill.selection.placeMarkers()
-
-      cleaned = Quill.sanitizer.clean(Quill.elem)
-      wrapInline(cleaned)
-
-      while (Quill.elem.firstChild)
-        Quill.elem.removeChild(Quill.elem.firstChild)
-
-      Quill.elem.appendChild(cleaned)
-
-      Quill.selection.selectMarkers()
-    })
+    this.onDomChange = onDomChange.bind(Quill)
+    Quill.on('domChange', this.onDomChange)
   }
 
   Rich.prototype.destroy = function () {
@@ -175,6 +177,7 @@ define([
     this.elem.removeEventListener('focus', this.onFocus)
 
     this.Quill.sanitizer.removeElements(['p', 'br'])
+    this.Quill.off('domChange', this.onDomChange)
 
     this.observer.disconnect()
 

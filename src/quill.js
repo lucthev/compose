@@ -71,7 +71,7 @@ define([
         this[name] = new Plugin(this, opts)
         this.plugins.push(name)
       } catch (e) {
-        if (this._debug) console.log(e)
+        if (this._debug) throw e
       }
     } else throw new Error('Quill is already using a plugin ' + name)
 
