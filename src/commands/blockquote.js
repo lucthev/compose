@@ -12,6 +12,14 @@ define(function () {
     function blockquote (quote) {
       var pullQuote = typeof quote === 'string'
 
+      // Turn all list items into <p>s before changing them into
+      // blockquotes.
+      // TODO: conserve attributes?
+      Quill.selection.forEachBlock(function (block) {
+        if (block.nodeName === 'LI')
+          Quill.list.splitList(block, true)
+      })
+
       Quill.selection.forEachBlock(function (elem) {
         var block = quote ? document.createElement('blockquote') :
                             document.createElement('p'),

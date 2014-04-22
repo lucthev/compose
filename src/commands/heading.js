@@ -5,6 +5,14 @@ define(function () {
     function heading (level) {
       level = level ? 'h' + level + '' : 'p'
 
+      // Turn all list items into <p>s before changing them into
+      // headings.
+      // TODO: conserve attributes?
+      Quill.selection.forEachBlock(function (block) {
+        if (block.nodeName === 'LI')
+          Quill.list.splitList(block, true)
+      })
+
       // We manually convert each paragraph into a heading; formatBlock
       // introduces weird issues.
       // (see https://github.com/lucthev/quill/issues/7)
