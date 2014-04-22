@@ -109,9 +109,13 @@ define(function () {
    * level block element in the selection. In lists, it instead
    * performs the action on each <li>.
    *
+   * If rmSelection is true, forEachBlock will desregard the current
+   * selection - that is, it will not place the markers.
+   *
    * @param {Function} action
+   * @param {Boolean} rmSelection
    */
-  Selection.prototype.forEachBlock = function (action) {
+  Selection.prototype.forEachBlock = function (action, rmSelection) {
     var sel = window.getSelection(),
         listRegex = /^[OU]L$/,
         liRegex = /^LI$/,
@@ -134,8 +138,9 @@ define(function () {
     if (listRegex.test(end.nodeName))
       end = this.childOf(liRegex, range.endContainer)
 
-    // Save the selection.
-    this.placeMarkers()
+    // Save the selection, if necessary.
+    if (!rmSelection)
+      this.placeMarkers()
 
     next = start
     while (next !== end) {
@@ -157,8 +162,9 @@ define(function () {
     // Perform action on last block.
     action(end)
 
-    // Restore selection.
-    this.selectMarkers()
+    // Restore selection, if necessary.
+    if (!rmSelection)
+      this.selectMarkers()
   }
 
   /*
