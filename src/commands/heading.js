@@ -25,8 +25,26 @@ define(function () {
       Quill.emit('input')
     }
 
+    /**
+     * heading.getState( ) can be true in two cases:
+     * (1) The selection is a child of a heading
+     * (2) Every block item in the selection is a heading.
+     */
     heading.getState = function (level) {
-      return !!Quill.selection.childOf(new RegExp('^(?:H' + level + ')$', 'i'))
+      var allHeading = true
+
+      level = 'H' + level
+
+      // Check for condition (1); we can stop if true.
+      if (Quill.selection.childOf(new RegExp('^' + level + '$')))
+        return true
+
+      // Check for condition (2).
+      Quill.selection.forEachBlock(function (block) {
+        if (block.nodeName !== level) allHeading = false
+      }, true)
+
+      return allHeading
     }
 
     // Headers disabled in lists.

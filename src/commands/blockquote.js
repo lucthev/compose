@@ -37,18 +37,39 @@ define(function () {
 
     /**
      * blockquote.getState() state of the current selection with respect
-     * to blockquotes. If the selection is not contained within a
-     * blockquote, returns false. If the blockquote is a 'pullquote'
-     * (i.e. has a class), returns the class; otherwise, returns true.
+     * to blockquotes. Possibilities:
+     * (1) The selection is the child of a blockquote. Returns the class
+     *     of that blockquote, if it has one, or true.
+     * (2) All element in the selection are pullquotes (blockquotes with
+     *     classes). Returns the class
+     * (3) All elements in the selection are normal blockquotes (i.e.) no
+     *     class. Returns true.
+     * (4) None of the above. Return false.
      *
      * @return String || Boolean
      */
     blockquote.getState = function () {
-      var block = Quill.selection.childOf(/^blockquote$/i)
+      var block = Quill.selection.childOf(/^blockquote$/i),
+          allBlock = true,
+          allPull = true
 
-      if (!block) return false
+      // Check for condition (1).
+      if (block)
+        return block.className ? block.className : true
 
-      return block.className ? block.className : true
+      // Check for other conditions.
+      Quill.selection.forEachBlock(function (block) {
+
+        if (block.nodeName !== 'BLOCKQUOTE') {
+          allBlock = allPull = false
+        } else if (!block.className) allPull = false
+
+      }, true)
+
+      // If all element were pullquotes, return the class.
+      if (allPull) return Quill.selection.getContaining().className
+
+      return allBlock
     }
 
     blockquote.isEnabled = function () {
