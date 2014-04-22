@@ -7,10 +7,7 @@ define(function () {
     }
 
     Italic.getState = function () {
-
-      // The check for <i> tags is necessary when querying immediately
-      // after calling italic(), because of tag conversion.
-      return !!Quill.selection.childOf(/^EM|I$/i)
+      return !!Quill.selection.childOf(/^EM$/i)
     }
 
     Italic.isEnabled = function () {

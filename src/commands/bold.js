@@ -8,10 +8,7 @@ define(function () {
     }
 
     Bold.getState = function() {
-
-      // The check for <b> tags is necessary when querying immediately
-      // after calling bold(), because of tag conversion.
-      return !!Quill.selection.childOf(/^STRONG|B$/i)
+      return !!Quill.selection.childOf(/^STRONG$/i)
     }
 
     Bold.isEnabled = function () {
