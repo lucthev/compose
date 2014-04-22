@@ -53,9 +53,19 @@ define([
     return this.mode === 'inline'
   }
 
-  Quill.prototype.use = function (Plugin) {
+  /**
+   * Quill.use(Plugin, opts) adds a plugin to the Quill instance. Plugins
+   * will be passed the Quill instance as a first parameter and opts as the
+   * second.
+   *
+   * @param {Function} Plugin
+   * @param {Any} opts
+   * @return Context
+   */
+  Quill.prototype.use = function (Plugin, opts) {
     if (!Plugin) return
 
+    // Plugins should be named via a 'plugin' property.
     var name = Plugin.plugin
 
     if (!name)
@@ -63,7 +73,7 @@ define([
 
     if (!(name in this)) {
       try {
-        this[name] = new Plugin(this)
+        this[name] = new Plugin(this, opts)
         this.plugins.push(name)
       } catch (e) {
         if (this._debug) console.log(e)
@@ -77,7 +87,7 @@ define([
    * Quill.disable(name) disables the plugin with name 'name'.
    *
    * @param {String} name
-   * @return this
+   * @return Context
    */
   Quill.prototype.disable = function (name) {
     var i

@@ -186,5 +186,15 @@ describe('Quill', function () {
         quill.use(sillyPlugin)
       }).not.toThrow()
     })
+
+    it('can pass an options object along to plugins.', function () {
+      var fakePlugin = jasmine.createSpy('fakePlugin'),
+          opts = { one: 1, two: 2 }
+
+      fakePlugin.plugin = 'fakePlugin'
+      quill.use(fakePlugin, opts)
+
+      expect(fakePlugin).toHaveBeenCalledWith(jasmine.any(Quill), opts)
+    })
   })
 })
