@@ -197,8 +197,8 @@ define(function () {
 
     range = sel.getRangeAt(0)
 
-    start.classList.add('Quill-marker')
-    end.classList.add('Quill-marker')
+    start.className = 'Quill-marker'
+    end.className = 'Quill-marker'
 
     endRange = range.cloneRange()
     endRange.collapse()
