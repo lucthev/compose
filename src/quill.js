@@ -112,13 +112,15 @@ define([
   Quill.prototype.destroy = function () {
     if (this._destroyed) return
 
-    this.plugins.forEach(function (name) {
+    var i = this.plugins.length
 
-      if (this[name] && typeof this[name].destroy === 'function')
-        this[name].destroy()
+    // We disable plugin in the reverse order they were added.
+    // (Mainly so the sanitizer gets removed last).
+    while (i) {
+      this.disable(this.plugins[i - 1])
+      i -= 1
+    }
 
-      delete this[name]
-    }.bind(this))
     delete this.plugins
 
     this.elem.contentEditable = false
