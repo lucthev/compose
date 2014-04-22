@@ -128,8 +128,6 @@ define([
   }
 
   function Rich (Quill) {
-    if (Quill.isInline())
-      throw new Error('Rich mode plugin should only be used in rich mode.')
 
     formattingPlugins.forEach(function (Plugin) {
       Quill.use(Plugin)

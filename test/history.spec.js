@@ -15,7 +15,6 @@ describe('The History (undo) Plugin', function () {
 
     // Make our fake Quill
     quill = jasmine.createSpyObj('quill', ['on', 'off', 'emit'])
-    quill.isInline = jasmine.createSpy('isInline').and.returnValue(false)
     quill.sanitizer = {
       addFilter: function () {}
     }

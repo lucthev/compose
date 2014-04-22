@@ -9,9 +9,6 @@ define(function () {
     var children,
         i
 
-    if (!Quill.isInline())
-      throw new Error('The inline plugin should only be used in inline mode.')
-
     this.elem = Quill.elem
     this.elem.addEventListener('keydown', onKeydown)
 

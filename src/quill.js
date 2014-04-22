@@ -6,7 +6,7 @@ define([
   'selection',
   'history',
   'throttle'],
-  function (EventEmitter, Inline, Rich) {
+  function (EventEmitter, InlineMode, RichMode) {
 
   // Note: put default plugins last so they are included in the slice.
   var defaultPlugins = Array.prototype.slice.call(arguments, 3)
@@ -15,43 +15,38 @@ define([
     if (!(this instanceof Quill))
       return new Quill(elem, opts)
 
+    var Mode
+
     opts = opts || {}
     if (typeof elem === 'string')
       elem = document.querySelector(elem)
 
-    if (!elem) return
+    if (!elem) throw new Error('Invalid element given.')
 
     this.elem = elem
-    this.mode = opts.mode || 'rich'
     this._debug = opts.debug
 
     // Plugin names are kept in here:
     this.plugins = []
 
     elem.contentEditable = true
-    elem.setAttribute('data-mode', this.mode)
 
     defaultPlugins.forEach(function (Plugin) {
       this.use(Plugin)
     }.bind(this))
 
-    if (this.isInline())
-      this.use(Inline)
-    else this.use(Rich)
+    // Establish the mode:
+    Mode = opts.mode
+    if (!Mode || Mode === 'rich') Mode = RichMode
+    else if (Mode === 'inline') Mode = InlineMode
+
+    this.use(Mode)
+
+    // Use the mode's plugin name as Quill's mode property:
+    this.mode = Mode.plugin
   }
 
   Quill.prototype = Object.create(EventEmitter.prototype)
-
-  /**
-   * Quill.isInline() determines if the editor is in inline mode.
-   * This might seem silly, as one could just check Quill.mode,
-   * but this ensures backwards compatibility if that ever changes.
-   *
-   * @return Boolean
-   */
-  Quill.prototype.isInline = function () {
-    return this.mode === 'inline'
-  }
 
   /**
    * Quill.use(Plugin, opts) adds a plugin to the Quill instance. Plugins

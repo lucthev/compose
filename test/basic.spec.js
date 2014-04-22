@@ -1,5 +1,5 @@
 /* global describe, it, beforeEach, afterEach, Quill, expect,
-   jasmine, spyOn */
+   jasmine, spyOn, setContent, fireEvent */
 
 describe('Quill', function () {
 
@@ -76,7 +76,8 @@ describe('Quill', function () {
 
   // Note that this doesn't actually check that listeners were properly
   // removed. This test is ignored in PhantomJs / anywhere that doesn't
-  // support MutationObservers.
+  // support MutationObservers, because modes will throw an error and
+  // never be destroyed.
   if (window.MutationObserver) {
     it('should remove all event listeners upon destruction.', function () {
       spyOn(this.elem, 'addEventListener').and.callThrough()
@@ -89,12 +90,42 @@ describe('Quill', function () {
     })
   }
 
-  it('should delete reference to the element upon destruction.', function () {
+  it('should delete references to the element upon destruction.', function () {
     quill = Quill(this.elem)
     expect(quill.elem).toEqual(this.elem)
 
     quill.destroy()
     expect(quill.elem).not.toEqual(this.elem)
+  })
+
+  it('can use custom modes.', function () {
+
+    // This mode is going to change the content to be 'abc' on every
+    // keyup event.
+    function sillyMode (Quill) {
+      this.onKeyup = function () {
+        Quill.elem.innerHTML = 'abc'
+      }
+
+      this.elem = Quill.elem
+      this.elem.addEventListener('keyup', this.onKeyup)
+    }
+
+    sillyMode.prototype.destroy = function () {
+      this.elem.removeEventListener('keyup', this.onKeyup)
+    }
+
+    // Don't forget the mode's name:
+    sillyMode.plugin = 'silly'
+
+    quill = new Quill(this.elem, { mode: sillyMode })
+
+    setContent(this.elem, 'xyz')
+    expect(this.elem.innerHTML).toEqual('xyz')
+    fireEvent(this.elem, 'keyup')
+    expect(this.elem.innerHTML).toEqual('abc')
+
+    quill.destroy()
   })
 
   describe('has a plugin system which', function () {

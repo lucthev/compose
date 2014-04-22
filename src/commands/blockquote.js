@@ -80,8 +80,9 @@ define(function () {
       return allBlock
     }
 
+    // FIXME: what are actually the conditions?
     blockquote.isEnabled = function () {
-      return !Quill.isInline()
+      return true
     }
 
     Quill.sanitizer.addElements('blockquote')

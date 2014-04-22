@@ -21,7 +21,6 @@ define(function () {
 
   function Selection (Quill) {
     this.elem = Quill.elem
-    this.inline = Quill.isInline()
 
     Quill.sanitizer.addFilter(function (params) {
       var node = params.node,
@@ -47,7 +46,7 @@ define(function () {
 
     node = node || sel.anchorNode
 
-    if (!sel.rangeCount || this.inline) return false
+    if (!sel.rangeCount) return false
 
     while (node && node !== this.elem) {
       if (node.parentNode === this.elem)
@@ -90,8 +89,8 @@ define(function () {
     var sel = window.getSelection(),
         node
 
-    // Don't search if not given a matcher, inline, or nothing selected.
-    if (!matcher || this.inline || !sel.rangeCount) return false
+    // Don't search if not given a matcher or nothing selected.
+    if (!matcher || !sel.rangeCount) return false
 
     node = elem || sel.getRangeAt(0).commonAncestorContainer
 
@@ -125,7 +124,7 @@ define(function () {
         start,
         end
 
-    if (!sel.rangeCount || this.inline) return
+    if (!sel.rangeCount) return
 
     range = sel.getRangeAt(0)
     start = this.getContaining(range.startContainer)

@@ -14,10 +14,8 @@ describe('The Selection plugin:', function () {
       document.body.appendChild(this.elem)
 
       // Make our fake quill.
-      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
       var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
-        isInline: isInline,
         elem: this.elem,
         sanitizer: sanitizer
       }
@@ -53,16 +51,6 @@ describe('The Selection plugin:', function () {
     it('returns false if the caret is not in the element.', function () {
       expect(this.selection.getContaining()).toBe(false)
     })
-
-    it('returns false if in inline mode.', function () {
-      quill.isInline = jasmine.createSpy('isInline').and.returnValue(true)
-      this.selection = new Selection(quill)
-
-      setContent(this.elem, 'St|uff and things.')
-
-      expect(this.selection.getContaining()).toBe(false)
-      expect(quill.isInline).toHaveBeenCalled()
-    })
   })
 
   describe('Selection#childOf', function () {
@@ -73,10 +61,8 @@ describe('The Selection plugin:', function () {
       document.body.appendChild(this.elem)
 
       // Make our fake quill.
-      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
       var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
-        isInline: isInline,
         elem: this.elem,
         sanitizer: sanitizer
       }
@@ -103,15 +89,6 @@ describe('The Selection plugin:', function () {
 
     it('should not account for the editable element.', function () {
       setContent(this.elem, '<p>|<br></p>')
-
-      expect(this.selection.childOf(/^(?:DIV)$/i)).toBe(false)
-    })
-
-    it('should return false in inline mode.', function () {
-      setContent(this.elem, 'Stuff |and things')
-
-      quill.isInline = jasmine.createSpy('isInline').and.returnValue(true)
-      this.selection = new Selection(quill)
 
       expect(this.selection.childOf(/^(?:DIV)$/i)).toBe(false)
     })
@@ -145,10 +122,8 @@ describe('The Selection plugin:', function () {
       document.body.appendChild(this.elem)
 
       // Make our fake quill.
-      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
       var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
-        isInline: isInline,
         elem: this.elem,
         sanitizer: sanitizer
       }
@@ -204,10 +179,8 @@ describe('The Selection plugin:', function () {
       document.body.appendChild(this.elem)
 
       // Make our fake quill.
-      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
       var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
-        isInline: isInline,
         elem: this.elem,
         sanitizer: sanitizer
       }
@@ -254,10 +227,8 @@ describe('The Selection plugin:', function () {
       document.body.appendChild(this.elem)
 
       // Make our fake quill.
-      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
       var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
-        isInline: isInline,
         elem: this.elem,
         sanitizer: sanitizer
       }
@@ -300,10 +271,8 @@ describe('The Selection plugin:', function () {
       document.body.appendChild(this.elem)
 
       // Make our fake quill.
-      var isInline = jasmine.createSpy('isInline').and.returnValue(false)
       var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
       quill = {
-        isInline: isInline,
         elem: this.elem,
         sanitizer: sanitizer
       }
