@@ -84,6 +84,8 @@ define(function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
     this.elem.removeEventListener('click', this.onClick)
 
+    this.Quill.sanitizer.removeElements('hr')
+
     delete this.Quill
     delete this.elem
   }

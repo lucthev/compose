@@ -134,6 +134,7 @@ define([
     })
 
     this.elem = Quill.elem
+    this.Quill = Quill
 
     // Store bound handlers for later removal.
     this.onFocus = onFocus.bind(Quill)
@@ -173,8 +174,11 @@ define([
     this.elem.removeEventListener('keyup', this.onKeyup)
     this.elem.removeEventListener('focus', this.onFocus)
 
+    this.Quill.sanitizer.removeElements(['p', 'br'])
+
     this.observer.disconnect()
 
+    delete this.Quill
     delete this.elem
 
     return null

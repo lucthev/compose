@@ -1,5 +1,18 @@
 define(function () {
 
+  function boldFilter (params) {
+    var node = params.node,
+        name = params.node_name,
+        strong
+
+    if (name === 'b') {
+      strong = document.createElement('strong')
+      strong.innerHTML = node.innerHTML
+
+      return { node: strong }
+    } else return null
+  }
+
   // The actual plugin 'adapter'.
   function BoldPlugin (Quill) {
 
@@ -15,20 +28,15 @@ define(function () {
       return document.queryCommandEnabled('bold') && !Quill.selection.childOf(/^(?:H[1-6])$/)
     }
 
+    Bold.destroy = function () {
+      Quill.sanitizer
+        .removeElements('strong')
+        .removeFilter(boldFilter)
+    }
+
     Quill.sanitizer
       .addElements('strong')
-      .addFilter(function (params) {
-        var node = params.node,
-            name = params.node_name,
-            strong
-
-        if (name === 'b') {
-          strong = document.createElement('strong')
-          strong.innerHTML = node.innerHTML
-
-          return { node: strong }
-        } else return null
-      })
+      .addFilter(boldFilter)
 
     return Bold
   }

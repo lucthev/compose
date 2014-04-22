@@ -1,6 +1,7 @@
 define(function () {
 
   function HeadingPlugin (Quill) {
+    var allHeadings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
     function heading (level) {
       level = level ? 'h' + level + '' : 'p'
@@ -55,12 +56,16 @@ define(function () {
       return allHeading
     }
 
-    // Headers disabled in lists.
+    // FIXME: what are the conditions that allow headings?
     heading.isEnabled = function () {
-      return !Quill.selection.childOf(/^(?:[O|U]L)$/i)
+      return true
     }
 
-    Quill.sanitizer.addElements(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+    heading.destroy = function () {
+      Quill.sanitizer.removeElements(allHeadings)
+    }
+
+    Quill.sanitizer.addElements(allHeadings)
 
     return heading
   }

@@ -88,9 +88,52 @@ define(function () {
     }
   }
 
+  function listFilter (params) {
+    var elem = params.node,
+        name = params.node_name,
+        node,
+        next,
+        li
+
+    if (!/^[ou]l$/.test(name)) return null
+
+    // Merge consecutive lists.
+    node = elem.nextSibling
+    while (node && node.nodeName === elem.nodeName) {
+      next = node.nextSibling
+
+      while (node.firstChild)
+        elem.appendChild(node.removeChild(node.firstChild))
+
+      node.parentNode.removeChild(node)
+
+      node = next
+    }
+
+    // Wrap all children in <li>s, if applicable.
+    node = elem.firstChild
+    while (node) {
+
+      if (node.nodeName !== 'LI') {
+        li = document.createElement('li')
+        li.appendChild(node.cloneNode(true))
+
+        // Consecutive non-<li> nodes get merged into a single <li>.
+        while (node.nextSibling && node.nextSibling.nodeName !== 'LI')
+          li.appendChild(elem.removeChild(node.nextSibling))
+
+        next = node.nextSibling
+        elem.replaceChild(li, node)
+        node = next
+
+      } else node = node.nextSibling
+    }
+  }
+
   function autoList (Quill) {
     this.selection = Quill.selection
     this.elem = Quill.elem
+    this.Quill = Quill
 
     // Store bound event handlers for later removal.
     this.onKeydown = onKeydown.bind(Quill)
@@ -99,47 +142,7 @@ define(function () {
 
     Quill.sanitizer
       .addElements(['ol', 'ul', 'li'])
-      .addFilter(function (params) {
-        var elem = params.node,
-            name = params.node_name,
-            node,
-            next,
-            li
-
-        if (!/^[ou]l$/.test(name)) return null
-
-        // Merge consecutive lists.
-        node = elem.nextSibling
-        while (node && node.nodeName === elem.nodeName) {
-          next = node.nextSibling
-
-          while (node.firstChild)
-            elem.appendChild(node.removeChild(node.firstChild))
-
-          node.parentNode.removeChild(node)
-
-          node = next
-        }
-
-        // Wrap all children in <li>s, if applicable.
-        node = elem.firstChild
-        while (node) {
-
-          if (node.nodeName !== 'LI') {
-            li = document.createElement('li')
-            li.appendChild(node.cloneNode(true))
-
-            // Consecutive non-<li> nodes get merged into a single <li>.
-            while (node.nextSibling && node.nextSibling.nodeName !== 'LI')
-              li.appendChild(elem.removeChild(node.nextSibling))
-
-            next = node.nextSibling
-            elem.replaceChild(li, node)
-            node = next
-
-          } else node = node.nextSibling
-        }
-      })
+      .addFilter(listFilter)
   }
 
   /**
@@ -204,6 +207,14 @@ define(function () {
 
   autoList.prototype.destroy = function () {
     this.elem.removeEventListener('keydown', this.onKeydown)
+
+    this.Quill.sanitizer
+      .removeElements(['ol', 'ul', 'li'])
+      .removeFilter(listFilter)
+
+    delete this.elem
+    delete this.selection
+    delete this.Quill
   }
 
   // Plugin name:

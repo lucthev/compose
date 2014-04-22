@@ -80,15 +80,24 @@ define(function () {
       return allBlock
     }
 
-    // FIXME: what are actually the conditions?
+    // FIXME: what are actually the conditions that allow blockquotes?
     blockquote.isEnabled = function () {
       return true
     }
 
-    Quill.sanitizer.addElements('blockquote')
-    Quill.sanitizer.addAttributes({
-      blockquote: ['class']
-    })
+    blockquote.destroy = function () {
+      Quill.sanitizer
+        .removeElements('blockquote')
+        .removeAttributes({
+          blockquote: ['class']
+        })
+    }
+
+    Quill.sanitizer
+      .addElements('blockquote')
+      .addAttributes({
+        blockquote: ['class']
+      })
 
     return blockquote
   }

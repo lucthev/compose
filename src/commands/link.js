@@ -25,6 +25,17 @@ define(function () {
       return !Quill.selection.contains('a')
     }
 
+    Link.destroy = function () {
+      Quill.sanitizer
+        .removeElements('a')
+        .removeAttributes({
+          a: ['href']
+        })
+        .removeProtocols({
+          a: { href: ['http', 'https', 'mailto'] }
+        })
+    }
+
     Quill.sanitizer
       .addElements('a')
       .addAttributes({
