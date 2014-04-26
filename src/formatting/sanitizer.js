@@ -1,7 +1,8 @@
 'use strict';
 
 // Used to extract the protocol from a string.
-var PROTOCOL_REGEX = /^([A-Za-z0-9\+\-\.\&\;\*\s]*?)(?:\:|&*0*58|&*x0*3a)/i
+var PROTOCOL_REGEX = /^([A-Za-z0-9\+\-\.\&\;\*\s]*?)(?:\:|&*0*58|&*x0*3a)/i,
+    Slice = Array.prototype.slice
 
 function Sanitizer () {
   this.attributes = {}
@@ -17,61 +18,64 @@ function Sanitizer () {
  * @return Context
  */
 Sanitizer.prototype.clean = function (container) {
-  var fragment = document.createDocumentFragment()
-
-  this.current = fragment
+  this.current = container
 
   function clean (node) {
     /* jshint validthis:true */
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      cleanElement.call(this, node)
+    } else if (node.nodeType !== Node.TEXT_NODE) {
+      // Remove all nodes that aren't elements or text.
 
-    if (node.nodeType === Node.TEXT_NODE) {
-      this.current.appendChild(node.cloneNode(false))
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
-      clean_element.call(this, node)
+      node.parentNode.removeChild(node)
     }
   }
 
-  function clean_element (elem) {
+  function cleanElement (elem) {
     /* jshint validthis:true*/
-    var i, parent, name, attrs, attr, attribute, val
+    var children = Slice.call(elem.childNodes),
+        i, parent, name, attrs, attr, val
     var whitelisted = transform.call(this, elem)
 
     name = elem.nodeName.toLowerCase()
     parent = this.current
 
     if (whitelisted) {
-      this.current = elem.cloneNode(false)
-      parent.appendChild(this.current)
+      this.current = elem
     } else if (this.elements[name]) {
-      this.current = document.createElement(elem.nodeName)
-      parent.appendChild(this.current)
+      this.current = elem
 
       // Clean attributes
       attrs = this.attributes[name] || []
 
-      for (i = 0; i < attrs.length; i += 1) {
-        attribute = attrs[i]
-        attr = elem.attributes[attribute]
+      Slice.call(elem.attributes)
+        .forEach(function (attribute) {
+          attr = attribute.name
 
-        if (elem.hasAttribute(attribute)) {
-          val = elem.getAttribute(attribute)
+          if (attrs.indexOf(attr) < 0)
+            elem.removeAttribute(attr)
+          else if (attr === 'href') {
+            val = attribute.value.toLowerCase().match(PROTOCOL_REGEX)
 
-          // Check href for valid protocol.
-          if (attribute === 'href') {
-            val = val.toLowerCase().match(PROTOCOL_REGEX)
-
-            if (val && this.protocols.indexOf(val[1]) >= 0)
-              this.current.setAttribute('href', elem.getAttribute('href'))
-          } else {
-            this.current.setAttribute(attribute, val)
+            if (!val || this.protocols.indexOf(val[1]) < 0)
+              elem.removeAttribute(attr)
           }
-        }
+        }.bind(this))
+
+    } else {
+      while (elem.firstChild) {
+        parent.insertBefore(
+          elem.removeChild(elem.firstChild),
+          elem.nextSibling
+        )
       }
+
+      parent.removeChild(elem)
     }
 
     // Iterate over child nodes
-    for(i = 0; i < elem.childNodes.length; i += 1) {
-      clean.call(this, elem.childNodes[i])
+    for (i = 0; i < children.length; i += 1) {
+      clean.call(this, children[i])
     }
 
     this.current = parent
@@ -98,15 +102,9 @@ Sanitizer.prototype.clean = function (container) {
     clean.call(this, container.childNodes[i])
   }
 
-  // while (container.firstChild)
-  //   container.removeChild(container.firstChild)
+  container.normalize()
 
-  // container.appendChild(fragment)
-
-  fragment.normalize()
-
-  return fragment
-  // return this
+  return this
 }
 
 /**
