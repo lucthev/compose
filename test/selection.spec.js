@@ -3,12 +3,13 @@
 
 describe('The Selection plugin:', function () {
 
-  var Selection = Quill.getPlugin('selection'),
+  var Selection,
       quill
 
   describe('Selection#getContaining', function () {
 
     beforeEach(function () {
+
       this.elem = document.createElement('div')
       this.elem.innerHTML = '<p><br></p>'
       document.body.appendChild(this.elem)
@@ -18,6 +19,12 @@ describe('The Selection plugin:', function () {
       quill = {
         elem: this.elem,
         sanitizer: sanitizer
+      }
+
+      if (!Selection) {
+        var temp = new Quill(this.elem)
+        Selection = temp.selection.constructor
+        temp.destroy()
       }
 
       this.selection = new Selection(quill)

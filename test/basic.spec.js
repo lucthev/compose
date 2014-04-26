@@ -199,14 +199,6 @@ describe('Quill', function () {
       expect(quill.fake).toBeUndefined()
     })
 
-    it('can add default plugins for all future Quills to use.', function () {
-      Quill.addDefault(fakePlugin)
-
-      var temp = new Quill(elem)
-
-      expect(temp.fake).toEqual(jasmine.any(fakePlugin))
-    })
-
     it('should not fail if a plugin fails.', function () {
       function sillyPlugin () {
         throw new Error('This plugin sucks.')

@@ -1,28 +1,25 @@
-define(function () {
+function UnderlinePlugin (Quill) {
 
-  function UnderlinePlugin (Quill) {
-
-    function Underline () {
-      document.execCommand('underline', false, null)
-    }
-
-    Underline.getState = function () {
-      return document.queryCommandState('underline')
-    }
-
-    Underline.isEnabled = function () {
-      return document.queryCommandEnabled('underline')
-    }
-
-    Underline.destroy = function () {
-      Quill.sanitizer.removeElements('u')
-    }
-
-    Quill.sanitizer.addElements('u')
-
-    return Underline
+  function Underline () {
+    document.execCommand('underline', false, null)
   }
-  UnderlinePlugin.plugin = 'underline'
 
-  return UnderlinePlugin
-})
+  Underline.getState = function () {
+    return document.queryCommandState('underline')
+  }
+
+  Underline.isEnabled = function () {
+    return document.queryCommandEnabled('underline')
+  }
+
+  Underline.destroy = function () {
+    Quill.sanitizer.removeElements('u')
+  }
+
+  Quill.sanitizer.addElements('u')
+
+  return Underline
+}
+UnderlinePlugin.plugin = 'underline'
+
+module.exports = UnderlinePlugin

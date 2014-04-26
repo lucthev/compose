@@ -6,10 +6,10 @@
   "eqeqeq": true,
   "browser": true,
   "devel": true,
-
   "globals": {
 
-    "define": false,
+    "module": false,
+    "exports": false,
     "require": false
   }
 }

@@ -1,38 +1,35 @@
-define(function () {
+function onKeydown (e) {
+  if (e.keyCode === 13)
+    e.preventDefault()
+}
 
-  function onKeydown (e) {
-    if (e.keyCode === 13)
-      e.preventDefault()
+function Inline (Quill) {
+  var children,
+      i
+
+  this.elem = Quill.elem
+  this.elem.addEventListener('keydown', onKeydown)
+
+  // Remove all (presumably) unwanted elements.
+  if (this.elem.children.length) {
+    children = this.elem.children
+    for (i = 0; i < children.length; i += 1)
+      this.elem.removeChild(children[i])
   }
 
-  function Inline (Quill) {
-    var children,
-        i
+  // Insert initial <br>
+  if (!this.textContent)
+    this.elem.appendChild(document.createElement('br'))
+}
 
-    this.elem = Quill.elem
-    this.elem.addEventListener('keydown', onKeydown)
+Inline.prototype.destroy = function () {
+  this.elem.removeEventListener('keydown', onKeydown)
 
-    // Remove all (presumably) unwanted elements.
-    if (this.elem.children.length) {
-      children = this.elem.children
-      for (i = 0; i < children.length; i += 1)
-        this.elem.removeChild(children[i])
-    }
+  delete this.elem
 
-    // Insert initial <br>
-    if (!this.textContent)
-      this.elem.appendChild(document.createElement('br'))
-  }
+  return null
+}
 
-  Inline.prototype.destroy = function () {
-    this.elem.removeEventListener('keydown', onKeydown)
+Inline.plugin = 'inline'
 
-    delete this.elem
-
-    return null
-  }
-
-  Inline.plugin = 'inline'
-
-  return Inline
-})
+module.exports = Inline

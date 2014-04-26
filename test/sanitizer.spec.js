@@ -5,11 +5,17 @@
 
 describe('The Sanitizer plugin', function () {
 
-  var Sanitizer = Quill.getPlugin('sanitizer')
+  var Sanitizer
 
   beforeEach(function () {
     this.elem = document.createElement('div')
     document.body.appendChild(this.elem)
+
+    if (Sanitizer) {
+      var temp = new Quill(this.elem)
+      Sanitizer = temp.sanitizer.constructor
+      temp.destroy()
+    }
 
     this.Sanitizer = new Sanitizer()
   })

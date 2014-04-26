@@ -2,13 +2,19 @@
 
 describe('The Throttle plugin', function () {
 
-  var Throttle = Quill.getPlugin('throttle'),
+  var Throttle,
       quill
 
   beforeEach(function () {
     this.elem = document.createElement('article')
     document.body.appendChild(this.elem)
     jasmine.clock().install()
+
+    if (!Throttle) {
+      quill = new Quill(this.elem)
+      Throttle = quill.throttle.constructor
+      quill.destroy()
+    }
 
     quill = new Quill(this.elem)
     spyOn(quill, 'emit').and.callThrough()

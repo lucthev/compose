@@ -1,46 +1,43 @@
-define(function () {
+function italicFilter (params) {
+  var node = params.node,
+      name = params.node_name,
+      em
 
-  function italicFilter (params) {
-    var node = params.node,
-        name = params.node_name,
-        em
+  if (name === 'i') {
+    em = document.createElement('em')
+    em.innerHTML = node.innerHTML
 
-    if (name === 'i') {
-      em = document.createElement('em')
-      em.innerHTML = node.innerHTML
+    return { node: em }
+  } else return null
+}
 
-      return { node: em }
-    } else return null
+function ItalicPlugin (Quill) {
+
+  function Italic () {
+    document.execCommand('italic', false, null)
   }
 
-  function ItalicPlugin (Quill) {
+  Italic.getState = function () {
+    return !!Quill.selection.childOf(/^EM$/i)
+  }
 
-    function Italic () {
-      document.execCommand('italic', false, null)
-    }
+  Italic.isEnabled = function () {
+    return document.queryCommandState('italic')
+  }
 
-    Italic.getState = function () {
-      return !!Quill.selection.childOf(/^EM$/i)
-    }
-
-    Italic.isEnabled = function () {
-      return document.queryCommandState('italic')
-    }
-
-    Italic.destroy = function () {
-      Quill.sanitizer
-        .removeElements('em')
-        .removeFilter(italicFilter)
-    }
-
+  Italic.destroy = function () {
     Quill.sanitizer
-      .addElements('em')
-      .addFilter(italicFilter)
-
-    return Italic
+      .removeElements('em')
+      .removeFilter(italicFilter)
   }
 
-  ItalicPlugin.plugin  = 'italic'
+  Quill.sanitizer
+    .addElements('em')
+    .addFilter(italicFilter)
 
-  return ItalicPlugin
-})
+  return Italic
+}
+
+ItalicPlugin.plugin  = 'italic'
+
+module.exports = ItalicPlugin

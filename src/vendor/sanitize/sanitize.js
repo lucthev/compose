@@ -251,6 +251,4 @@ Sanitize.prototype.clean_node = function(container) {
 
 };
 
-if ( typeof define === "function" ) {
-  define(function () { return Sanitize; } );
-}
+module.exports = Sanitize

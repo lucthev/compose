@@ -1,46 +1,43 @@
-define(function () {
+function boldFilter (params) {
+  var node = params.node,
+      name = params.node_name,
+      strong
 
-  function boldFilter (params) {
-    var node = params.node,
-        name = params.node_name,
-        strong
+  if (name === 'b') {
+    strong = document.createElement('strong')
+    strong.innerHTML = node.innerHTML
 
-    if (name === 'b') {
-      strong = document.createElement('strong')
-      strong.innerHTML = node.innerHTML
+    return { node: strong }
+  } else return null
+}
 
-      return { node: strong }
-    } else return null
+// The actual plugin 'adapter'.
+function BoldPlugin (Quill) {
+
+  function Bold () {
+    document.execCommand('bold', false, null)
   }
 
-  // The actual plugin 'adapter'.
-  function BoldPlugin (Quill) {
+  Bold.getState = function() {
+    return !!Quill.selection.childOf(/^STRONG$/i)
+  }
 
-    function Bold () {
-      document.execCommand('bold', false, null)
-    }
+  Bold.isEnabled = function () {
+    return document.queryCommandEnabled('bold') && !Quill.selection.childOf(/^(?:H[1-6])$/)
+  }
 
-    Bold.getState = function() {
-      return !!Quill.selection.childOf(/^STRONG$/i)
-    }
-
-    Bold.isEnabled = function () {
-      return document.queryCommandEnabled('bold') && !Quill.selection.childOf(/^(?:H[1-6])$/)
-    }
-
-    Bold.destroy = function () {
-      Quill.sanitizer
-        .removeElements('strong')
-        .removeFilter(boldFilter)
-    }
-
+  Bold.destroy = function () {
     Quill.sanitizer
-      .addElements('strong')
-      .addFilter(boldFilter)
-
-    return Bold
+      .removeElements('strong')
+      .removeFilter(boldFilter)
   }
-  BoldPlugin.plugin = 'bold'
 
-  return BoldPlugin
-})
+  Quill.sanitizer
+    .addElements('strong')
+    .addFilter(boldFilter)
+
+  return Bold
+}
+BoldPlugin.plugin = 'bold'
+
+module.exports = BoldPlugin

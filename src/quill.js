@@ -1,160 +1,139 @@
-define([
-  'vendor/eventEmitter/EventEmitter',
-  'inlineMode',
-  'richMode',
-  'formatting/sanitizer',
-  'selection',
-  'history',
-  'throttle'],
-  function (EventEmitter, InlineMode, RichMode) {
+var EventEmitter = require('./vendor/eventEmitter/EventEmitter'),
+    Selection = require('./selection'),
+    InlineMode = require('./inlineMode'),
+    RichMode = require('./richMode'),
+    Sanitizer = require('./formatting/sanitizer'),
+    History = require('./history'),
+    Throttle = require('./throttle')
 
-  // Note: put default plugins last so they are included in the slice.
-  var defaultPlugins = Array.prototype.slice.call(arguments, 3)
+/**
+ * setup(elem) sets up the given element. If a string is passed
+ * in, tries to query that element using querySelector.
+ *
+ * @param {Element || String} elem
+ * @return Element
+ */
+function setup (elem) {
+  if (typeof elem === 'string')
+    elem = document.querySelector(elem)
 
-  function Quill (elem, opts) {
-    if (!(this instanceof Quill))
-      return new Quill(elem, opts)
+  if (!elem)
+    throw new Error('Invalid element given.')
 
-    var Mode
+  elem.setAttribute('contenteditable', true)
 
-    opts = opts || {}
-    if (typeof elem === 'string')
-      elem = document.querySelector(elem)
+  return elem
+}
 
-    if (!elem) throw new Error('Invalid element given.')
+function Quill (elem, opts) {
+  var Mode
 
-    this.elem = elem
-    this._debug = opts.debug
+  if (!(this instanceof Quill))
+    return new Quill(elem, opts)
 
-    // Plugin names are kept in here:
-    this.plugins = []
+  opts = opts || {}
 
-    elem.contentEditable = true
+  this.elem = setup(elem)
+  this._debug = opts.debug
 
-    defaultPlugins.forEach(function (Plugin) {
-      this.use(Plugin)
-    }.bind(this))
+  // Plugin names are kept in here:
+  this.plugins = []
 
-    // Establish the mode:
-    Mode = opts.mode
-    if (!Mode || Mode === 'rich') Mode = RichMode
-    else if (Mode === 'inline') Mode = InlineMode
+  this.use(Sanitizer)
+  this.use(Selection)
+  this.use(History)
+  this.use(Throttle)
 
-    this.use(Mode)
+  // Establish the mode:
+  Mode = opts.mode
+  if (!Mode || Mode === 'rich') Mode = RichMode
+  else if (Mode === 'inline') Mode = InlineMode
 
-    // Use the mode's plugin name as Quill's mode property:
-    this.mode = Mode.plugin
-  }
+  this.use(Mode)
+}
 
-  Quill.prototype = Object.create(EventEmitter.prototype)
+Quill.prototype = Object.create(EventEmitter.prototype)
 
-  /**
-   * Quill.use(Plugin, opts) adds a plugin to the Quill instance. Plugins
-   * will be passed the Quill instance as a first parameter and opts as the
-   * second.
-   *
-   * @param {Function} Plugin
-   * @param {Any} opts
-   * @return Context
-   */
-  Quill.prototype.use = function (Plugin, opts) {
-    if (!Plugin) return
+/**
+ * Quill.use(Plugin, opts) adds a plugin to the Quill instance. Plugins
+ * will be passed the Quill instance as a first parameter and opts as the
+ * second.
+ *
+ * @param {Function} Plugin
+ * @param {*} opts
+ * @return Context
+ */
+Quill.prototype.use = function (Plugin, opts) {
+  if (!Plugin) return
 
-    // Plugins should be named via a 'plugin' property.
-    var name = Plugin.plugin
+  // Plugins should be named via a 'plugin' property.
+  var name = Plugin.plugin
 
-    if (!name)
-      throw new Error('Plugins should be named via a \'plugin\' property.')
+  if (!name)
+    throw new Error('Plugins should be named via a \'plugin\' property.')
 
-    if (!(name in this)) {
-      try {
-        this[name] = new Plugin(this, opts)
-        this.plugins.push(name)
-      } catch (e) {
-        if (this._debug) throw e
-      }
-    } else throw new Error('Quill is already using a plugin ' + name)
-
-    return this
-  }
-
-  /**
-   * Quill.disable(name) disables the plugin with name 'name'.
-   *
-   * @param {String} name
-   * @return Context
-   */
-  Quill.prototype.disable = function (name) {
-    var i
-
-    if (!name) return
-
-    i = this.plugins.indexOf(name)
-    if (i < 0)
-      throw new Error('Quill is not using a plugin ' + name)
-
-    if (typeof this[name].destroy === 'function')
-      this[name].destroy()
-
-    delete this[name]
-
-    this.plugins.splice(i, 1)
-
-    return this
-  }
-
-  /**
-   * Quill.destroy() removes event listeners and deletes references
-   * to elements etc.
-   *
-   * @return null
-   */
-  Quill.prototype.destroy = function () {
-    if (this._destroyed) return
-
-    var i = this.plugins.length
-
-    // We disable plugin in the reverse order they were added.
-    // (Mainly so the sanitizer gets removed last).
-    while (i) {
-      this.disable(this.plugins[i - 1])
-      i -= 1
+  if (!(name in this)) {
+    try {
+      this[name] = new Plugin(this, opts)
+      this.plugins.push(name)
+    } catch (e) {
+      if (this._debug) throw e
     }
+  } else throw new Error('Quill is already using a plugin ' + name)
 
-    delete this.plugins
+  return this
+}
 
-    this.elem.contentEditable = false
-    delete this.elem
+/**
+ * Quill.disable(name) disables the plugin with name 'name'.
+ *
+ * @param {String} name
+ * @return Context
+ */
+Quill.prototype.disable = function (name) {
+  var i
 
-    this._destroyed = true
-    return null
+  if (!name) return
+
+  i = this.plugins.indexOf(name)
+  if (i < 0)
+    throw new Error('Quill is not using a plugin ' + name)
+
+  if (typeof this[name].destroy === 'function')
+    this[name].destroy()
+
+  delete this[name]
+
+  this.plugins.splice(i, 1)
+
+  return this
+}
+
+/**
+ * Quill.destroy() removes event listeners and deletes references
+ * to elements etc.
+ *
+ * @return null
+ */
+Quill.prototype.destroy = function () {
+  if (this._destroyed) return
+
+  var i = this.plugins.length
+
+  // We disable plugins in the reverse order they were added.
+  // (Mainly so the sanitizer gets removed last).
+  while (i) {
+    this.disable(this.plugins[i - 1])
+    i -= 1
   }
 
-  Quill.addDefault = function (Plugin) {
-    if (!Plugin) return false
+  delete this.plugins
 
-    if (!defaultPlugins)
-      defaultPlugins = [Plugin]
-    else defaultPlugins.push(Plugin)
+  this.elem.contentEditable = false
+  delete this.elem
 
-    return true
-  }
+  this._destroyed = true
+  return null
+}
 
-  /**
-   * Quill.getPlugin(name) gets the plugin with name 'name' from the
-   * array of default plugins. Useful mainly for testing.
-   *
-   * @param {String} name
-   * @return Function || false
-   */
-  Quill.getPlugin = function (name) {
-    var i
-
-    for (i = 0; i < defaultPlugins.length; i += 1)
-      if (defaultPlugins[i].plugin === name) return defaultPlugins[i]
-
-    return false
-  }
-
-  return Quill
-})
+module.exports = Quill

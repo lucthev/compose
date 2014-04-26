@@ -2,8 +2,8 @@
 
 describe('The History (undo) Plugin', function () {
 
-  var History = Quill.getPlugin('history'),
-      Selection = Quill.getPlugin('selection'),
+  var History,
+      Selection,
       callback,
       history,
       quill,
@@ -14,12 +14,18 @@ describe('The History (undo) Plugin', function () {
     document.body.appendChild(elem)
 
     // Make our fake Quill
-    quill = jasmine.createSpyObj('quill', ['on', 'off', 'emit'])
-    quill.sanitizer = {
-      addFilter: function () {}
+    if (!History) {
+      var temp = new Quill(elem)
+      History = temp.history.constructor
+      Selection = temp.selection.constructor
+      temp.destroy()
     }
-    quill.elem = elem
-    quill.selection = new Selection(quill)
+
+    quill = new Quill(elem)
+    quill.disable('history')
+    spyOn(quill, 'on')
+    spyOn(quill, 'off')
+    spyOn(quill, 'emit')
 
     quill.history = history = new History(quill)
 
