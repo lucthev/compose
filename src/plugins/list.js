@@ -89,14 +89,10 @@ function onKeydown (e) {
   }
 }
 
-function listFilter (params) {
-  var elem = params.node,
-      name = params.node_name,
-      node,
+function listFilter (elem) {
+  var node,
       next,
       li
-
-  if (!/^[ou]l$/.test(name)) return null
 
   // Merge consecutive lists.
   node = elem.nextSibling
@@ -143,7 +139,8 @@ function AutoList (Quill) {
 
   Quill.sanitizer
     .addElements(['ol', 'ul', 'li'])
-    .addFilter(listFilter)
+    .addFilter('ul', listFilter)
+    .addFilter('ol', listFilter)
 }
 
 /**
@@ -211,7 +208,8 @@ AutoList.prototype.destroy = function () {
 
   this.Quill.sanitizer
     .removeElements(['ol', 'ul', 'li'])
-    .removeFilter(listFilter)
+    .removeFilter('ol', listFilter)
+    .removeFilter('ul', listFilter)
 
   delete this.elem
   delete this.selection

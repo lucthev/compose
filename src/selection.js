@@ -19,17 +19,16 @@
 
 'use strict';
 
+// Whitelist marker elements.
+function markerFilter (span) {
+  return span.classList.contains('Quill-marker')
+}
+
 function Selection (Quill) {
   this.elem = Quill.elem
+  this.Quill = Quill
 
-  Quill.sanitizer.addFilter(function (params) {
-    var node = params.node,
-        name = params.node_name
-
-    if (name === 'span' && node.className === 'Quill-marker')
-      return { whitelist: true, attr_whitelist: ['class'] }
-    else return null
-  })
+  Quill.sanitizer.addFilter('span', markerFilter)
 }
 
 /**
@@ -336,7 +335,10 @@ Selection.prototype.placeCaret = function (node, atEnd) {
 }
 
 Selection.prototype.destroy = function () {
+  this.Quill.sanitizer.removeFilter('span', markerFilter)
+
   delete this.elem
+  delete this.Quill
 
   return null
 }

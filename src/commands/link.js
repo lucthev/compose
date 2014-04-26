@@ -2,6 +2,8 @@
 
 function LinkPlugin (Quill) {
 
+  var Protocols = ['http', 'https', 'mailto']
+
   function Link (href) {
     if (href) {
       href += ''
@@ -31,9 +33,7 @@ function LinkPlugin (Quill) {
       .removeAttributes({
         a: ['href']
       })
-      .removeProtocols({
-        a: { href: ['http', 'https', 'mailto'] }
-      })
+      .removeProtocols(Protocols)
   }
 
   Quill.sanitizer
@@ -41,9 +41,7 @@ function LinkPlugin (Quill) {
     .addAttributes({
       a: ['href']
     })
-    .addProtocols({
-      a: { href: ['http', 'https', 'mailto'] }
-    })
+    .addProtocols(Protocols)
 
   return Link
 }

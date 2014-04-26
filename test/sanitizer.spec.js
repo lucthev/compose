@@ -1,18 +1,17 @@
 /* jshint ignore:start */
 
-// NOTE: we are not testing the Sanitizer itself, just the plugin
-// layer we've added.
-
 describe('The Sanitizer plugin', function () {
 
   var Sanitizer
 
   beforeEach(function () {
+    var temp
+
     this.elem = document.createElement('div')
     document.body.appendChild(this.elem)
 
     if (!Sanitizer) {
-      var temp = new Quill(this.elem)
+      temp = new Quill(this.elem)
       Sanitizer = temp.sanitizer.constructor
       temp.destroy()
     }
@@ -85,6 +84,7 @@ describe('The Sanitizer plugin', function () {
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('Stuff')
   })
+
   it('can be configured to keep attributes via the addAttribute method.', function () {
     var div = document.createElement('div')
     this.Sanitizer.addElements(['p'])
@@ -153,40 +153,34 @@ describe('The Sanitizer plugin', function () {
       a: ['href']
     })
 
-    this.elem.innerHTML = '<a href="javascript:void(0)">Stuff</a>'
-    expect(toHTML(this.Sanitizer.clean(this.elem)))
-      .toEqual('<a href="javascript:void(0)">Stuff</a>')
-
-    this.Sanitizer.addProtocols({
-      a: { href: ['http', 'https']}
-    })
+    this.Sanitizer.addProtocols(['http', 'https'])
 
     this.elem.innerHTML = '<a href="javascript:void(0)">Stuff</a>'
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<a>Stuff</a>')
 
-    this.elem.innerHTML = '<a href="https://example.com">Stuff</a>'
+    this.elem.innerHTML = '<a href="https://example.com/">Stuff</a>'
     expect(toHTML(this.Sanitizer.clean(this.elem)))
-      .toEqual('<a href="https://example.com">Stuff</a>')
+      .toEqual('<a href="https://example.com/">Stuff</a>')
   })
 
   it('can remove allowed protocols.', function () {
     this.Sanitizer
       .addElements('a')
       .addAttributes({ a: ['href'] })
-      .addProtocols({ a: { href: ['http', 'https'] } })
-      .addProtocols({ a: { href: ['http'] } })
+      .addProtocols(['http', 'https'])
+      .addProtocols(['http'])
 
     this.elem.innerHTML = '<a href="http://www.example.com">Click me</a>'
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<a href="http://www.example.com">Click me</a>')
 
-    this.Sanitizer.removeProtocols({ a: { href: ['http'] } })
+    this.Sanitizer.removeProtocols('http')
 
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<a href="http://www.example.com">Click me</a>')
 
-    this.Sanitizer.removeProtocols({ a: { href: ['http'] } })
+    this.Sanitizer.removeProtocols(['http'])
 
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<a>Click me</a>')
@@ -197,15 +191,10 @@ describe('The Sanitizer plugin', function () {
       .toEqual('<a href="https://www.example.com">Click me</a>')
   })
 
-  it('can be configured to use custom filters.', function () {
+  it('can be configured to use custom filters (1).', function () {
 
-    function filter (params) {
-      var node = params.node,
-          name = params.node_name
-
-      if (name === 'hr')
-        return { node: node, whitelist: true }
-      else return null
+    function filter (node) {
+      return true
     }
 
     this.Sanitizer.addElements(['p'])
@@ -214,32 +203,46 @@ describe('The Sanitizer plugin', function () {
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<p>Things</p><p>Stuff</p>')
 
-    this.Sanitizer.addFilter(filter)
+    this.Sanitizer.addFilter('hr', filter)
 
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<p>Things</p><hr><p>Stuff</p>')
   })
 
-  it('can remove custom filters.', function () {
-    function filter (params) {
-      var node = params.node,
-          name = params.node_name
+  it('can be configured to use custom filters (2).', function () {
 
-      if (name === 'hr')
-        return { node: node, whitelist: true }
-      else return null
+    function filter (node) {
+      return true
+    }
+
+    this.Sanitizer.addElements(['p'])
+
+    this.elem.innerHTML = '<p>Things</p><ol><li>Words</li></ol><p>Stuff</p>'
+    expect(toHTML(this.Sanitizer.clean(this.elem)))
+      .toEqual('<p>Things</p>Words<p>Stuff</p>')
+
+    this.Sanitizer.addFilter('ol', filter)
+
+    expect(toHTML(this.Sanitizer.clean(this.elem)))
+      .toEqual('<p>Things</p><ol>Words</ol><p>Stuff</p>')
+  })
+
+  it('can remove custom filters.', function () {
+
+    function filter (node) {
+      return true
     }
 
     this.Sanitizer
       .addElements(['p'])
-      .addFilter(filter)
+      .addFilter('hr', filter)
 
     this.elem.innerHTML = '<p>Things</p><hr><p>Stuff</p>'
 
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<p>Things</p><hr><p>Stuff</p>')
 
-    this.Sanitizer.removeFilter(filter)
+    this.Sanitizer.removeFilter('hr', filter)
 
     expect(toHTML(this.Sanitizer.clean(this.elem)))
       .toEqual('<p>Things</p><p>Stuff</p>')

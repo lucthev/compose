@@ -1,6 +1,113 @@
 'use strict';
 
-var Sanitize = require('../vendor/sanitize/sanitize.js')
+// Used to extract the protocol from a string.
+var PROTOCOL_REGEX = /^([A-Za-z0-9\+\-\.\&\;\*\s]*?)(?:\:|&*0*58|&*x0*3a)/i
+
+function Sanitizer () {
+  this.attributes = {}
+  this.elements = {}
+  this.filters = {}
+  this.protocols = []
+}
+
+/**
+ * Sanitizer.clean(node) sanitizes the given node in-place.
+ *
+ * @param {Element} container
+ * @return Context
+ */
+Sanitizer.prototype.clean = function (container) {
+  var fragment = document.createDocumentFragment()
+
+  this.current = fragment
+
+  function clean (node) {
+    /* jshint validthis:true */
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      this.current.appendChild(node.cloneNode(false))
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      clean_element.call(this, node)
+    }
+  }
+
+  function clean_element (elem) {
+    /* jshint validthis:true*/
+    var i, parent, name, attrs, attr, attribute, val
+    var whitelisted = transform.call(this, elem)
+
+    name = elem.nodeName.toLowerCase()
+    parent = this.current
+
+    if (whitelisted) {
+      this.current = elem.cloneNode(false)
+      parent.appendChild(this.current)
+    } else if (this.elements[name]) {
+      this.current = document.createElement(elem.nodeName)
+      parent.appendChild(this.current)
+
+      // Clean attributes
+      attrs = this.attributes[name] || []
+
+      for (i = 0; i < attrs.length; i += 1) {
+        attribute = attrs[i]
+        attr = elem.attributes[attribute]
+
+        if (elem.hasAttribute(attribute)) {
+          val = elem.getAttribute(attribute)
+
+          // Check href for valid protocol.
+          if (attribute === 'href') {
+            val = val.toLowerCase().match(PROTOCOL_REGEX)
+
+            if (val && this.protocols.indexOf(val[1]) >= 0)
+              this.current.setAttribute('href', elem.getAttribute('href'))
+          } else {
+            this.current.setAttribute(attribute, val)
+          }
+        }
+      }
+    }
+
+    // Iterate over child nodes
+    for(i = 0; i < elem.childNodes.length; i += 1) {
+      clean.call(this, elem.childNodes[i])
+    }
+
+    this.current = parent
+  }
+
+  function transform (node) {
+    /* jshint validthis:true */
+    var name = node.nodeName.toLowerCase(),
+        retVal = false,
+        output
+
+    if (this.filters[name]) {
+      this.filters[name].forEach(function (fn) {
+        output = fn(node)
+
+        if (output) retVal = true
+      })
+    }
+
+    return retVal
+  }
+
+  for (var i = 0; i < container.childNodes.length; i += 1) {
+    clean.call(this, container.childNodes[i])
+  }
+
+  // while (container.firstChild)
+  //   container.removeChild(container.firstChild)
+
+  // container.appendChild(fragment)
+
+  fragment.normalize()
+
+  return fragment
+  // return this
+}
 
 /**
  * Sanitize.addElements(elements) adds to the list of allowed
@@ -9,15 +116,18 @@ var Sanitize = require('../vendor/sanitize/sanitize.js')
  * @param {Array} elements
  * @return Context
  */
-Sanitize.prototype.addElements = function (elements) {
-  if (typeof elements === 'string')
-    elements = [elements]
+Sanitizer.prototype.addElements = function (elems) {
+  var elem,
+      i
 
-  elements.forEach(function (elem) {
-    if (this.allowed_elements[elem])
-      this.allowed_elements[elem] += 1
-    else this.allowed_elements[elem] = 1
-  }.bind(this))
+  if (typeof elems === 'string')
+    elems = [elems]
+
+  for (i = 0; i < elems.length; i += 1) {
+    elem = elems[i]
+    if (!this.elements[elem]) this.elements[elem] = 1
+    else this.elements[elem] += 1
+  }
 
   return this
 }
@@ -29,53 +139,54 @@ Sanitize.prototype.addElements = function (elements) {
  * @param {Array} elements
  * @return Context
  */
-Sanitize.prototype.removeElements = function (elements) {
-  if (typeof elements === 'string')
-    elements = [elements]
+Sanitizer.prototype.removeElements = function (elems) {
+  var elem,
+      i
 
-  elements.forEach(function (elem) {
-    if (this.allowed_elements[elem])
-      this.allowed_elements[elem] -= 1
-  }.bind(this))
+  if (typeof elems === 'string')
+    elems = [elems]
+
+  for (i = 0; i < elems.length; i += 1) {
+    elem = elems[i]
+    if (this.elements[elem]) this.elements[elem] -= 1
+  }
 
   return this
 }
 
 /**
- * Sanitize.addAttributes(attributes) adds attributes allowed on an
+ * Sanitizer.addAttributes(attributes) adds attributes allowed on an
  * element.
- * See (https://github.com/gbirke/Sanitize.js#attributes-object)
  *
  * @param {Object} attributes
  * @return Context
  */
-Sanitize.prototype.addAttributes = function (attributes) {
+Sanitizer.prototype.addAttributes = function (attributes) {
 
   Object.keys(attributes).forEach(function (key) {
-    var allowed = this.config.attributes[key] || []
+    var allowed = this.attributes[key] || []
 
     attributes[key].forEach(function (attr) {
       allowed.push(attr)
     })
 
-    this.config.attributes[key] = allowed
+    this.attributes[key] = allowed
   }.bind(this))
 
   return this
 }
 
 /**
- * Sanitize.removeAttributes(attributes) removes attributes allowed
+ * Sanitizer.removeAttributes(attributes) removes attributes allowed
  * on an element.
- * See (https://github.com/gbirke/Sanitize.js#attributes-object)
  *
  * @param {Object} attributes
  * @return Context
  */
-Sanitize.prototype.removeAttributes = function (attributes) {
+Sanitizer.prototype.removeAttributes = function (attributes) {
 
   Object.keys(attributes).forEach(function (key) {
-    var allowed = this.config.attributes[key] || []
+    var allowed = this.attributes[key] || []
 
     attributes[key].forEach(function (attr) {
       var index = allowed.indexOf(attr)
@@ -84,7 +195,7 @@ Sanitize.prototype.removeAttributes = function (attributes) {
         allowed.splice(index, 1)
     })
 
-    this.config.attributes[key] = allowed
+    this.attributes[key] = allowed
   }.bind(this))
 
   return this
@@ -92,97 +203,71 @@ Sanitize.prototype.removeAttributes = function (attributes) {
 
 /**
  * Sanitize.addFilter(filter) add a transformer to the sanitizer.
- * (see https://github.com/gbirke/Sanitize.js#transformers)
  *
  * @param {Function} filter
  * @return Context
  */
-Sanitize.prototype.addFilter = function (filter) {
-  this.transformers.push(filter)
+Sanitizer.prototype.addFilter = function (name, filter) {
+  if (!this.filters[name]) this.filters[name] = []
+
+  this.filters[name].push(filter)
 
   return this
 }
 
 /**
- * Sanitize.removeFilter(filter) removes a transformer from the
- * sanitizer (see https://github.com/gbirke/Sanitize.js#transformers).
+ * Sanitize.removeFilter(filter) removes a transformer from the sanitizer.
  *
  * @param {Function} filter
  * @return Context
  */
-Sanitize.prototype.removeFilter = function (filter) {
-  var index = this.transformers.indexOf(filter)
+Sanitizer.prototype.removeFilter = function (name, filter) {
+  var index
 
-  if (index >= 0) this.transformers.splice(index, 1)
+  if (!this.filters[name]) return
 
-  return this
-}
-
-/**
- * Sanitize.addProtocols(protocols) adds protocols allowed in certain
- * attributes.
- * See (https://github.com/gbirke/Sanitize.js#protocols-object)
- *
- * @param {Object} protocols
- * @return Context
- */
-Sanitize.prototype.addProtocols = function (protocols) {
-
-  Object.keys(protocols).forEach(function (tagName) {
-    var tag = this.config.protocols[tagName] || {}
-
-    Object.keys(protocols[tagName]).forEach(function (attr) {
-      var allowed = tag[attr] || []
-
-      protocols[tagName][attr].forEach(function (pcol) {
-        allowed.push(pcol)
-      })
-
-      tag[attr] = allowed
-    })
-
-    this.config.protocols[tagName] = tag
-  }.bind(this))
+  index = this.filters[name].indexOf(filter)
+  if (index >= 0) this.filters[name].splice(index, 1)
 
   return this
 }
 
 /**
- * Sanitize.removeProtocols(protocols) removes protocols allowed in
- * certain attributes.
- * See (https://github.com/gbirke/Sanitize.js#protocols-object)
+ * Sanitizer.addProtocols() adds to the list of allowed protocols.
  *
- * @param {Object} protocols
+ * @param {Array} protocols
  * @return Context
  */
-Sanitize.prototype.removeProtocols = function (protocols) {
-
-  Object.keys(protocols).forEach(function (tagName) {
-    var tag = this.config.protocols[tagName] || {}
-
-    Object.keys(protocols[tagName]).forEach(function (attr) {
-      var allowed = tag[attr] || []
-
-      protocols[tagName][attr].forEach(function (pcol) {
-        var index = allowed.indexOf(pcol)
-
-        if (allowed.indexOf(pcol) >= 0)
-          allowed.splice(index, 1)
-      })
-
-      tag[attr] = allowed
-    })
-
-    this.config.protocols[tagName] = tag
-  }.bind(this))
+Sanitizer.prototype.addProtocols = function (protocols) {
+  this.protocols = this.protocols.concat(protocols)
 
   return this
 }
 
-// An alias for Sanitize.clean_node().
-Sanitize.prototype.clean = Sanitize.prototype.clean_node
+/**
+ * Sanitizer.addProtocols() removes from the list of allowed protocols.
+ *
+ * @param {Array} protocols
+ * @return Context
+ */
+Sanitizer.prototype.removeProtocols = function (protocols) {
+  var index,
+      i
 
-// Plugin name.
-Sanitize.plugin = 'sanitizer'
+  if (typeof protocols === 'string')
+    protocols = [protocols]
 
-module.exports = Sanitize
+  for (i = 0; i < protocols.length; i += 1) {
+    index = this.protocols.indexOf(protocols[i])
+
+    if (index >= 0)
+      this.protocols.splice(index, 1)
+  }
+
+
+  return this
+}
+
+Sanitizer.plugin = 'sanitizer'
+
+module.exports = Sanitizer

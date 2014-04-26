@@ -1,16 +1,16 @@
 'use strict';
 
-function boldFilter (params) {
-  var node = params.node,
-      name = params.node_name,
-      strong
+/**
+ * boldFilter() is a filter for Quill's sanitizer that turns <b> tags
+ * into <strong> tags.
+ */
+function boldFilter (elem) {
+  var strong = document.createElement('strong')
 
-  if (name === 'b') {
-    strong = document.createElement('strong')
-    strong.innerHTML = node.innerHTML
+  while (elem.firstChild)
+    strong.appendChild(elem.removeChild(elem.firstChild))
 
-    return { node: strong }
-  } else return null
+  elem.parentNode.replaceChild(strong, elem)
 }
 
 // The actual plugin 'adapter'.
@@ -31,12 +31,12 @@ function BoldPlugin (Quill) {
   Bold.destroy = function () {
     Quill.sanitizer
       .removeElements('strong')
-      .removeFilter(boldFilter)
+      .removeFilter('b', boldFilter)
   }
 
   Quill.sanitizer
     .addElements('strong')
-    .addFilter(boldFilter)
+    .addFilter('b', boldFilter)
 
   return Bold
 }

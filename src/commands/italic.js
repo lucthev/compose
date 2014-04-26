@@ -1,16 +1,16 @@
 'use strict';
 
-function italicFilter (params) {
-  var node = params.node,
-      name = params.node_name,
-      em
+/**
+ * italicFilter() is a filter for Quill's sanitizer that turns <i>
+ * tags into <em> tags.
+ */
+function italicFilter (elem) {
+  var em = document.createElement('em')
 
-  if (name === 'i') {
-    em = document.createElement('em')
-    em.innerHTML = node.innerHTML
+  while (elem.firstChild)
+    em.appendChild(elem.removeChild(elem.firstChild))
 
-    return { node: em }
-  } else return null
+  elem.parentNode.replaceChild(em, elem)
 }
 
 function ItalicPlugin (Quill) {
@@ -30,12 +30,12 @@ function ItalicPlugin (Quill) {
   Italic.destroy = function () {
     Quill.sanitizer
       .removeElements('em')
-      .removeFilter(italicFilter)
+      .removeFilter('i', italicFilter)
   }
 
   Quill.sanitizer
     .addElements('em')
-    .addFilter(italicFilter)
+    .addFilter('i', italicFilter)
 
   return Italic
 }
