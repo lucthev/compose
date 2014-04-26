@@ -1,5 +1,4 @@
-/* global describe, it, beforeEach, afterEach, Quill,
-   fireEvent, setContent, expect */
+/* jshint ignore:start */
 
 describe('Rich mode', function () {
 

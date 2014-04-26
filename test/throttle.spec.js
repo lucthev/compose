@@ -33,15 +33,6 @@ describe('The Throttle plugin', function () {
     jasmine.clock().uninstall()
   })
 
-  it('should listen to the input event on an element.', function () {
-    spyOn(this.elem, 'addEventListener').and.callThrough()
-
-    new Throttle(quill)
-
-    expect(this.elem.addEventListener)
-      .toHaveBeenCalledWith('input', jasmine.any(Function))
-  })
-
   it('should fire change events on Quill.', function () {
     fireEvent(this.elem, 'input')
     expect(quill.emit).not.toHaveBeenCalledWith('change')

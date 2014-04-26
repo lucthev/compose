@@ -1,5 +1,4 @@
-/* global describe, it, beforeEach, afterEach, Quill, expect,
-   jasmine, spyOn, setContent, fireEvent */
+/* jshint ignore:start */
 
 describe('Quill', function () {
 
@@ -59,13 +58,6 @@ describe('Quill', function () {
     quill = new Quill('#' + id)
 
     expect(quill.elem).toEqual(this.elem)
-  })
-
-  it('should use querySelector if passed a string.', function () {
-    spyOn(document, 'querySelector').and.callThrough()
-    quill = Quill('#' + id)
-
-    expect(document.querySelector).toHaveBeenCalled()
   })
 
   it('should present a destroy method.', function () {

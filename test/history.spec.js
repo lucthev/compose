@@ -70,19 +70,6 @@ describe('The History (undo) Plugin', function () {
     }, 0)
   })
 
-  it('should place the caret in the correct position (Firefox).',
-    function (done) {
-
-    setContent(elem, '|<p><br></p>')
-
-    fireEvent(elem, 'focus')
-
-    setTimeout(function () {
-      expect(window.getSelection().anchorNode).toEqual(elem.firstChild)
-      done()
-    }, 0)
-  })
-
   it('should save state on change.', function (done) {
     spyOn(history, 'push').and.callThrough()
 

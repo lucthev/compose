@@ -1,5 +1,4 @@
-/* global describe, expect, it, beforeEach, afterEach,
-   Quill, setContent, jasmine */
+/* jshint ignore:start */
 
 describe('The Selection plugin:', function () {
 
