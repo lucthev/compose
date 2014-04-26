@@ -1,3 +1,5 @@
+'use strict';
+
 function LinkPlugin (Quill) {
 
   function Link (href) {

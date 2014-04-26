@@ -6,8 +6,8 @@
   "eqeqeq": true,
   "browser": true,
   "devel": true,
+  "globalstrict": true,
   "globals": {
-
     "module": false,
     "exports": false,
     "require": false

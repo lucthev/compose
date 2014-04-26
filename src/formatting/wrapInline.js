@@ -1,3 +1,5 @@
+'use strict';
+
 var blocks = ['address', 'article', 'aside', 'blockquote', 'figure',
   'figcaption', 'footer', 'h[1-6]', 'header', 'hr', 'ol', 'ul', 'p',
   'pre', 'section']

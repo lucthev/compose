@@ -1,3 +1,5 @@
+'use strict';
+
 function UnderlinePlugin (Quill) {
 
   function Underline () {

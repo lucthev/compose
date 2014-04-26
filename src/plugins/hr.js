@@ -1,4 +1,7 @@
+'use strict';
+
 function onKeydown (e) {
+  /* jshint validthis:true */
   var container = this.selection.getContaining(),
       sel = window.getSelection(),
       key = e.keyCode
@@ -49,6 +52,7 @@ function onKeydown (e) {
 // This handles the case where clicking on an <hr> place the caret
 // on the <hr> (see https://github.com/lucthev/quill/issues/24).
 function onClick () {
+  /* jshint validthis:true */
   var container = this.selection.getContaining()
 
   // We just place the caret in whatever element comes after.
@@ -56,7 +60,7 @@ function onClick () {
     this.selection.placeCaret(container.nextSibling)
 }
 
-function autoHR (Quill) {
+function AutoHR (Quill) {
 
   // Store bound event handlers for later removal.
   this.onKeydown = onKeydown.bind(Quill)
@@ -70,7 +74,7 @@ function autoHR (Quill) {
   Quill.sanitizer.addElements('hr')
 }
 
-autoHR.prototype.insertBefore = function (elem) {
+AutoHR.prototype.insertBefore = function (elem) {
   var hr = document.createElement('hr')
 
   elem.parentNode.insertBefore(hr, elem)
@@ -78,7 +82,7 @@ autoHR.prototype.insertBefore = function (elem) {
   this.Quill.emit('input')
 }
 
-autoHR.prototype.destroy = function () {
+AutoHR.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.onKeydown)
   this.elem.removeEventListener('click', this.onClick)
 
@@ -88,6 +92,6 @@ autoHR.prototype.destroy = function () {
   delete this.elem
 }
 
-autoHR.plugin = 'hr'
+AutoHR.plugin = 'hr'
 
-module.exports = autoHR
+module.exports = AutoHR

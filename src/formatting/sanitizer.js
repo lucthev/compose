@@ -1,3 +1,5 @@
+'use strict';
+
 var Sanitize = require('../vendor/sanitize/sanitize.js')
 
 /**

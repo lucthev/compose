@@ -5,7 +5,7 @@
   "main": "dist/quill.min.js",
   "scripts": {
     "test": "npm run js && ./node_modules/.bin/grunt",
-    "js": "./node_modules/.bin/gulp js",
+    "js": "./node_modules/.bin/gulp",
     "dev": "./node_modules/.bin/gulp watch"
   },
   "repository": {

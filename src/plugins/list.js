@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * An unordered list is created via typing '*' or '-' followed
  * immediately by a space. An ordered list is created by typing '1.'
@@ -7,6 +9,7 @@
  */
 
 function onKeydown (e) {
+  /* jshint validthis:true */
   var container = this.selection.getContaining(),
       sel = window.getSelection(),
       range,
@@ -128,7 +131,7 @@ function listFilter (params) {
   }
 }
 
-function autoList (Quill) {
+function AutoList (Quill) {
   this.selection = Quill.selection
   this.elem = Quill.elem
   this.Quill = Quill
@@ -151,7 +154,7 @@ function autoList (Quill) {
  * @param {Element} listItem
  * @param {Boolean} rmSelection
  */
-autoList.prototype.splitList = function (listItem, rmSelection) {
+AutoList.prototype.splitList = function (listItem, rmSelection) {
   var parent = listItem.parentNode,
       listType = parent.nodeName,
       before,
@@ -203,7 +206,7 @@ autoList.prototype.splitList = function (listItem, rmSelection) {
   return p
 }
 
-autoList.prototype.destroy = function () {
+AutoList.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.onKeydown)
 
   this.Quill.sanitizer
@@ -216,6 +219,6 @@ autoList.prototype.destroy = function () {
 }
 
 // Plugin name:
-autoList.plugin = 'list'
+AutoList.plugin = 'list'
 
-module.exports = autoList
+module.exports = AutoList

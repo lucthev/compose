@@ -1,3 +1,5 @@
+'use strict';
+
 var makeObserver = require('./observer'),
     wrapInline = require('./formatting/wrapInline')
 
@@ -34,6 +36,7 @@ function appendParagraph (elem) {
  * the caret within block elements, not outside.
  */
 function fixSelection () {
+  /* jshint validthis:true */
   var sel = window.getSelection(),
       marker,
       last
@@ -70,6 +73,7 @@ function fixSelection () {
  * block element in Firefox when focusing the element.
  */
 function onFocus () {
+  /* jshint validthis:true */
   var sel = window.getSelection(),
       outside,
       node
@@ -92,6 +96,7 @@ function onFocus () {
 }
 
 function onKeydown (e) {
+  /* jshint validthis:true */
   var container = this.selection.getContaining(),
       newLine = this.selection.isNewLine(),
       sel = window.getSelection(),
@@ -127,6 +132,7 @@ function onKeydown (e) {
 }
 
 function onDomChange () {
+  /* jshint validthis:true */
   var cleaned
 
   this.selection.placeMarkers()

@@ -1,3 +1,5 @@
+'use strict';
+
 function italicFilter (params) {
   var node = params.node,
       name = params.node_name,

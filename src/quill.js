@@ -1,3 +1,5 @@
+'use strict';
+
 var EventEmitter = require('./vendor/eventEmitter/EventEmitter'),
     Selection = require('./selection'),
     InlineMode = require('./inlineMode'),

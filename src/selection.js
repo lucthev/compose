@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 
+'use strict';
+
 function Selection (Quill) {
   this.elem = Quill.elem
 

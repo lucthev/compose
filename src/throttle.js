@@ -1,5 +1,7 @@
+'use strict';
 
 function scheduleSave () {
+  /* jshint validthis:true */
   var throttle = this
 
   if (throttle.scheduled)
@@ -26,6 +28,7 @@ function scheduleSave () {
 }
 
 function onInput () {
+  /* jshint validthis:true */
   this.emit('input')
 }
 

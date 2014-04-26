@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * modKey(event) determines if the modifier key was pressed during
  * an event. Assumes Cmd for Mac, Ctrl for others.
@@ -14,6 +16,7 @@ function modKey (e) {
 
 // Used to intercept Cmd/Ctrl-z.
 function onKeydown (e) {
+  /* jshint validthis:true */
   if (e.keyCode === 90 && modKey(e)) {
     e.preventDefault()
     if (e.shiftKey) this.redo()
@@ -22,6 +25,7 @@ function onKeydown (e) {
 }
 
 function onChange (ignore) {
+  /* jshint validthis:true */
 
   // See @History.undo()
   if (ignore === 'ignore') return
@@ -33,6 +37,7 @@ function onChange (ignore) {
 
 // Used to push the initial state once focus has been achieved.
 function onFocus () {
+  /* jshint validthis:true */
 
   // Wait until the caret has been placed to save state.
   setTimeout(function () {

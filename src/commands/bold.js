@@ -1,3 +1,5 @@
+'use strict';
+
 function boldFilter (params) {
   var node = params.node,
       name = params.node_name,
