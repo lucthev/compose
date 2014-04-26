@@ -33,9 +33,8 @@ describe('The History (undo) Plugin', function () {
     callback = quill.on.calls.argsFor(0)[1]
   })
 
-  afterEach(function () {
+  afterEach(function (done) {
     document.body.removeChild(elem)
-    if (history) history = history.destroy()
 
     // Remove extraneous markers. This happens because we are firing
     // the change callback when the element is not focussed; this
@@ -45,6 +44,12 @@ describe('The History (undo) Plugin', function () {
     markers.forEach(function (marker) {
       marker.parentNode.removeChild(marker)
     })
+
+    setTimeout(function () {
+      if (history) history = history.destroy()
+
+      done()
+    }, 10)
   })
 
   it('should listen to Quill\'s change event.', function () {

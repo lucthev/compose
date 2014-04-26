@@ -1,7 +1,6 @@
 'use strict';
 
-var makeObserver = require('./observer'),
-    wrapInline = require('./formatting/wrapInline')
+var wrapInline = require('./formatting/wrapInline')
 
 var formattingPlugins = [
   require('./commands/bold'),
@@ -131,24 +130,18 @@ function onKeydown (e) {
   }
 }
 
-function onDomChange () {
+function onInput () {
   /* jshint validthis:true */
-  var cleaned
 
   this.selection.placeMarkers()
 
-  cleaned = this.sanitizer.clean(this.elem)
-  wrapInline(cleaned)
-
-  while (this.elem.firstChild)
-    this.elem.removeChild(this.elem.firstChild)
-
-  this.elem.appendChild(cleaned)
+  this.sanitizer.clean(this.elem)
+  wrapInline(this.elem)
 
   this.selection.selectMarkers()
 }
 
-function Rich (Quill) {
+function RichMode (Quill) {
 
   formattingPlugins.forEach(function (Plugin) {
     Quill.use(Plugin)
@@ -171,20 +164,17 @@ function Rich (Quill) {
 
   Quill.sanitizer.addElements(['p', 'br'])
 
-  this.observer = makeObserver(Quill)
-  this.onDomChange = onDomChange.bind(Quill)
-  Quill.on('domChange', this.onDomChange)
+  this.onInput = onInput.bind(Quill)
+  Quill.on('input', this.onInput)
 }
 
-Rich.prototype.destroy = function () {
+RichMode.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.onKeydown)
   this.elem.removeEventListener('keyup', this.onKeyup)
   this.elem.removeEventListener('focus', this.onFocus)
 
   this.Quill.sanitizer.removeElements(['p', 'br'])
-  this.Quill.off('domChange', this.onDomChange)
-
-  this.observer.disconnect()
+  this.Quill.off('input', this.onInput)
 
   delete this.Quill
   delete this.elem
@@ -193,6 +183,6 @@ Rich.prototype.destroy = function () {
 }
 
 // Plugin name.
-Rich.plugin = 'rich'
+RichMode.plugin = 'rich'
 
-module.exports = Rich
+module.exports = RichMode

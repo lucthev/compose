@@ -11,10 +11,14 @@ describe('Rich mode', function () {
       this.quill = new Quill(this.elem)
     })
 
-    afterEach(function () {
+    afterEach(function (done) {
       document.body.removeChild(this.elem)
 
-      this.quill.destroy()
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
     })
 
     it('should append a paragraph to empty elements.', function () {
@@ -103,8 +107,14 @@ describe('Rich mode', function () {
       this.quill = new Quill(this.elem)
     })
 
-    afterEach(function () {
+    afterEach(function (done) {
       document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
     })
 
     it('should not fail when converting paragraphs to headings (1).', function () {
@@ -140,6 +150,12 @@ describe('Rich mode', function () {
     })
 
     it('should conserve attributes when converting.', function () {
+      // We have to add attributes to the sanitizer.
+      this.quill.sanitizer.addAttributes({
+        p: ['id', 'name'],
+        h2: ['id', 'name']
+      })
+
       setContent(this.elem, '<p id="word">|Stuff</p><p name="blue">Thing|s</p>')
 
       this.quill.heading(2)
@@ -158,8 +174,14 @@ describe('Rich mode', function () {
       this.quill = new Quill(this.elem)
     })
 
-    afterEach(function () {
+    afterEach(function (done) {
       document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
     })
 
     it('should be inserted when pressing enter on a new line.', function () {
@@ -240,8 +262,14 @@ describe('Rich mode', function () {
       this.quill = new Quill(this.elem)
     })
 
-    afterEach(function () {
+    afterEach(function (done) {
       document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
     })
 
     it('can be inserted normally.', function () {
@@ -328,6 +356,12 @@ describe('Rich mode', function () {
     })
 
     it('should preserve other attributes.', function () {
+      // We have to add the attributes to Quill's sanitizer.
+      this.quill.sanitizer.addAttributes({
+        p: ['name'],
+        blockquote: ['name']
+      })
+
       setContent(this.elem, '<p name="word">S|tuff</p>')
       this.elem.focus()
 

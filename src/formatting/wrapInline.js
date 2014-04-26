@@ -38,6 +38,27 @@ function wrapText (parent) {
   for (i = 0; i < parent.childNodes.length; i += 1) {
     node = parent.childNodes[i]
 
+    if (!isBlock(node)) {
+      p = document.createElement('p')
+
+      if (node.nodeName === 'DIV') {
+        while (node.firstChild)
+          p.appendChild(node.removeChild(node.firstChild))
+      } else {
+        p.appendChild(node.cloneNode(true))
+
+        // Merge consecutive inline elements into the same <p>
+        while (node.nextSibling && !isBlock(node.nextSibling))
+          p.appendChild(parent.removeChild(node.nextSibling))
+      }
+
+      parent.replaceChild(p, node)
+
+      // Make the node refer to the new <p>; this way, if the new <p>
+      // has no text content, it will still get a <br>.
+      node = p
+    }
+
     // If a block node has no text content, we make sure it has a
     // <br>. Otherwise, it may not be selectable.
     // TODO: we may not want <br>s in all block elements (e.g. <hr>)
@@ -53,26 +74,8 @@ function wrapText (parent) {
           node.appendChild(br)
         else node.parentNode.insertBefore(br, node)
       }
-
-      continue
     }
 
-    p = document.createElement('p')
-
-    if (node.nodeName === 'DIV') {
-      while (node.firstChild)
-        p.appendChild(node.removeChild(node.firstChild))
-
-      parent.replaceChild(p, node)
-    } else {
-      p.appendChild(node.cloneNode(true))
-
-      // Merge consecutive inline elements into the same <p>
-      while (node.nextSibling && !isBlock(node.nextSibling))
-        p.appendChild(parent.removeChild(node.nextSibling))
-
-      parent.replaceChild(p, node)
-    }
   }
 }
 

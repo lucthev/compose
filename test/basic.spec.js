@@ -67,20 +67,16 @@ describe('Quill', function () {
   })
 
   // Note that this doesn't actually check that listeners were properly
-  // removed. This test is ignored in PhantomJs / anywhere that doesn't
-  // support MutationObservers, because modes will throw an error and
-  // never be destroyed.
-  if (window.MutationObserver) {
-    it('should remove all event listeners upon destruction.', function () {
-      spyOn(this.elem, 'addEventListener').and.callThrough()
-      spyOn(this.elem, 'removeEventListener').and.callThrough()
+  // removed.
+  it('should remove all event listeners upon destruction.', function () {
+    spyOn(this.elem, 'addEventListener').and.callThrough()
+    spyOn(this.elem, 'removeEventListener').and.callThrough()
 
-      new Quill('#' + id).destroy()
+    new Quill('#' + id).destroy()
 
-      expect(this.elem.addEventListener.calls.count())
-        .toEqual(this.elem.removeEventListener.calls.count())
-    })
-  }
+    expect(this.elem.addEventListener.calls.count())
+      .toEqual(this.elem.removeEventListener.calls.count())
+  })
 
   it('should delete references to the element upon destruction.', function () {
     quill = Quill(this.elem)
