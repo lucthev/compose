@@ -78,7 +78,7 @@ function onKeydown (e) {
 
     if (!container) return
 
-    if ((e.keyCode === 8 && this.selection.atStartOf(container)) ||
+    if ((e.keyCode === 8 && this.selection.at('start', container)) ||
         (e.keyCode === 13 && !container.textContent)) {
       e.preventDefault()
 

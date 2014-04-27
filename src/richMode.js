@@ -116,7 +116,7 @@ function onKeydown (e) {
   if (e.keyCode === 13 && sel.isCollapsed &&
       /^H[1-6]|BLOCKQUOTE$/i.test(container.nodeName)) {
 
-    if (this.selection.atEndOf(container)) {
+    if (this.selection.at('end', container)) {
       e.preventDefault()
 
       paragraph = appendParagraph()

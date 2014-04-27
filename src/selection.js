@@ -348,13 +348,14 @@ Selection.prototype.isNewLine = function () {
 }
 
 /**
- * Selection.atStartOf(elem) determines if the caret is collapsed
- * and at the start of the given element.
+ * Selection.at(pos, elem) determines if the caret is at the start or
+ * the end of an element.
  *
+ * @param {String} pos
  * @param {Node} elem
  * @return Boolean
  */
-Selection.prototype.atStartOf = function (elem) {
+Selection.prototype.at = function (pos, elem) {
   var sel = window.getSelection(),
       range,
       text
@@ -362,29 +363,11 @@ Selection.prototype.atStartOf = function (elem) {
   if (!sel.rangeCount || !sel.isCollapsed) return false
 
   range = sel.getRangeAt(0).cloneRange()
-  range.setStartBefore(elem)
 
-  text = range.cloneContents()
-
-  return !text.firstChild.textContent
-}
-
-/**
- * Selection.atEndOf(elem) determines if the caret is collapsed
- * and at the end of the given element.
- *
- * @param {Node} elem
- * @return Boolean
- */
-Selection.prototype.atEndOf = function (elem) {
-  var sel = window.getSelection(),
-      range,
-      text
-
-  if (!sel.rangeCount || !sel.isCollapsed) return false
-
-  range = sel.getRangeAt(0).cloneRange()
-  range.setEndAfter(elem)
+  if (pos === 'end')
+    range.setEndAfter(elem)
+  else
+    range.setStartBefore(elem)
 
   text = range.cloneContents()
 

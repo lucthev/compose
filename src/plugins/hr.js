@@ -14,7 +14,7 @@ function onKeydown (e) {
 
   } else if (sel.rangeCount && (key === 8 || key === 46)) {
 
-    if (key === 8 && this.selection.atStartOf(container) &&
+    if (key === 8 && this.selection.at('start', container) &&
       container.previousSibling && container.previousSibling.nodeName === 'HR') {
 
       e.preventDefault()
@@ -22,7 +22,7 @@ function onKeydown (e) {
       container.parentNode.removeChild(container.previousSibling)
 
       this.emit('input')
-    } else if (key === 46 && this.selection.atEndOf(container) &&
+    } else if (key === 46 && this.selection.at('end', container) &&
       container.nextSibling && container.nextSibling.nodeName === 'HR') {
 
       e.preventDefault()
