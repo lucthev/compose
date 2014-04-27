@@ -1,5 +1,35 @@
 /* jshint ignore:start */
 
+function flatten (array) {
+  var result = [],
+      value,
+      i, j
+
+  for (i = 0; i < array.length; i += 1) {
+    value = array[i]
+
+    if (Array.isArray(value)) {
+      value = flatten(value)
+
+      for (j = 0; j < value.length; j += 1)
+        result.push(value[j])
+    } else result.push(value)
+  }
+
+  return result
+}
+
+function count (array, elem) {
+  var count = 0,
+      i
+
+  for (i = 0; i < array.length; i += 1) {
+    if (array[i] === elem) count += 1
+  }
+
+  return count
+}
+
 describe('The Throttle plugin', function () {
 
   var Throttle,
@@ -48,8 +78,8 @@ describe('The Throttle plugin', function () {
 
     jasmine.clock().tick(21)
 
-    expect(quill.emit.calls.allArgs())
-      .toEqual([['input'], ['input'], ['change']])
+    expect(count(flatten(quill.emit.calls.allArgs()), 'change'))
+      .toEqual(1)
   })
 
   it('should fire multiple times when the events are spaced out.', function () {
@@ -57,14 +87,14 @@ describe('The Throttle plugin', function () {
     expect(quill.emit).not.toHaveBeenCalledWith('change')
 
     jasmine.clock().tick(21)
-    expect(quill.emit.calls.allArgs())
-      .toEqual([['input'], ['change']])
+    expect(count(flatten(quill.emit.calls.allArgs()), 'change'))
+      .toEqual(1)
 
     fireEvent(this.elem, 'input')
 
     jasmine.clock().tick(20)
-    expect(quill.emit.calls.allArgs())
-      .toEqual([['input'], ['change'], ['input'], ['change']])
+    expect(count(flatten(quill.emit.calls.allArgs()), 'change'))
+      .toEqual(2)
   })
 
   it('should eventually fire an event even with constant input.', function () {
@@ -76,8 +106,8 @@ describe('The Throttle plugin', function () {
     expect(quill.emit).not.toHaveBeenCalledWith('change')
 
     jasmine.clock().tick(81)
-    expect(quill.emit.calls.allArgs())
-      .toEqual([['input'], ['input'], ['input'], ['input'], ['input'], ['change']])
+    expect(count(flatten(quill.emit.calls.allArgs()), 'change'))
+      .toEqual(1)
 
     clearInterval(interval)
   })

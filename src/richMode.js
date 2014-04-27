@@ -136,9 +136,15 @@ function onInput () {
   this.selection.save()
 
   this.sanitizer.clean(this.elem)
-  wrapInline(this.elem)
 
   this.selection.restore()
+}
+
+function afterClean (elem) {
+  /* jshint validthis:true */
+
+  if (elem === this.elem)
+    wrapInline(elem)
 }
 
 function RichMode (Quill) {
@@ -165,7 +171,9 @@ function RichMode (Quill) {
   Quill.sanitizer.addElements(['p', 'br'])
 
   this.onInput = onInput.bind(Quill)
+  this.afterClean = afterClean.bind(Quill)
   Quill.on('input', this.onInput)
+  Quill.on('afterclean', this.afterClean)
 }
 
 RichMode.prototype.destroy = function () {
@@ -175,6 +183,7 @@ RichMode.prototype.destroy = function () {
 
   this.Quill.sanitizer.removeElements(['p', 'br'])
   this.Quill.off('input', this.onInput)
+  this.Quill.off('afterclean', this.afterclean)
 
   delete this.Quill
   delete this.elem

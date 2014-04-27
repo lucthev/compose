@@ -4,11 +4,13 @@
 var PROTOCOL_REGEX = /^([A-Za-z0-9\+\-\.\&\;\*\s]*?)(?:\:|&*0*58|&*x0*3a)/i,
     Slice = Array.prototype.slice
 
-function Sanitizer () {
+function Sanitizer (Quill) {
   this.attributes = {}
   this.elements = {}
   this.filters = {}
   this.protocols = []
+
+  this.Quill = Quill
 }
 
 /**
@@ -18,6 +20,10 @@ function Sanitizer () {
  * @return Context
  */
 Sanitizer.prototype.clean = function (container) {
+
+  // Emit a 'beforeclean' event with the container as an argument.
+  this.Quill.emit('beforeclean', container)
+
   this.current = container
 
   function clean (node) {
@@ -126,6 +132,9 @@ Sanitizer.prototype.clean = function (container) {
 
   // Join adjacent text nodes and whatnot.
   container.normalize()
+
+  // Emit an 'afterclean' event with the container as an argument.
+  this.Quill.emit('afterclean', container)
 
   return this
 }

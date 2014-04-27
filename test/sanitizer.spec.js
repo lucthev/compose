@@ -18,7 +18,12 @@ describe('The Sanitizer plugin', function () {
       temp.destroy()
     }
 
-    this.Sanitizer = new Sanitizer()
+    // Mock quill.
+    this.Quill = {
+      emit: function () {}
+    }
+
+    this.Sanitizer = new Sanitizer(this.Quill)
   })
 
   afterEach(function () {
