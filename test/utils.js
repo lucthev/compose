@@ -41,9 +41,11 @@ function setContent (elem, html) {
       range = document.createRange(),
       markers
 
-  elem.innerHTML = html.replace(/\|/g, '<span class="Quill-marker"></span>')
-
   if (/\|/.test(html)) {
+    elem.focus()
+
+    elem.innerHTML = html.replace(/\|/g, '<span class="Quill-marker"></span>')
+
     markers = elem.querySelectorAll('.Quill-marker')
 
     range.setStartBefore(markers[0])
@@ -62,5 +64,5 @@ function setContent (elem, html) {
 
     sel.removeAllRanges()
     sel.addRange(range)
-  }
+  } else elem.innerHTML = html
 }

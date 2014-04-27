@@ -307,14 +307,18 @@ describe('The Selection plugin:', function () {
         li: ['id']
       })
 
-      this.selection = new Selection(quill)
+      quill.selection = this.selection = new Selection(quill)
     })
 
-    afterEach(function () {
-      if (quill && !quill._destroyed)
-        quill.destroy()
-
+    afterEach(function (done) {
       document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        if (quill && !quill._destroyed)
+          quill.destroy()
+
+        done()
+      }, 10)
     })
 
     it('should iterate over each block element in the selection.', function () {

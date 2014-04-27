@@ -11,11 +11,15 @@ describe('Quill', function () {
     document.body.appendChild(this.elem)
   })
 
-  afterEach(function () {
-    if (quill && quill.destroy && !quill._destroyed)
-      quill = quill.destroy()
-
+  afterEach(function (done) {
     document.body.removeChild(this.elem)
+
+    setTimeout(function () {
+      if (quill && quill.destroy && !quill._destroyed)
+        quill = quill.destroy()
+
+      done()
+    }, 10)
   })
 
   it('should be available as a global.', function () {
@@ -133,11 +137,15 @@ describe('Quill', function () {
       quill = new Quill(elem)
     })
 
-    afterEach(function () {
-      if (!quill._destroyed)
-        quill.destroy()
-
+    afterEach(function (done) {
       document.body.removeChild(elem)
+
+      setTimeout(function () {
+        if (!quill._destroyed)
+          quill.destroy()
+
+        done()
+      }, 10)
     })
 
     it('can add plugins via the \'use\' method.', function () {
