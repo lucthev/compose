@@ -1,37 +1,53 @@
 'use strict';
 
+// Creates a <br>.
+function br () {
+  return document.createElement('br')
+}
+
 function onKeydown (e) {
   if (e.keyCode === 13)
     e.preventDefault()
 }
 
-function Inline (Quill) {
-  var children,
-      i
+function onInput () {
+  /* jshint validthis:true */
+  this.selection.save()
 
-  this.elem = Quill.elem
-  this.elem.addEventListener('keydown', onKeydown)
+  this.sanitizer.clean(this.elem)
 
-  // Remove all (presumably) unwanted elements.
-  if (this.elem.children.length) {
-    children = this.elem.children
-    for (i = 0; i < children.length; i += 1)
-      this.elem.removeChild(children[i])
-  }
+  // Append a <br> if need be.
+  if (!this.elem.textContent)
+    this.elem.appendChild(br())
 
-  // Insert initial <br>
-  if (!this.textContent)
-    this.elem.appendChild(document.createElement('br'))
+  this.selection.restore()
 }
 
-Inline.prototype.destroy = function () {
-  this.elem.removeEventListener('keydown', onKeydown)
+function InlineMode (Quill) {
 
+  this.elem = Quill.elem
+  this.Quill = Quill
+
+  // Store bound event handlers for later removal.
+  this.onInput = onInput.bind(Quill)
+
+  this.elem.addEventListener('keydown', onKeydown)
+  Quill.on('input', this.onInput)
+
+  // Remove all (presumably) unwanted elements by simulating input.
+  this.onInput()
+}
+
+InlineMode.prototype.destroy = function () {
+  this.elem.removeEventListener('keydown', onKeydown)
+  this.Quill.off('input', this.onInput)
+
+  delete this.Quill
   delete this.elem
 
   return null
 }
 
-Inline.plugin = 'inline'
+InlineMode.plugin = 'inline'
 
-module.exports = Inline
+module.exports = InlineMode
