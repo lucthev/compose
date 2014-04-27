@@ -12,13 +12,17 @@ function BlockquotePlugin (Quill) {
   function blockquote (quote) {
     var pullQuote = typeof quote === 'string'
 
-    // Turn all list items into <p>s before changing them into
-    // blockquotes.
-    // TODO: conserve attributes?
+    Quill.selection.save()
+
+    // Convert <li>s to <p>s.
     Quill.selection.forEachBlock(function (block) {
       if (block.nodeName === 'LI')
         Quill.list.splitList(block, true)
     })
+
+    // We have to restore the selection in between, otherwise the
+    // selection gets weird and the second forEachBlock does nothing.
+    Quill.selection.restore(true)
 
     Quill.selection.forEachBlock(function (elem) {
       var block = quote ? document.createElement('blockquote') :
@@ -39,6 +43,8 @@ function BlockquotePlugin (Quill) {
 
       elem.parentNode.replaceChild(block, elem)
     })
+
+    Quill.selection.restore()
 
     Quill.emit('input')
   }
@@ -72,7 +78,7 @@ function BlockquotePlugin (Quill) {
         allBlock = allPull = false
       } else if (!block.className) allPull = false
 
-    }, true)
+    })
 
     // If all element were pullquotes, return the class.
     if (allPull) return Quill.selection.getContaining().className

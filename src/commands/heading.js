@@ -6,6 +6,8 @@ function HeadingPlugin (Quill) {
   function heading (level) {
     level = level ? 'h' + level + '' : 'p'
 
+    Quill.selection.save()
+
     // Turn all list items into <p>s before changing them into
     // headings.
     // TODO: conserve attributes?
@@ -13,6 +15,10 @@ function HeadingPlugin (Quill) {
       if (block.nodeName === 'LI')
         Quill.list.splitList(block, true)
     })
+
+    // We have to restore the selection in between, otherwise the
+    // selection gets weird and the second forEachBlock does nothing.
+    Quill.selection.restore(true)
 
     // We manually convert each paragraph into a heading; formatBlock
     // introduces weird issues.
@@ -30,6 +36,8 @@ function HeadingPlugin (Quill) {
 
       block.parentNode.replaceChild(elem, block)
     })
+
+    Quill.selection.restore()
 
     Quill.emit('input')
   }
@@ -51,7 +59,7 @@ function HeadingPlugin (Quill) {
     // Check for condition (2).
     Quill.selection.forEachBlock(function (block) {
       if (block.nodeName !== level) allHeading = false
-    }, true)
+    })
 
     return allHeading
   }
