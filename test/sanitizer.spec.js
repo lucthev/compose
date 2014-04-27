@@ -304,4 +304,20 @@ describe('The Sanitizer plugin', function () {
     expect(this.elem.innerHTML).toEqual('<p><strong>Word</strong></p>')
   })
 
+  // I was seeing something similar in inline mode.
+  it('miscellaneous (1)', function () {
+
+    // A filter that whitelists certain <span>s.
+    function filter (span) {
+      return { whitelist: span.classList.contains('Quill-marker') }
+    }
+
+    this.Sanitizer.addFilter('span', filter)
+
+    this.elem.innerHTML = '<p>One</p><p>Two<span class="Quill-marker"></span></p>'
+    this.Sanitizer.clean(this.elem)
+
+    expect(this.elem.innerHTML)
+      .toEqual('OneTwo<span class="Quill-marker"></span>')
+  })
 })

@@ -80,7 +80,7 @@ Sanitizer.prototype.clean = function (container) {
       while (elem.firstChild) {
         parent.insertBefore(
           elem.removeChild(elem.firstChild),
-          elem.nextSibling
+          elem
         )
       }
 
@@ -120,11 +120,7 @@ Sanitizer.prototype.clean = function (container) {
 
   Slice.call(container.childNodes).forEach(clean.bind(this))
 
-  // for (var i = 0; i < container.childNodes.length; i += 1) {
-  //   clean.call(this, container.childNodes[i])
-  // }
-
-  // Join edjacent text nodes & whatnot.
+  // Join adjacent text nodes and whatnot.
   container.normalize()
 
   return this
