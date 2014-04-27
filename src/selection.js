@@ -1,23 +1,37 @@
-/**
- * Much of this file was inspired by the Guardian's Scribe
- * (https://github.com/guardian/scribe), so here's the license for that:
- *
- * Copyright 2014 Guardian News & Media Ltd
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 'use strict';
+
+/**
+ * isBackwards(selection) determines if the given selection is
+ * backwards (i.e. the focus node comes before the anchor node)
+ *
+ * @param {Selection} selection
+ * @return {Boolean}
+ */
+function isBackwards (sel) {
+  var backwards,
+      range
+
+  if (!sel.rangeCount) return false
+  range = sel.getRangeAt(0)
+
+  if (sel.anchorNode === sel.focusNode)
+    backwards = sel.anchorOffset > sel.focusOffset
+  else backwards = sel.focusNode === range.startContainer
+
+  return backwards
+}
+
+/**
+ * Range.insertNode() insert a bogus text node after the inserted node
+ * in some browsers (Chrome). This is used to remove it.
+ *
+ * @param {Node} node
+ */
+function removeBogusText (node) {
+  var next = node.nextSibling
+  if (next && next.nodeType === Node.TEXT_NODE && !next.data)
+    node.parentNode.removeChild(next)
+}
 
 // Whitelist marker elements.
 function markerFilter (span) {
@@ -28,10 +42,149 @@ function markerFilter (span) {
 
 function Selection (Quill) {
   this.elem = Quill.elem
+  this._debug = Quill._debug
   this.Quill = Quill
 
   Quill.sanitizer.addFilter('span', markerFilter)
 }
+
+/**
+ * Selection.createMarker() creates a markers that can be used to track
+ * the selection.
+ *
+ * @param {Boolean} end
+ * @return {Element}
+ */
+Selection.prototype.createMarker = function (end) {
+  var span = document.createElement('span')
+
+  span.classList.add('Quill-marker')
+  span.classList.add(end ? 'end' : 'start')
+
+  return span
+}
+
+/**
+ * Selection.getMarkers() gets all markers in the editable element.
+ *
+ * @return {NodeList}
+ */
+Selection.prototype.getMarkers = function () {
+  return this.elem.querySelectorAll('.Quill-marker')
+}
+
+/**
+ * Selection.removeMarkers() removes all moarkers in the editable
+ * element, joining any text nodes that may have been split by
+ * marker insertion.
+ */
+Selection.prototype.removeMarkers = function () {
+  var markers = this.getMarkers(),
+      parent,
+      i
+
+  for (i = 0; i < markers.length; i += 1) {
+    parent = markers[i].parentNode
+
+    parent.removeChild(markers[i])
+
+    // Join any text nodes that may have split by marker insertion.
+    parent.normalize()
+  }
+}
+
+/**
+ * Selection.selectRange(range) selects the given range. If backwards
+ * is true, it will select the range 'backwards'.
+ *
+ * @param {Range} range
+ * @param {Boolean} backwards
+ */
+Selection.prototype.selectRange = function (range, backwards) {
+  var sel = window.getSelection(),
+      endRange
+
+  sel.removeAllRanges()
+
+  // Directional selections are only possible in browsers that implement
+  // the Selection.extend() method.
+  // NOTE: We'll only make a directional selection when not in debug mode;
+  // otherwise, this can mask how often we are calling this method.
+  if (typeof sel.extend === 'function' && !this._debug) {
+    endRange = range.cloneRange()
+    endRange.collapse(!backwards)
+    sel.addRange(endRange)
+
+    if (backwards)
+      sel.extend(range.startContainer, range.startOffset)
+    else
+      sel.extend(range.endContainer, range.endOffset)
+  } else sel.addRange(range)
+}
+
+/**
+ * Selection.save() 'saves' the user's selection by placing markers
+ * in the document. The saved selection can later be restored by
+ * calling Selection.restore()
+ */
+Selection.prototype.save = function () {
+  var sel = window.getSelection(),
+      start = this.createMarker(),
+      end = this.createMarker(true),
+      toEnd = isBackwards(sel),
+      startRange,
+      endRange
+
+  if (!sel.rangeCount) return
+
+  startRange = sel.getRangeAt(0).cloneRange()
+  startRange.collapse(!toEnd)
+  startRange.insertNode(start)
+
+  // Remove bogus text nodes that may have been created.
+  removeBogusText(start)
+
+  if (!sel.isCollapsed) {
+    endRange = sel.getRangeAt(0).cloneRange()
+    endRange.collapse(toEnd)
+    endRange.insertNode(end)
+
+    removeBogusText(end)
+  }
+}
+
+/**
+ * Selection.restore() restore the selection from previously placed
+ * markers. By default removes the markers; they will be kept if
+ * keepMarkers is true.
+ *
+ * @param {Boolean} keepMarkers
+ */
+Selection.prototype.restore = function (keepMarkers) {
+  var markers = this.getMarkers(),
+      range = document.createRange(),
+      backwards
+
+  if (!markers.length) return
+
+  range.setStartBefore(markers[0])
+
+  if (markers.length === 1)
+    range.setEndAfter(markers[0])
+  else range.setEndAfter(markers[1])
+
+  // The markers will be in document order.
+  backwards = markers[0].classList.contains('end')
+
+  if (!keepMarkers)
+    this.removeMarkers()
+
+  this.selectRange(range, backwards)
+}
+
+// Alias these, for now.
+Selection.prototype.placeMarkers = Selection.prototype.save
+Selection.prototype.selectMarkers = Selection.prototype.restore
 
 /**
  * Selection.getContaining() gets the immediate child of the editor
@@ -183,82 +336,6 @@ Selection.prototype.contains = function (query) {
   fragment = sel.getRangeAt(0).cloneContents()
 
   return !!fragment.querySelectorAll(query).length
-}
-
-Selection.prototype.placeMarkers = function () {
-  var sel = window.getSelection(),
-      start = document.createElement('span'),
-      end = document.createElement('span'),
-      startRange,
-      endRange,
-      range
-
-  if (!sel.rangeCount) return
-
-  range = sel.getRangeAt(0)
-
-  start.className = 'Quill-marker'
-  end.className = 'Quill-marker'
-
-  endRange = range.cloneRange()
-  endRange.collapse()
-  endRange.insertNode(end)
-
-  /**
-   * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-   * element. We just remove it.
-   * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
-   */
-  if (end.nextSibling && end.nextSibling.nodeType === Node.TEXT_NODE &&
-     !end.nextSibling.data)
-    end.parentNode.removeChild(end.nextSibling)
-
-  if (!range.collapsed) {
-    startRange = range.cloneRange()
-    startRange.collapse(true)
-    startRange.insertNode(start)
-
-    // See above.
-    if (start.nextSibling && start.nextSibling.nodeType === Node.TEXT_NODE &&
-       !start.nextSibling.data)
-      start.parentNode.removeChild(start.nextSibling)
-  }
-}
-
-Selection.prototype.getMarkers = function () {
-  return this.elem.querySelectorAll('.Quill-marker')
-}
-
-Selection.prototype.removeMarkers = function () {
-  var markers = this.getMarkers()
-  Array.prototype.forEach.call(markers, function (marker) {
-    var parent = marker.parentNode
-
-    parent.removeChild(marker)
-
-    // Join text nodes that may have been split by marker insertion.
-    parent.normalize()
-  })
-}
-
-Selection.prototype.selectMarkers = function (keepMarkers) {
-  var sel = window.getSelection(),
-      markers = this.getMarkers(),
-      range = document.createRange()
-
-  if (!markers.length) return
-
-  range.setStartBefore(markers[0])
-
-  if (markers.length === 1)
-    range.setEndAfter(markers[0])
-  else range.setEndAfter(markers[1])
-
-  if (!keepMarkers)
-    this.removeMarkers()
-
-  sel.removeAllRanges()
-  sel.addRange(range)
 }
 
 /**
