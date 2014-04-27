@@ -220,9 +220,7 @@ describe('The Sanitizer plugin', function () {
   it('can be configured to use custom filters (1).', function () {
 
     function filter () {
-
-      // Returning true whitelists the element.
-      return true
+      return { whitelist: true }
     }
 
     this.Sanitizer.addElements(['p'])
@@ -242,7 +240,7 @@ describe('The Sanitizer plugin', function () {
   it('can be configured to use custom filters (2).', function () {
 
     function filter () {
-      return true
+      return { whitelist: true }
     }
 
     this.Sanitizer.addElements(['p'])
@@ -263,7 +261,7 @@ describe('The Sanitizer plugin', function () {
   it('can remove custom filters.', function () {
 
     function filter () {
-      return true
+      return { whitelist: true }
     }
 
     this.Sanitizer
@@ -282,4 +280,28 @@ describe('The Sanitizer plugin', function () {
     expect(this.elem.innerHTML)
       .toEqual('<p>Things</p><p>Stuff</p>')
   })
+
+  it('should allow removal of elements from within filters.', function () {
+
+    // A filter which replaces <b>s with <strong>s.
+    function filter (node) {
+      var strong = document.createElement('strong')
+
+      strong.innerHTML = node.innerHTML
+
+      return { node: strong }
+    }
+
+    this.Sanitizer
+      .addElements(['p', 'strong'])
+      .addFilter('b', filter)
+
+    this.elem.innerHTML = '<p><b>Word</b></p>'
+
+    expect(function () {
+      this.Sanitizer.clean(this.elem)
+    }.bind(this)).not.toThrow()
+    expect(this.elem.innerHTML).toEqual('<p><strong>Word</strong></p>')
+  })
+
 })

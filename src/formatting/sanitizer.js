@@ -33,12 +33,26 @@ Sanitizer.prototype.clean = function (container) {
 
   function cleanElement (elem) {
     /* jshint validthis:true*/
-    var children = Slice.call(elem.childNodes),
-        i, parent, name, attrs, attr, val
-    var whitelisted = transform.call(this, elem)
+    var transformed = transform.call(this, elem),
+        whitelisted = transformed.whitelist,
+        replacement = transformed.node,
+        children,
+        parent,
+        attrs,
+        attr,
+        name,
+        val,
+        i
+
+    parent = this.current
+
+    if (replacement) {
+      parent.replaceChild(replacement, elem)
+      elem = replacement
+    }
 
     name = elem.nodeName.toLowerCase()
-    parent = this.current
+    children = Slice.call(elem.childNodes)
 
     if (whitelisted) {
       this.current = elem
@@ -70,6 +84,8 @@ Sanitizer.prototype.clean = function (container) {
         )
       }
 
+      // The node may have been removed or otherwise moved by a
+      // filter; we try to account for that.
       parent.removeChild(elem)
     }
 
@@ -84,24 +100,31 @@ Sanitizer.prototype.clean = function (container) {
   function transform (node) {
     /* jshint validthis:true */
     var name = node.nodeName.toLowerCase(),
-        retVal = false,
-        output
+        output,
+        returned = {
+          node: false,
+          whitelist: false
+        }
 
     if (this.filters[name]) {
       this.filters[name].forEach(function (fn) {
-        output = fn(node)
+        output = fn(node) || {}
 
-        if (output) retVal = true
+        if (output.node) returned.node = output.node
+        if (output.whitelist) returned.whitelist = true
       })
     }
 
-    return retVal
+    return returned
   }
 
-  for (var i = 0; i < container.childNodes.length; i += 1) {
-    clean.call(this, container.childNodes[i])
-  }
+  Slice.call(container.childNodes).forEach(clean.bind(this))
 
+  // for (var i = 0; i < container.childNodes.length; i += 1) {
+  //   clean.call(this, container.childNodes[i])
+  // }
+
+  // Join edjacent text nodes & whatnot.
   container.normalize()
 
   return this
