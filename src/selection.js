@@ -21,7 +21,9 @@
 
 // Whitelist marker elements.
 function markerFilter (span) {
-  return span.classList.contains('Quill-marker')
+  return {
+    whitelist: span.classList.contains('Quill-marker')
+  }
 }
 
 function Selection (Quill) {

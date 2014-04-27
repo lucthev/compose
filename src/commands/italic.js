@@ -10,7 +10,7 @@ function italicFilter (elem) {
   while (elem.firstChild)
     em.appendChild(elem.removeChild(elem.firstChild))
 
-  elem.parentNode.replaceChild(em, elem)
+  return { node: em }
 }
 
 function ItalicPlugin (Quill) {

@@ -10,7 +10,7 @@ function boldFilter (elem) {
   while (elem.firstChild)
     strong.appendChild(elem.removeChild(elem.firstChild))
 
-  elem.parentNode.replaceChild(strong, elem)
+  return { node: strong }
 }
 
 // The actual plugin 'adapter'.
