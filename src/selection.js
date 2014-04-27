@@ -182,10 +182,6 @@ Selection.prototype.restore = function (keepMarkers) {
   this.selectRange(range, backwards)
 }
 
-// Alias these, for now.
-Selection.prototype.placeMarkers = Selection.prototype.save
-Selection.prototype.selectMarkers = Selection.prototype.restore
-
 /**
  * Selection.getContaining() gets the immediate child of the editor
  * element that contains the node node. If no node is given, uses the
@@ -293,7 +289,7 @@ Selection.prototype.forEachBlock = function (action, rmSelection) {
 
   // Save the selection, if necessary.
   if (!rmSelection)
-    this.placeMarkers()
+    this.save()
 
   next = start
   while (next !== end) {
@@ -317,7 +313,7 @@ Selection.prototype.forEachBlock = function (action, rmSelection) {
 
   // Restore selection, if necessary.
   if (!rmSelection)
-    this.selectMarkers()
+    this.restore()
 }
 
 /*

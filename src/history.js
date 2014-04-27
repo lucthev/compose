@@ -30,7 +30,7 @@ function onChange (ignore) {
   // See @History.undo()
   if (ignore === 'ignore') return
 
-  this.selection.placeMarkers()
+  this.selection.save()
   this.history.push(this.elem.innerHTML)
   this.selection.removeMarkers()
 }
@@ -41,7 +41,7 @@ function onFocus () {
 
   // Wait until the caret has been placed to save state.
   setTimeout(function () {
-    this.selection.placeMarkers()
+    this.selection.save()
     this.history.push(this.elem.innerHTML)
     this.selection.removeMarkers()
   }.bind(this), 0)
@@ -85,7 +85,7 @@ History.prototype.undo = function () {
   if (this.length <= 1) return
 
   this.elem.innerHTML = this.stack[this.length - 2]
-  this.Quill.selection.selectMarkers()
+  this.Quill.selection.restore()
 
   this.length -= 1
 
@@ -99,7 +99,7 @@ History.prototype.redo = function () {
 
   var content = this.stack[this.length]
   this.elem.innerHTML = content
-  this.Quill.selection.selectMarkers()
+  this.Quill.selection.restore()
 
   this.length += 1
 

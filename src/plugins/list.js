@@ -37,7 +37,7 @@ function onKeydown (e) {
     e.preventDefault()
 
     // Place marker (there should only be one):
-    this.selection.placeMarkers()
+    this.selection.save()
     marker = this.selection.getMarkers()[0]
 
     // Placing the marker will have split the text, so the previous
@@ -65,7 +65,7 @@ function onKeydown (e) {
 
     this.elem.replaceChild(list, container)
 
-    this.selection.selectMarkers()
+    this.selection.restore()
 
     // Trigger change if necessary.
     this.emit('input')
@@ -163,7 +163,7 @@ AutoList.prototype.splitList = function (listItem, rmSelection) {
   if (!/^[OU]L$/.test(listType)) return
 
   if (!rmSelection)
-    this.selection.placeMarkers()
+    this.selection.save()
 
   before = document.createElement(listType)
   after = document.createElement(listType)
@@ -198,7 +198,7 @@ AutoList.prototype.splitList = function (listItem, rmSelection) {
   parent.parentNode.replaceChild(p, parent)
 
   if (!rmSelection)
-    this.selection.selectMarkers()
+    this.selection.restore()
 
   return p
 }

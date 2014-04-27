@@ -44,7 +44,7 @@ function fixSelection () {
   // it can cause issues (https://github.com/lucthev/quill/issues/12)
   if (!sel.rangeCount || this.selection.getContaining()) return
 
-  this.selection.placeMarkers()
+  this.selection.save()
 
   marker = this.elem.firstChild
   if (marker.classList.contains('Quill-marker')) {
@@ -64,7 +64,7 @@ function fixSelection () {
     else last.appendChild(marker)
   }
 
-  this.selection.selectMarkers()
+  this.selection.restore()
 }
 
 /**
@@ -79,7 +79,7 @@ function onFocus () {
 
   if (!sel.rangeCount) return
 
-  this.selection.placeMarkers()
+  this.selection.save()
   outside = this.elem.firstChild.classList.contains('Quill-marker')
   this.selection.removeMarkers()
 
@@ -133,12 +133,12 @@ function onKeydown (e) {
 function onInput () {
   /* jshint validthis:true */
 
-  this.selection.placeMarkers()
+  this.selection.save()
 
   this.sanitizer.clean(this.elem)
   wrapInline(this.elem)
 
-  this.selection.selectMarkers()
+  this.selection.restore()
 }
 
 function RichMode (Quill) {
