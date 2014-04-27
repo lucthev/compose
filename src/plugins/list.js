@@ -82,7 +82,9 @@ function onKeydown (e) {
         (e.keyCode === 13 && !container.textContent)) {
       e.preventDefault()
 
+      this.selection.save()
       this.list.splitList(container)
+      this.selection.restore()
 
       this.emit('input')
     }
@@ -146,12 +148,11 @@ function AutoList (Quill) {
 /**
  * splitList(listItem) splits a list at the given <li>. The <li> is
  * transformed into a <p>. If no <li>s remain in the list, the list
- * is removed. If rmSelection is true, the selection is disregarded.
+ * is removed.
  *
  * @param {Element} listItem
- * @param {Boolean} rmSelection
  */
-AutoList.prototype.splitList = function (listItem, rmSelection) {
+AutoList.prototype.splitList = function (listItem) {
   var parent = listItem.parentNode,
       listType = parent.nodeName,
       before,
@@ -161,9 +162,6 @@ AutoList.prototype.splitList = function (listItem, rmSelection) {
       p
 
   if (!/^[OU]L$/.test(listType)) return
-
-  if (!rmSelection)
-    this.selection.save()
 
   before = document.createElement(listType)
   after = document.createElement(listType)
@@ -196,9 +194,6 @@ AutoList.prototype.splitList = function (listItem, rmSelection) {
 
   // Replace the <li>'s parent with the new paragraph.
   parent.parentNode.replaceChild(p, parent)
-
-  if (!rmSelection)
-    this.selection.restore()
 
   return p
 }

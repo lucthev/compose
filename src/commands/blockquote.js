@@ -17,7 +17,7 @@ function BlockquotePlugin (Quill) {
     // Convert <li>s to <p>s.
     Quill.selection.forEachBlock(function (block) {
       if (block.nodeName === 'LI')
-        Quill.list.splitList(block, true)
+        Quill.list.splitList(block)
     })
 
     // We have to restore the selection in between, otherwise the
