@@ -258,6 +258,36 @@ describe('The Sanitizer plugin', function () {
       .toEqual('<p>Things</p><ol>Words</ol><p>Stuff</p>')
   })
 
+  it('can add wildcard filters (1).', function () {
+    var visited = []
+
+    function filter (node) {
+      visited.push(node.nodeName.toLowerCase())
+    }
+
+    this.Sanitizer.addFilter('*', filter)
+
+    this.elem.innerHTML =
+      '<p>One</p><h2>Two</h2><blockquote>Three</blockquote>'
+    this.Sanitizer.clean(this.elem)
+    expect(visited).toEqual(['p', 'h2', 'blockquote'])
+  })
+
+  it('can add wildcard filters (2).', function () {
+    var visited = []
+
+    function filter (node) {
+      visited.push(node.nodeName.toLowerCase())
+    }
+
+    this.Sanitizer.addFilter(filter)
+
+    this.elem.innerHTML =
+      '<p>One</p><h2>Two</h2><blockquote>Three</blockquote>'
+    this.Sanitizer.clean(this.elem)
+    expect(visited).toEqual(['p', 'h2', 'blockquote'])
+  })
+
   it('can remove custom filters.', function () {
 
     function filter () {

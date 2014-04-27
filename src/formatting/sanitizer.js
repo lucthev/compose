@@ -100,20 +100,24 @@ Sanitizer.prototype.clean = function (container) {
   function transform (node) {
     /* jshint validthis:true */
     var name = node.nodeName.toLowerCase(),
-        output,
-        returned = {
-          node: false,
-          whitelist: false
-        }
+        returned,
+        filters,
+        output
 
-    if (this.filters[name]) {
-      this.filters[name].forEach(function (fn) {
+    returned = {
+      node: false,
+      whitelist: false
+    }
+
+    // Apply transformations for the elements and wildcards.
+    filters = this.filters[name] || []
+    filters.concat(this.filters['*'] || [])
+      .forEach(function (fn) {
         output = fn(node) || {}
 
         if (output.node) returned.node = output.node
         if (output.whitelist) returned.whitelist = true
       })
-    }
 
     return returned
   }
@@ -220,11 +224,20 @@ Sanitizer.prototype.removeAttributes = function (attributes) {
 
 /**
  * Sanitize.addFilter(filter) add a transformer to the sanitizer.
+ * The transformer will only get called on elements with the given
+ * name. If the name is omitted, the filter will be applied to all
+ * elements.
  *
+ * @param {String} name
  * @param {Function} filter
  * @return Context
  */
 Sanitizer.prototype.addFilter = function (name, filter) {
+  if (typeof name === 'function') {
+    filter = name
+    name = '*'
+  }
+
   if (!this.filters[name]) this.filters[name] = []
 
   this.filters[name].push(filter)
@@ -240,6 +253,11 @@ Sanitizer.prototype.addFilter = function (name, filter) {
  */
 Sanitizer.prototype.removeFilter = function (name, filter) {
   var index
+
+  if (typeof name === 'function') {
+    filter = name
+    name = '*'
+  }
 
   if (!this.filters[name]) return
 
