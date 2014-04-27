@@ -8,6 +8,3 @@ src/vendor/*
 temp.*
 TODO.txt
 _SpecRunner.html
-
-# We have to include sanitize because we've modified the define function.
-!src/vendor/sanitize/
