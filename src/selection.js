@@ -371,13 +371,11 @@ Selection.prototype.at = function (pos, elem) {
  * @param {Boolean} atEnd
  */
 Selection.prototype.placeCaret = function (node, atEnd) {
-  var sel = window.getSelection(),
-      range = document.createRange()
+  var range = document.createRange()
 
   range.selectNodeContents(node)
   range.collapse(!atEnd)
-  sel.removeAllRanges()
-  sel.addRange(range)
+  this.selectRange(range)
 }
 
 Selection.prototype.destroy = function () {
