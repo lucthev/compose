@@ -67,10 +67,13 @@ function wrapText (parent) {
           node.nodeName !== 'HR') {
         br = document.createElement('br')
 
+        // We want to append in the lastmost element (i.e. if we have
+        // <p><b></b></p>, it ends up being <p><b><br></b></p>)
         while (node.lastChild && node.lastChild.nodeType === Node.ELEMENT_NODE)
           node = node.lastChild
 
-        if (node.className !== 'Quill-marker')
+        // We don't, however, want it to end up in a marker.
+        if (!node.classList.contains('Quill-marker'))
           node.appendChild(br)
         else node.parentNode.insertBefore(br, node)
       }

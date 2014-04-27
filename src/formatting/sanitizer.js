@@ -90,8 +90,6 @@ Sanitizer.prototype.clean = function (container) {
         )
       }
 
-      // The node may have been removed or otherwise moved by a
-      // filter; we try to account for that.
       parent.removeChild(elem)
     }
 
