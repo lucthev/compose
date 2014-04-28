@@ -17,11 +17,6 @@ function isBlock (elem) {
   return elem && blockRegex.test(elem.nodeName)
 }
 
-// TODO: let plugins tap into an event or something of the sort
-// that would let them take action on the sanitized HTML; for
-// example, the link plugin could remove links with no href or links
-// with no text content.
-
 /**
  * wrapText(parent) wraps the inline children of parent in <p>s.
  * If multiple consecutive children are inline, they are merged into
@@ -61,24 +56,26 @@ function wrapText (parent) {
 
     // If a block node has no text content, we make sure it has a
     // <br>. Otherwise, it may not be selectable.
-    // TODO: we may not want <br>s in all block elements (e.g. <hr>)
     if (isBlock(node)) {
+
+      // Replace whitespace at the beginning of the block.
+      node.innerHTML = node.innerHTML.replace(/^\s+/, '')
+
       if (!node.textContent && !node.querySelectorAll('br').length &&
           node.nodeName !== 'HR') {
         br = document.createElement('br')
 
-        // We want to append in the lastmost element (i.e. if we have
-        // <p><b></b></p>, it ends up being <p><b><br></b></p>)
+        // We want to append in the innermost element (i.e. if we have
+        // <p><b></b></p>, it should end up being <p><b><br></b></p>)
         while (node.lastChild && node.lastChild.nodeType === Node.ELEMENT_NODE)
           node = node.lastChild
 
         // We don't, however, want it to end up in a marker.
         if (!node.classList.contains('Quill-marker'))
           node.appendChild(br)
-        else node.parentNode.insertBefore(br, node)
+        else node.parentNode.insertBefore(br, node.nextSibling)
       }
     }
-
   }
 }
 

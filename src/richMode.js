@@ -32,7 +32,9 @@ function appendParagraph (elem) {
 
 /**
  * fixSelection() fixes Firefox's select all behaviour by placing
- * the caret within block elements, not outside.
+ * the caret within block elements, not outside. Although this does
+ * not prevent escaping of paragraph mode, it does allow for the
+ * formatting of multiple blocks (e.g. <p> -> <h2>).
  */
 function fixSelection () {
   /* jshint validthis:true */
@@ -101,16 +103,11 @@ function onKeydown (e) {
       sel = window.getSelection(),
       paragraph
 
-  // Prevent deletion of the first paragraph.
-  if ((e.keyCode === 8 || e.keyCode === 46) && newLine &&
-      container === this.elem.firstElementChild)
-    return e.preventDefault()
-
   // Prevent newline creation when already on a new line.
   if (e.keyCode === 13 && newLine)
     return e.preventDefault()
 
-  // Pressing enter after an <h*> or <blockquote> creates divs or
+  // Pressing enter after an <h[1-6]> or <blockquote> creates divs or
   // blockquotes, not paragraphs. We override this behaviour.
   // TODO: Ideally, this would be in the plugins themselves.
   if (e.keyCode === 13 && sel.isCollapsed &&
@@ -147,6 +144,11 @@ function afterClean (elem) {
     wrapInline(elem)
 }
 
+/**
+ * The Rich mode constructor.
+ *
+ * @param {Quill} Quill
+ */
 function RichMode (Quill) {
 
   formattingPlugins.forEach(function (Plugin) {
@@ -176,6 +178,12 @@ function RichMode (Quill) {
   Quill.on('afterclean', this.afterClean)
 }
 
+/**
+ * RichMode.destroy() removes event listeners, deletes references
+ * to elements, etc.
+ *
+ * @return null
+ */
 RichMode.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.onKeydown)
   this.elem.removeEventListener('keyup', this.onKeyup)
