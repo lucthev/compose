@@ -13,17 +13,13 @@ var paths = {
 
 gulp.task('js', function () {
   gulp.src('src/quill.js')
-
     .pipe(browserify({
       standalone: 'Quill'
     }))
-
     .pipe(uglify({
       preserveComments: 'some'
     }))
-
     .pipe(rename('quill.min.js'))
-
     .pipe(gulp.dest('./dist/'))
 })
 
@@ -37,16 +33,19 @@ gulp.task('lint', function () {
 gulp.task('watch', ['js'], function () {
   var watcher = gulp.watch(paths.js, ['lint', 'js'])
 
+  function log (e) {
+    var folder = new RegExp(__dirname + '/'),
+        path = e.path.replace(folder, '')
+
+    console.log('File ' + path + ' was ' + e.type + ', compiling...')
+  }
+
+  watcher.on('change', log)
+
   function atStart () {
     console.log('Waiting for changes...')
   }
   process.nextTick(atStart)
-
-  watcher.on('change', function (e) {
-    var path = e.path.replace('/Users/luc/Projects/quill/', '')
-
-    console.log('File ' + path + ' was ' + e.type + ', compiling...')
-  })
 })
 
-gulp.task('default', ['lint' ,'js'])
+gulp.task('default', ['lint', 'js'])
