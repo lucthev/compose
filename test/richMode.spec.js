@@ -61,7 +61,7 @@ describe('Rich mode', function () {
         .toEqual(this.elem.firstChild.nextSibling)
     })
 
-    // NOTE: doesn't work in PhantomJS, for whatever reason.
+    // NOTE: these don't work in PhantomJS, for whatever reason.
     if (!/PhantomJS/i.test(navigator.userAgent)) {
       it('should place the caret in the correct place when focusing (1).', function () {
         this.elem.focus()
@@ -70,7 +70,6 @@ describe('Rich mode', function () {
         expect(this.quill.selection.getContaining()).toEqual(this.elem.firstChild)
       })
 
-      // NOTE: doesn't work in PhantomJS, for whatever reason.
       it('should place the caret in the correct place when focusing (2).', function () {
         setContent(this.elem, '<p><i><b id="x">Stuff</b></i></p>')
 
@@ -83,7 +82,6 @@ describe('Rich mode', function () {
           .toEqual(document.querySelector('#x').firstChild)
       })
 
-      // NOTE: doesn't work in PhantomJS, for whatever reason.
       it('should place the caret in the correct place when focusing (3).', function () {
         setContent(this.elem, '<p>Stuff <i><b>and things</b></i></p>')
 
@@ -227,34 +225,10 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML)
         .toEqual('<p>Stuff</p><p>Words</p>')
     })
-
-    // NOTE: these don't work.
-    xit('should be ignored when keying around (1).', function () {
-      setContent(this.elem, '<p>Stuff|</p><hr><p>Words</p>')
-
-      expect(this.quill.selection.getContaining())
-        .toEqual(this.elem.firstChild)
-
-      // Simulate right arrow key.
-      fireEvent(this.elem, 'keydown', 39)
-      expect(this.quill.selection.getContaining())
-        .toEqual(this.elem.lastChild)
-    })
-
-    xit('should be ignored when keying around (2).', function () {
-      setContent(this.elem, '<p>Stuff</p><hr><p>|Words</p>')
-
-      expect(this.quill.selection.getContaining())
-        .toEqual(this.elem.lastChild)
-
-      // Simulate left arrow key.
-      fireEvent(this.elem, 'keydown', 37)
-      expect(this.quill.selection.getContaining())
-        .toEqual(this.elem.firstChild)
-    })
   })
 
   describe('blockquotes', function () {
+
     beforeEach(function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)

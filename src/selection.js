@@ -11,7 +11,7 @@ function isBackwards (sel) {
   var backwards,
       range
 
-  if (!sel.rangeCount) return false
+  if (!sel.rangeCount || sel.isCollapsed) return false
   range = sel.getRangeAt(0)
 
   if (sel.anchorNode === sel.focusNode)
@@ -44,6 +44,7 @@ function Selection (Quill) {
   this.elem = Quill.elem
   this._debug = Quill._debug
   this.Quill = Quill
+  this.node = Quill.node
 
   Quill.sanitizer.addFilter('span', markerFilter)
 }
@@ -184,25 +185,20 @@ Selection.prototype.restore = function (keepMarkers) {
 
 /**
  * Selection.getContaining() gets the immediate child of the editor
- * element that contains the node node. If no node is given, uses the
- * selection anchor.
+ * element that contains the selection anchor.
  *
- * @param {Node} node
  * @return Element || false
  */
-Selection.prototype.getContaining = function (node) {
+Selection.prototype.getContaining = function () {
   var sel = window.getSelection(),
-      range
-
-  node = node || sel.anchorNode
+      node = sel.anchorNode,
+      range,
+      elem
 
   if (!sel.rangeCount) return false
 
-  while (node && node !== this.elem) {
-    if (node.parentNode === this.elem)
-      return node
-    else node = node.parentNode
-  }
+  elem = this.node.getContaining(node)
+  if (elem) return elem
 
   // We check for the caret being on an HR, in which case the
   // anchorNode is reported as being the editable element.
@@ -228,29 +224,19 @@ Selection.prototype.getContaining = function (node) {
  * a node with name matching the provided regular expression. If
  * so, returns the matched node; else, returns false.
  *
- * Optionally takes an element as the second parameter; in that case,
- * it determines if the element has a parent matching the RegExp.
- *
  * @param {RegExp} matcher
- * @param {Node} elem
  * @return Node || false
  */
-Selection.prototype.childOf = function (matcher, elem) {
+Selection.prototype.childOf = function (matcher) {
   var sel = window.getSelection(),
       node
 
   // Don't search if not given a matcher or nothing selected.
   if (!matcher || !sel.rangeCount) return false
 
-  node = elem || sel.getRangeAt(0).commonAncestorContainer
+  node = sel.getRangeAt(0).commonAncestorContainer
 
-  while (node && node !== this.elem) {
-    if (node.nodeName.match(matcher))
-      return node
-    else node = node.parentNode
-  }
-
-  return false
+  return this.node.childOf(node, matcher)
 }
 
 /**
@@ -273,15 +259,15 @@ Selection.prototype.forEachBlock = function (action) {
   if (!sel.rangeCount) return
 
   range = sel.getRangeAt(0)
-  start = this.getContaining(range.startContainer)
-  end = this.getContaining(range.endContainer)
+  start = this.node.getContaining(range.startContainer)
+  end = this.node.getContaining(range.endContainer)
 
   // If either the start or end are lists, we instead get the list
   // item in which the start/end is.
   if (listRegex.test(start.nodeName))
-    start = this.childOf(liRegex, range.startContainer)
+    start = this.node.childOf(range.startContainer, liRegex)
   if (listRegex.test(end.nodeName))
-    end = this.childOf(liRegex, range.endContainer)
+    end = this.node.childOf(range.endContainer, liRegex)
 
   next = start
   while (next !== end) {
@@ -382,6 +368,7 @@ Selection.prototype.destroy = function () {
   this.Quill.sanitizer.removeFilter('span', markerFilter)
 
   delete this.elem
+  delete this.node
   delete this.Quill
 
   return null

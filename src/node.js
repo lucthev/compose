@@ -71,17 +71,16 @@ NodePlugin.prototype.getContaining = function (node) {
  * @return {Node || false}
  */
 NodePlugin.prototype.childOf = function (node, tagName) {
-  var elem
 
   // If tagName is a string, we'll assume they want to match only
   // that tag name.
   if (typeof tagName === 'string')
-   tagName = new RegExp('^' + tagName + '$', 'i')
+    tagName = new RegExp('^' + tagName + '$', 'i')
 
-  elem = node.parentNode
-  while (elem && elem !== this.elem) {
-    if (tagName.test(elem.nodeName)) return elem
-      elem = elem.parentNode
+  while (node && node !== this.elem) {
+    if (node.nodeName.match(tagName))
+      return node
+    else node = node.parentNode
   }
 
   return false

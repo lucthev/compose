@@ -43,10 +43,10 @@ function Quill (elem, opts) {
   this.plugins = []
 
   this.use(Sanitizer)
+  this.use(NodePlugin)
   this.use(Selection)
   this.use(History)
   this.use(Throttle)
-  this.use(NodePlugin)
 
   // Establish the mode:
   Mode = opts.mode

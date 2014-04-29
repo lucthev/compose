@@ -53,7 +53,7 @@ function HeadingPlugin (Quill) {
     level = 'H' + level
 
     // Check for condition (1); we can stop if true.
-    if (Quill.selection.childOf(new RegExp('^' + level + '$')))
+    if (Quill.selection.childOf(level))
       return true
 
     // Check for condition (2).

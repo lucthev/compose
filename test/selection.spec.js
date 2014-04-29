@@ -13,20 +13,16 @@ describe('The Selection plugin:', function () {
       this.elem.innerHTML = '<p><br></p>'
       document.body.appendChild(this.elem)
 
-      // Make our fake quill.
-      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
-      quill = {
-        elem: this.elem,
-        sanitizer: sanitizer
-      }
-
       if (!Selection) {
         var temp = new Quill(this.elem)
         Selection = temp.selection.constructor
         temp.destroy()
       }
 
-      this.selection = new Selection(quill)
+      quill = new Quill(this.elem)
+      quill.disable('selection')
+
+      quill.selection = this.selection = new Selection(quill)
     })
 
     afterEach(function () {
@@ -37,14 +33,6 @@ describe('The Selection plugin:', function () {
       setContent(this.elem, '<p>|<br></p>')
 
       expect(this.selection.getContaining()).toEqual(this.elem.firstChild)
-    })
-
-    it('uses anchorNode by default, but can use any other node.', function () {
-      setContent(this.elem, '<p>Stu|ff</p><p>Th<strong>i|n<strong>gs</p>')
-
-      expect(this.selection.getContaining()).toEqual(this.elem.firstChild)
-      expect(this.selection.getContaining(this.elem.querySelector('strong')))
-        .toEqual(this.elem.lastChild)
     })
 
     it('should work even with deeply nested elements.', function () {
@@ -66,14 +54,10 @@ describe('The Selection plugin:', function () {
       this.elem.innerHTML = '<p><br></p>'
       document.body.appendChild(this.elem)
 
-      // Make our fake quill.
-      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
-      quill = {
-        elem: this.elem,
-        sanitizer: sanitizer
-      }
+      quill = new Quill(this.elem)
+      quill.disable('selection')
 
-      this.selection = new Selection(quill)
+      quill.selection = this.selection = new Selection(quill)
     })
 
     afterEach(function () {
@@ -83,14 +67,14 @@ describe('The Selection plugin:', function () {
     it('determines if the selection is contained within a node.', function () {
       setContent(this.elem, '<p>|<br></p>')
 
-      expect(this.selection.childOf(/^(?:P)$/i)).toBeTruthy()
-      expect(this.selection.childOf(/^(?:article)$/i)).toBe(false)
+      expect(this.selection.childOf(/^P$/i)).toBeTruthy()
+      expect(this.selection.childOf(/^article$/i)).toBe(false)
     })
 
     it('should return the matched element, if found.', function () {
       setContent(this.elem, '<p>|<br></p>')
 
-      expect(this.selection.childOf(/^(?:P)$/i)).toEqual(this.elem.firstChild)
+      expect(this.selection.childOf(/^P$/i)).toEqual(this.elem.firstChild)
     })
 
     it('should not account for the editable element.', function () {
@@ -127,14 +111,10 @@ describe('The Selection plugin:', function () {
 
       document.body.appendChild(this.elem)
 
-      // Make our fake quill.
-      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
-      quill = {
-        elem: this.elem,
-        sanitizer: sanitizer
-      }
+      quill = new Quill(this.elem)
+      quill.disable('selection')
 
-      this.selection = new Selection(quill)
+      quill.selection = this.selection = new Selection(quill)
     })
 
     afterEach(function () {
@@ -184,14 +164,10 @@ describe('The Selection plugin:', function () {
 
       document.body.appendChild(this.elem)
 
-      // Make our fake quill.
-      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
-      quill = {
-        elem: this.elem,
-        sanitizer: sanitizer
-      }
+      quill = new Quill(this.elem)
+      quill.disable('selection')
 
-      this.selection = new Selection(quill)
+      quill.selection = this.selection = new Selection(quill)
     })
 
     afterEach(function () {
@@ -232,14 +208,10 @@ describe('The Selection plugin:', function () {
       this.elem.innerHTML = '<p><br></p>'
       document.body.appendChild(this.elem)
 
-      // Make our fake quill.
-      var sanitizer = jasmine.createSpyObj('Sanitizer', ['addFilter'])
-      quill = {
-        elem: this.elem,
-        sanitizer: sanitizer
-      }
+      quill = new Quill(this.elem)
+      quill.disable('selection')
 
-      this.selection = new Selection(quill)
+      quill.selection = this.selection = new Selection(quill)
     })
 
     afterEach(function () {
