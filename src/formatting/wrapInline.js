@@ -1,22 +1,5 @@
 'use strict';
 
-var blocks = ['address', 'article', 'aside', 'blockquote', 'figure',
-  'figcaption', 'footer', 'h[1-6]', 'header', 'hr', 'ol', 'ul', 'p',
-  'pre', 'section']
-
-var blockRegex = new RegExp('^(' + blocks.join('|') + ')$', 'i')
-
-/**
- * isBlock(elem) determines if an elements is a block element
- * according to the above RegExp.
- *
- * @param {Node} elem
- * @return Boolean
- */
-function isBlock (elem) {
-  return elem && blockRegex.test(elem.nodeName)
-}
-
 /**
  * wrapText(parent) wraps the inline children of parent in <p>s.
  * If multiple consecutive children are inline, they are merged into
@@ -25,6 +8,7 @@ function isBlock (elem) {
  * @param {Node} parent
  */
 function wrapText (parent) {
+  /* jshint validthis:true */
   var node,
       br,
       p,
@@ -33,7 +17,7 @@ function wrapText (parent) {
   for (i = 0; i < parent.childNodes.length; i += 1) {
     node = parent.childNodes[i]
 
-    if (!isBlock(node)) {
+    if (!this.isBlock(node)) {
       p = document.createElement('p')
 
       if (node.nodeName === 'DIV') {
@@ -43,7 +27,7 @@ function wrapText (parent) {
         p.appendChild(node.cloneNode(true))
 
         // Merge consecutive inline elements into the same <p>
-        while (node.nextSibling && !isBlock(node.nextSibling))
+        while (node.nextSibling && !this.isBlock(node.nextSibling))
           p.appendChild(parent.removeChild(node.nextSibling))
       }
 
@@ -56,7 +40,7 @@ function wrapText (parent) {
 
     // If a block node has no text content, we make sure it has a
     // <br>. Otherwise, it may not be selectable.
-    if (isBlock(node)) {
+    if (this.isBlock(node)) {
 
       // Replace whitespace at the beginning of the block.
       node.innerHTML = node.innerHTML.replace(/^\s+/, '')

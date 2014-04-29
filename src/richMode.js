@@ -141,7 +141,7 @@ function afterClean (elem) {
   /* jshint validthis:true */
 
   if (elem === this.elem)
-    wrapInline(elem)
+    wrapInline.call(this.node, elem)
 }
 
 /**

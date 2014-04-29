@@ -96,9 +96,11 @@ NodePlugin.prototype.childOf = function (node, tagName) {
  * @return Boolean
  */
 NodePlugin.prototype.areSimilar = function (elem1, elem2) {
-  var similar =
-    this.isElem(elem1) && this.isElem(elem2) &&
-    elem1.nodeName === elem2.nodeName
+  var similar = true
+
+  if (!(this.isElem(elem1) && this.isElem(elem2) &&
+      elem1.nodeName === elem2.nodeName))
+    return false
 
   Array.prototype.forEach.call(elem1.attributes, function (attr) {
     similar = similar && elem2.hasAttribute(attr.name) &&
