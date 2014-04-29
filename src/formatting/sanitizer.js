@@ -17,7 +17,7 @@ function Sanitizer (Quill) {
  * Sanitizer.clean(node) sanitizes the given node in-place.
  *
  * @param {Element} container
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.clean = function (container) {
 
@@ -75,7 +75,14 @@ Sanitizer.prototype.clean = function (container) {
           if (attrs.indexOf(attr) < 0)
             elem.removeAttribute(attr)
           else if (attr === 'href') {
-            val = attribute.value.toLowerCase().match(PROTOCOL_REGEX)
+
+            /**
+             * We use elem.href; this way, any relative URL are converted
+             * to their absolute equivalent, where possible. This means
+             * potentially garbage values, like 'ELEPHANT', will be OK'd;
+             * care must be taken.
+             */
+            val = elem.href.toLowerCase().match(PROTOCOL_REGEX)
 
             if (!val || this.protocols.indexOf(val[1]) < 0)
               elem.removeAttribute(attr)
@@ -142,7 +149,7 @@ Sanitizer.prototype.clean = function (container) {
  * elements. Takes an array of lowercase tag names.
  *
  * @param {Array} elements
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.addElements = function (elems) {
   var elem,
@@ -165,7 +172,7 @@ Sanitizer.prototype.addElements = function (elems) {
  * of allowed elements. Takes an array of lowercase tag names.
  *
  * @param {Array} elements
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.removeElements = function (elems) {
   var elem,
@@ -187,7 +194,7 @@ Sanitizer.prototype.removeElements = function (elems) {
  * element.
  *
  * @param {Object} attributes
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.addAttributes = function (attributes) {
 
@@ -209,7 +216,7 @@ Sanitizer.prototype.addAttributes = function (attributes) {
  * on an element.
  *
  * @param {Object} attributes
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.removeAttributes = function (attributes) {
 
@@ -237,7 +244,7 @@ Sanitizer.prototype.removeAttributes = function (attributes) {
  *
  * @param {String} name
  * @param {Function} filter
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.addFilter = function (name, filter) {
   if (typeof name === 'function') {
@@ -256,7 +263,7 @@ Sanitizer.prototype.addFilter = function (name, filter) {
  * Sanitize.removeFilter(filter) removes a transformer from the sanitizer.
  *
  * @param {Function} filter
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.removeFilter = function (name, filter) {
   var index
@@ -278,7 +285,7 @@ Sanitizer.prototype.removeFilter = function (name, filter) {
  * Sanitizer.addProtocols() adds to the list of allowed protocols.
  *
  * @param {Array} protocols
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.addProtocols = function (protocols) {
   this.protocols = this.protocols.concat(protocols)
@@ -290,7 +297,7 @@ Sanitizer.prototype.addProtocols = function (protocols) {
  * Sanitizer.addProtocols() removes from the list of allowed protocols.
  *
  * @param {Array} protocols
- * @return Context
+ * @return {Context}
  */
 Sanitizer.prototype.removeProtocols = function (protocols) {
   var index,
