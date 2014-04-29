@@ -6,7 +6,8 @@ var EventEmitter = require('./vendor/eventEmitter/EventEmitter'),
     RichMode = require('./richMode'),
     Sanitizer = require('./formatting/sanitizer'),
     History = require('./history'),
-    Throttle = require('./throttle')
+    Throttle = require('./throttle'),
+    NodePlugin = require('./node')
 
 /**
  * setup(elem) sets up the given element. If a string is passed
@@ -45,6 +46,7 @@ function Quill (elem, opts) {
   this.use(Selection)
   this.use(History)
   this.use(Throttle)
+  this.use(NodePlugin)
 
   // Establish the mode:
   Mode = opts.mode
