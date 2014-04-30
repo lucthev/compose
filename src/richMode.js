@@ -137,6 +137,25 @@ function onInput () {
   this.selection.restore()
 }
 
+function mergeSimilar (elem) {
+  /* jshint validthis:true */
+  var prev = elem.previousSibling
+
+  // If they are similar and inline, we merge them.
+  if (this.isInline(elem) && this.isInline(prev) &&
+      this.areSimilar(prev, elem)) {
+
+    while (prev.firstChild) {
+      elem.insertBefore(
+        prev.removeChild(prev.firstChild),
+        elem.firstChild
+      )
+    }
+
+    elem.parentNode.removeChild(prev)
+  }
+}
+
 function afterClean (elem) {
   /* jshint validthis:true */
 
@@ -162,6 +181,7 @@ function RichMode (Quill) {
   this.onFocus = onFocus.bind(Quill)
   this.onKeydown = onKeydown.bind(Quill)
   this.onKeyup = fixSelection.bind(Quill)
+  this.mergeSimilar = mergeSimilar.bind(Quill.node)
 
   this.elem.addEventListener('keydown', this.onKeydown)
   this.elem.addEventListener('keyup', this.onKeyup)
@@ -170,7 +190,9 @@ function RichMode (Quill) {
   if (!this.elem.firstElementChild)
     appendParagraph(this.elem)
 
-  Quill.sanitizer.addElements(['p', 'br'])
+  Quill.sanitizer
+    .addElements(['p', 'br'])
+    .addFilter(this.mergeSimilar)
 
   this.onInput = onInput.bind(Quill)
   this.afterClean = afterClean.bind(Quill)
@@ -189,7 +211,10 @@ RichMode.prototype.destroy = function () {
   this.elem.removeEventListener('keyup', this.onKeyup)
   this.elem.removeEventListener('focus', this.onFocus)
 
-  this.Quill.sanitizer.removeElements(['p', 'br'])
+  this.Quill.sanitizer
+    .removeElements(['p', 'br'])
+    .removeFilter(this.mergeSimilar)
+
   this.Quill.off('input', this.onInput)
   this.Quill.off('afterclean', this.afterclean)
 

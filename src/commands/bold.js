@@ -40,6 +40,7 @@ function BoldPlugin (Quill) {
 
   return Bold
 }
+
 BoldPlugin.plugin = 'bold'
 
 module.exports = BoldPlugin
