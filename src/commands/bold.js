@@ -20,8 +20,39 @@ function BoldPlugin (Quill) {
     document.execCommand('bold', false, null)
   }
 
-  Bold.getState = function() {
-    return !!Quill.selection.childOf(/^STRONG$/i)
+  /**
+   * queryCommandState() returns true whenever the font-style or
+   * font-weight is bold, not just when we're in a <strong>/<b>;
+   * we implement our own logic. Bold is true when:
+   *
+   * (1) The selection is a child of an <strong>
+   * (2) The only element in the selection is an <strong>
+   * (e.g. |<strong>One</strong>|)
+   *
+   * Note that for (2), the following also counts: |<em><strong>One</strong></em>|
+   */
+  Bold.getState = function () {
+    var sel = window.getSelection(),
+        node
+
+    // If there's no selection, it won't be true.
+    if (!sel.rangeCount) return false
+
+    // Check condition (1). We need to check for both <strong>s and <b>s
+    // because sanitization is deferred until the next event loop; if we
+    // check only <strong>s, querying too soon would return false.
+    if (Quill.selection.childOf(/^(STRONG|B)$/i)) return true
+
+    // Check condition (2).
+    node = sel.getRangeAt(0).cloneContents()
+
+    while (node && !node.previousSibling && !node.nextSibling) {
+      if (/^(STRONG|B)$/.test(node.nodeName)) return true
+
+      node = node.firstChild
+    }
+
+    return false
   }
 
   Bold.isEnabled = function () {

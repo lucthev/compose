@@ -96,6 +96,108 @@ describe('Rich mode', function () {
     }
   })
 
+  describe('bold/italic', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
+    })
+
+    afterEach(function (done) {
+      document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
+    })
+
+    it('bold should use the <strong> tag.', function (done) {
+      setContent(this.elem, '<p>One |two| three</p>')
+
+      this.quill.bold()
+
+      // Sanitization, which is responsible for converting <b> and <i>
+      // to <strong> and <em>, is deferred until the next event loop;
+      // we have to go async.
+      setTimeout(function () {
+        expect(this.elem.innerHTML)
+          .toEqual('<p>One <strong>two</strong> three</p>')
+
+        done()
+      }.bind(this), 0)
+    })
+
+    it('italic should use the <em> tag.', function (done) {
+      setContent(this.elem, '<p>One |two| three</p>')
+
+      this.quill.italic()
+
+      setTimeout(function () {
+        expect(this.elem.innerHTML)
+          .toEqual('<p>One <em>two</em> three</p>')
+
+        done()
+      }.bind(this), 0)
+    })
+
+    it('bold should report the correct state (1)', function () {
+      setContent(this.elem, '<p>One |two| three</p>')
+
+      this.quill.bold()
+
+      expect(this.quill.bold.getState()).toBe(true)
+    })
+
+    it('bold should report the correct state (2)', function () {
+      setContent(this.elem, '<p>One |two| three</p>')
+
+      this.quill.bold()
+      this.quill.italic()
+
+      expect(this.quill.bold.getState()).toBe(true)
+    })
+
+    it('bold should report the correct state (3)', function () {
+      setContent(this.elem, '<h2>One two three</h2>')
+
+      // Headings usually have font-weight: bold; we'll set it explicitly
+      // anyways.
+      this.elem.firstChild.style.fontWeight = 'bold'
+
+      expect(this.quill.bold.getState()).toBe(false)
+    })
+
+    it('italic should report the correct state (1)', function () {
+      setContent(this.elem, '<p>One |two| three</p>')
+
+      this.quill.italic()
+
+      expect(this.quill.italic.getState()).toBe(true)
+    })
+
+    it('italic should report the correct state (2)', function () {
+      setContent(this.elem, '<p>One |two| three</p>')
+
+      this.quill.italic()
+      this.quill.bold()
+
+      expect(this.quill.italic.getState()).toBe(true)
+    })
+
+    it('italic should report the correct state (3)', function () {
+      setContent(this.elem, '<blockquote>One two three</blockquote>')
+
+      // We'll pretend blockquotes are italicized.
+      this.elem.firstChild.style.fontStyle = 'italic'
+
+      expect(this.quill.italic.getState()).toBe(false)
+    })
+  })
+
   describe('headings', function () {
 
     beforeEach(function () {
