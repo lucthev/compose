@@ -33,14 +33,28 @@ var blocks = ['address', 'article', 'aside', 'blockquote', 'figure',
     blockRegex = new RegExp('^(' + blocks.join('|') + ')$', 'i')
 
 /**
- * Node.isBlock(elem) determines if an elements is a block element
+ * Node.isBlock(elem) determines if an element is a block element
  * according to the above RegExp.
  *
  * @param {Node} elem
  * @return {Boolean}
  */
 NodePlugin.prototype.isBlock = function (elem) {
-  return elem && blockRegex.test(elem.nodeName)
+  return this.isElem(elem) && blockRegex.test(elem.nodeName)
+}
+
+var inlines = ['b', 'i', 'em', 'strong', 'a', 'sub', 'sup'],
+    inlineRegex = new RegExp('^(' + inlines.join('|') + ')$', 'i')
+
+/**
+ * Node.isInline(elem) determines if an element is a block element
+ * according to the above RegExp.
+ *
+ * @param {Node} elem
+ * @return {Boolean}
+ */
+NodePlugin.prototype.isInline = function (elem) {
+  return this.isElem(elem) && inlineRegex.test(elem.nodeName)
 }
 
 /**
