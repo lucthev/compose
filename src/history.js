@@ -32,21 +32,22 @@ function onChange (ignore) {
 
   this.selection.save()
   this.history.push(this.elem.innerHTML)
-  this.selection.removeMarkers()
+  this.selection.restore()
 }
 
 // Used to push the initial state once focus has been achieved.
 function onFocus () {
   /* jshint validthis:true */
 
-  // Wait until the caret has been placed to save state.
-  setTimeout(function () {
-    this.selection.save()
-    this.history.push(this.elem.innerHTML)
-    this.selection.removeMarkers()
-  }.bind(this), 0)
+  if (!this.history.length) {
 
-  this.elem.removeEventListener('focus', this.history.onFocus)
+    // Wait until the caret has been placed to save state.
+    setTimeout(function () {
+      this.selection.save()
+      this.history.push(this.elem.innerHTML)
+      this.selection.restore()
+    }.bind(this), 0)
+  }
 }
 
 function History (Quill) {
@@ -108,9 +109,6 @@ History.prototype.redo = function () {
 History.prototype.destroy = function () {
   this.Quill.off('change', this.onChange)
   this.elem.removeEventListener('keydown', this.onKeydown)
-
-  // Try removing onFocus; maybe we are getting destroyed before
-  // focus was ever achieved.
   this.elem.removeEventListener('focus', this.onFocus)
 
   delete this.onFocus
