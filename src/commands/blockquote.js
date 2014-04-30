@@ -39,7 +39,8 @@ function BlockquotePlugin (Quill) {
       else
         block.removeAttribute('class')
 
-      block.innerHTML = elem.innerHTML
+      while (elem.firstChild)
+        block.appendChild(elem.removeChild(elem.firstChild))
 
       elem.parentNode.replaceChild(block, elem)
     })

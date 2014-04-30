@@ -97,8 +97,7 @@ History.prototype.undo = function () {
 History.prototype.redo = function () {
   if (!this.stack.length || this.stack.length === this.length) return
 
-  var content = this.stack[this.length]
-  this.elem.innerHTML = content
+  this.elem.innerHTML = this.stack[this.length]
   this.Quill.selection.restore()
 
   this.length += 1

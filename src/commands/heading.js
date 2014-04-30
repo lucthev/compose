@@ -27,7 +27,8 @@ function HeadingPlugin (Quill) {
       var elem = document.createElement(level),
           attributes = Array.prototype.slice.call(block.attributes)
 
-      elem.innerHTML = block.innerHTML
+      while (block.firstChild)
+        elem.appendChild(block.removeChild(block.firstChild))
 
       // Conserve attributes.
       attributes.forEach(function (item) {

@@ -42,8 +42,9 @@ function wrapText (parent) {
     // <br>. Otherwise, it may not be selectable.
     if (this.isBlock(node)) {
 
-      // Replace whitespace at the beginning of the block.
-      node.innerHTML = node.innerHTML.replace(/^\s+/, '')
+      // Remove whitespace at the beginning of the block.
+      while (this.isText(node.firstChild) && !node.firstChild.data.trim())
+        node.removeChild(node.firstChild)
 
       if (!node.textContent && !node.querySelectorAll('br').length &&
           node.nodeName !== 'HR') {
