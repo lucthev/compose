@@ -452,4 +452,109 @@ describe('Rich mode', function () {
         .toEqual('<p name="word">Stuff</p>')
     })
   })
+
+  describe('links', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
+
+      // We're adding a filter to allow basically any <a>.
+      function filter (a) {
+        return { whitelist: true }
+      }
+
+      this.quill.sanitizer.addFilter('a', filter)
+    })
+
+    afterEach(function (done) {
+      document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
+    })
+
+    it('can insert absolute urls (1).', function () {
+      setContent(this.elem, '<p>Stuff |and| things</p>')
+
+      this.quill.link('http://www.example.com')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff <a href="http://www.example.com">and</a> things</p>')
+
+      this.quill.link(false)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff and things</p>')
+    })
+
+    it('can insert absolute urls (2).', function (done) {
+      setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
+
+      this.quill.link('http://www.example.com')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<h2>One tw<a href="http://www.example.com">o <em>th</em></a><em>ree</em></h2>')
+
+      this.quill.link(false)
+
+      // Sanitization, deferred until the next event loop, is responsible
+      // for joining adjacent <em>s etc. We need to go async.
+      setTimeout(function () {
+        expect(this.elem.innerHTML)
+          .toEqual('<h2>One two <em>three</em></h2>')
+
+        done()
+      }.bind(this), 0)
+    })
+
+    it('can insert relative urls (1).', function () {
+      setContent(this.elem, '<p>Stuff |and| things</p>')
+
+      this.quill.link('/word')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff <a href="/word">and</a> things</p>')
+    })
+
+    it('can insert relative urls (2).', function (done) {
+      setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
+
+      this.quill.link('/word')
+
+      setTimeout(function () {
+        expect(this.elem.innerHTML)
+          .toEqual('<h2>One tw<a href="/word">o <em>th</em></a><em>ree</em></h2>')
+
+        done()
+      }.bind(this), 0)
+    })
+
+    it('can insert whatever you want (1).', function () {
+      setContent(this.elem, '<p>Stuff |and| things</p>')
+
+      this.quill.link('ELEPHANTS!')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>Stuff <a href="ELEPHANTS!">and</a> things</p>')
+    })
+
+    it('can insert whatever you want (2).', function (done) {
+      setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
+
+      this.quill.link('#something')
+
+      setTimeout(function () {
+        expect(this.elem.innerHTML)
+          .toEqual('<h2>One tw<a href="#something">o <em>th</em></a><em>ree</em></h2>')
+
+        done()
+      }.bind(this), 0)
+    })
+  })
 })

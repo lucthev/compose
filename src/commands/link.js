@@ -5,10 +5,28 @@ function LinkPlugin (Quill) {
   var Protocols = ['http', 'https', 'mailto']
 
   function Link (href) {
-    if (href) {
-      href += ''
-      document.execCommand('createLink', false, href)
-    } else document.execCommand('unlink', false, null)
+    var sel = window.getSelection(),
+        content,
+        range,
+        a
+
+    // We can't do anything if there is no selection.
+    if (!sel.rangeCount || sel.isCollapsed) return
+
+    if (!href)
+      return document.execCommand('unlink', false, null)
+
+    sel = window.getSelection()
+    range = sel.getRangeAt(0)
+    content = range.extractContents()
+
+    a = document.createElement('a')
+    a.setAttribute('href', href)
+    range.insertNode(a)
+    a.appendChild(content)
+
+    sel.removeAllRanges()
+    sel.addRange(range)
   }
 
   /**
