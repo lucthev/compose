@@ -134,11 +134,13 @@ Selection.prototype.save = function () {
       end = this.createMarker(true),
       toEnd = isBackwards(sel),
       startRange,
-      endRange
+      endRange,
+      range
 
   if (!sel.rangeCount) return
+  range = sel.getRangeAt(0)
 
-  startRange = sel.getRangeAt(0).cloneRange()
+  startRange = range.cloneRange()
   startRange.collapse(!toEnd)
   startRange.insertNode(start)
 
@@ -146,12 +148,15 @@ Selection.prototype.save = function () {
   removeBogusText(start)
 
   if (!sel.isCollapsed) {
-    endRange = sel.getRangeAt(0).cloneRange()
+    endRange = range.cloneRange()
     endRange.collapse(toEnd)
     endRange.insertNode(end)
 
     removeBogusText(end)
   }
+
+  sel.removeAllRanges()
+  sel.addRange(range)
 }
 
 /**
