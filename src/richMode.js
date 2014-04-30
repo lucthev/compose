@@ -130,11 +130,14 @@ function onKeydown (e) {
 function onInput () {
   /* jshint validthis:true */
 
-  this.selection.save()
+  // Give other event listeners a chance to finish before sanitizing.
+  setTimeout(function () {
+    this.selection.save()
 
-  this.sanitizer.clean(this.elem)
+    this.sanitizer.clean(this.elem)
 
-  this.selection.restore()
+    this.selection.restore()
+  }.bind(this), 0)
 }
 
 function mergeSimilar (elem) {
