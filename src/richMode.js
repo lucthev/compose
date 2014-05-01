@@ -144,9 +144,21 @@ function mergeSimilar (elem) {
   /* jshint validthis:true */
   var prev = elem.previousSibling
 
+  // If the previous element is a marker, we ignore it.
+  if (this.selection.isMarker(prev))
+    prev = prev.previousSibling
+
   // If they are similar and inline, we merge them.
-  if (this.isInline(elem) && this.isInline(prev) &&
-      this.areSimilar(prev, elem)) {
+  if (this.node.isInline(elem) && this.node.isInline(prev) &&
+      this.node.areSimilar(prev, elem)) {
+
+    // We do, however, want to keep a potential marker's place.
+    if (this.selection.isMarker(elem.previousSibling)) {
+      elem.insertBefore(
+        elem.parentNode.removeChild(elem.previousSibling),
+        elem.firstChild
+      )
+    }
 
     while (prev.lastChild) {
       elem.insertBefore(
@@ -184,7 +196,7 @@ function RichMode (Quill) {
   this.onFocus = onFocus.bind(Quill)
   this.onKeydown = onKeydown.bind(Quill)
   this.onKeyup = fixSelection.bind(Quill)
-  this.mergeSimilar = mergeSimilar.bind(Quill.node)
+  this.mergeSimilar = mergeSimilar.bind(Quill)
 
   this.elem.addEventListener('keydown', this.onKeydown)
   this.elem.addEventListener('keyup', this.onKeyup)

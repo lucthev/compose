@@ -66,6 +66,17 @@ Selection.prototype.createMarker = function (end) {
 }
 
 /**
+ * Selection.isMarker(node) determines if the given node is a marker.
+ *
+ * @param {Node} node
+ * @return {Boolean}
+ */
+Selection.prototype.isMarker = function (node) {
+  return this.node.isElem(node) && node.nodeName === 'SPAN' &&
+    node.classList.contains('Quill-marker')
+}
+
+/**
  * Selection.getMarkers() gets all markers in the editable element.
  *
  * @return {NodeList}
