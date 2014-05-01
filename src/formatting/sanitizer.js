@@ -57,10 +57,14 @@ Sanitizer.prototype.clean = function (container) {
       elem = replacement
     }
 
-    name = elem.nodeName.toLowerCase()
-    children = Slice.call(elem.childNodes)
+    if (!transformed.remove) {
+      name = elem.nodeName.toLowerCase()
+      children = Slice.call(elem.childNodes)
+    } else children = []
 
-    if (whitelisted) {
+    if (transformed.remove) {
+      parent.removeChild(elem)
+    } else if (whitelisted) {
       this.current = elem
     } else if (this.elements[name]) {
       this.current = elem
@@ -117,17 +121,23 @@ Sanitizer.prototype.clean = function (container) {
 
     returned = {
       node: false,
-      whitelist: false
+      whitelist: false,
+      remove: false
     }
 
     // Apply transformations for the elements and wildcards.
     filters = this.filters[name] || []
     filters.concat(this.filters['*'] || [])
       .forEach(function (fn) {
-        output = fn(node) || {}
+
+        // There no point in applying further transformation if the
+        // node is going to be removed.
+        if (!returned.remove)
+          output = fn(node) || {}
 
         if (output.node) returned.node = output.node
         if (output.whitelist) returned.whitelist = true
+        if (output.remove) returned.remove = true
       })
 
     return returned

@@ -316,7 +316,7 @@ describe('The Sanitizer plugin', function () {
       .toEqual('<p>Things</p><p>Stuff</p>')
   })
 
-  it('should allow removal of elements from within filters.', function () {
+  it('should allow changing of elements.', function () {
 
     // A filter which replaces <b>s with <strong>s.
     function filter (node) {
@@ -339,7 +339,51 @@ describe('The Sanitizer plugin', function () {
     expect(this.elem.innerHTML).toEqual('<p><strong>Word</strong></p>')
   })
 
-  // I was seeing something similar in inline mode.
+  it('should allow removal of elements (1).', function () {
+
+    // A filter which removes <i>s.
+    function  filter () {
+      return { remove: true }
+    }
+
+    this.Sanitizer
+      .addElements(['p', 'b', 'i'])
+      .addFilter('i', filter)
+
+    this.elem.innerHTML = '<p>One <i>two </i><b>three</b></p>'
+
+    this.Sanitizer.clean(this.elem)
+
+    expect(this.elem.innerHTML)
+      .toEqual('<p>One <b>three</b></p>')
+  })
+
+  it('should allow removal of elements (2).', function () {
+
+    function filter () {
+      var d = document.createElement('div')
+
+      d.innerHTML = 'One <b>two</b>'
+
+      return {
+        node: d,
+        whitelist: true,
+        remove: true
+      }
+    }
+
+    this.Sanitizer
+      .addElements(['p', 'span', 'b', 'i'])
+      .addFilter('span', filter)
+
+    this.elem.innerHTML = '<p>One<span> two <i>three <b>four</b></i></span></p>'
+
+    this.Sanitizer.clean(this.elem)
+
+    expect(this.elem.innerHTML)
+      .toEqual('<p>One</p>')
+  })
+
   it('miscellaneous (1)', function () {
 
     // A filter that whitelists certain <span>s.
