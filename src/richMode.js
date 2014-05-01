@@ -38,34 +38,53 @@ function appendParagraph (elem) {
  */
 function fixSelection () {
   var sel = window.getSelection(),
+      range,
       marker,
-      last
+      outStart,
+      outEnd,
+      elem
 
-  // Dont place markers and whatnot if we dont have to; otherwise,
-  // it can cause issues (https://github.com/lucthev/quill/issues/12)
-  if (!sel.rangeCount || this.selection.getContaining()) return
+  if (!sel.rangeCount || sel.isCollapsed) return
 
-  this.selection.save()
+  // Check that everything is selected, and the bounds of the selection
+  // are outside block elements:
+  outStart = sel.anchorNode === this.elem && sel.anchorOffset === 0
+  outEnd = sel.focusNode === this.elem &&
+    sel.focusOffset === this.elem.childNodes.length
 
-  marker = this.elem.firstChild
-  if (marker.classList.contains('Quill-marker')) {
-    this.elem.removeChild(marker)
+  if (outStart) {
+    marker = this.selection.createMarker()
 
-    this.elem.firstChild
-      .insertBefore(marker, this.elem.firstChild.firstChild)
+    elem = this.elem.firstChild
+    elem.insertBefore(marker, elem.firstChild)
   }
 
-  marker = this.elem.lastChild
-  if (marker.classList.contains('Quill-marker')) {
-    this.elem.removeChild(marker)
+  if (outEnd) {
+    marker = this.selection.createMarker(true)
 
-    last = this.elem.lastChild
-    if (last.lastChild && last.lastChild.nodeName === 'BR')
-      last.insertBefore(marker, last.lastChild)
-    else last.appendChild(marker)
+    elem = this.elem.lastChild
+    if (elem.lastChild.nodeName === 'BR')
+      elem.insertBefore(marker, elem.lastChild)
+    else elem.appendChild(marker)
   }
 
-  this.selection.restore()
+  if (outStart && outEnd)
+    this.selection.restore()
+  else if (outStart || outEnd) {
+
+    // Unfortunately, we have to resort to some range manipulation.
+    range = sel.getRangeAt(0).cloneRange()
+    range.collapse(!outStart)
+    marker = this.selection.createMarker(outStart)
+    range.insertNode(marker)
+
+    // Remove potential bogus text nodes.
+    elem = marker.nextSibling
+    if (this.node.isText(elem) && !elem.data)
+      marker.parentNode.removeChild(elem)
+
+    this.selection.restore()
+  }
 }
 
 /**
@@ -80,8 +99,8 @@ function onFocus () {
   if (!sel.rangeCount) return
 
   this.selection.save()
-  outside = this.elem.firstChild.classList.contains('Quill-marker')
-  this.selection.removeMarkers()
+  outside = this.selection.isMarker(this.elem.firstChild)
+  this.selection.restore()
 
   if (!outside) return
 
@@ -208,9 +227,9 @@ function RichMode (Quill) {
   // Store bound handlers for later removal.
   this.onFocus = onFocus.bind(Quill)
   this.onKeydown = onKeydown.bind(Quill)
-  this.onKeyup = fixSelection.bind(Quill)
+  this.fixSelection = fixSelection.bind(Quill)
   this.elem.addEventListener('keydown', this.onKeydown)
-  this.elem.addEventListener('keyup', this.onKeyup)
+  this.elem.addEventListener('keydown', this.fixSelection)
   this.elem.addEventListener('focus', this.onFocus)
 
   this.mergeSimilar = mergeSimilar.bind(Quill)
@@ -238,7 +257,7 @@ function RichMode (Quill) {
  */
 RichMode.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.onKeydown)
-  this.elem.removeEventListener('keyup', this.onKeyup)
+  this.elem.removeEventListener('keydown', this.fixSelection)
   this.elem.removeEventListener('focus', this.onFocus)
 
   this.Quill.sanitizer
