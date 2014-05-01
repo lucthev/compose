@@ -51,7 +51,7 @@ function wrapText (parent) {
 
         // We want to append in the innermost element (i.e. if we have
         // <p><b></b></p>, it should end up being <p><b><br></b></p>)
-        while (node.lastChild && node.lastChild.nodeType === Node.ELEMENT_NODE)
+        while (this.isElem(node.lastChild))
           node = node.lastChild
 
         // We don't, however, want it to end up in a marker.
