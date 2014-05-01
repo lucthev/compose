@@ -9,7 +9,6 @@
  */
 
 function onKeydown (e) {
-  /* jshint validthis:true */
   var container = this.selection.getContaining(),
       sel = window.getSelection(),
       range,

@@ -8,7 +8,6 @@
  * @param {Node} parent
  */
 function wrapText (parent) {
-  /* jshint validthis:true */
   var node,
       br,
       p,

@@ -37,7 +37,6 @@ function appendParagraph (elem) {
  * formatting of multiple blocks (e.g. <p> -> <h2>).
  */
 function fixSelection () {
-  /* jshint validthis:true */
   var sel = window.getSelection(),
       marker,
       last
@@ -74,7 +73,6 @@ function fixSelection () {
  * block element in Firefox when focusing the element.
  */
 function onFocus () {
-  /* jshint validthis:true */
   var sel = window.getSelection(),
       outside,
       node
@@ -97,7 +95,6 @@ function onFocus () {
 }
 
 function onKeydown (e) {
-  /* jshint validthis:true */
   var container = this.selection.getContaining(),
       newLine = this.selection.isNewLine(),
       sel = window.getSelection(),
@@ -128,7 +125,6 @@ function onKeydown (e) {
 }
 
 function onInput () {
-  /* jshint validthis:true */
 
   // Give other event listeners a chance to finish before sanitizing.
   setTimeout(function () {
@@ -140,8 +136,13 @@ function onInput () {
   }.bind(this), 0)
 }
 
+/**
+ * mergeSimilar() is a Sanitizer filter that merges similar elements
+ * (e.g. two adjacent <em>s).
+ *
+ * @param {Element} elem
+ */
 function mergeSimilar (elem) {
-  /* jshint validthis:true */
   var prev = elem.previousSibling
 
   // If the previous element is a marker, we ignore it.
@@ -172,7 +173,6 @@ function mergeSimilar (elem) {
 }
 
 function afterClean (elem) {
-  /* jshint validthis:true */
 
   if (elem === this.elem)
     wrapInline.call(this.node, elem)

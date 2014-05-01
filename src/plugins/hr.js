@@ -1,7 +1,6 @@
 'use strict';
 
 function onKeydown (e) {
-  /* jshint validthis:true */
   var container = this.selection.getContaining(),
       sel = window.getSelection(),
       key = e.keyCode
@@ -52,7 +51,6 @@ function onKeydown (e) {
 // This handles the case where clicking on an <hr> place the caret
 // on the <hr> (see https://github.com/lucthev/quill/issues/24).
 function onClick () {
-  /* jshint validthis:true */
   var container = this.selection.getContaining()
 
   // We just place the caret in whatever element comes after.

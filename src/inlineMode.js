@@ -11,7 +11,6 @@ function onKeydown (e) {
 }
 
 function onInput () {
-  /* jshint validthis:true */
   this.selection.save()
 
   this.sanitizer.clean(this.elem)
