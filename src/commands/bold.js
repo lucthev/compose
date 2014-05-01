@@ -5,10 +5,11 @@
  * into <strong> tags.
  */
 function boldFilter (elem) {
-  var strong = document.createElement('strong')
+  var strong = document.createElement('strong'),
+      i
 
-  while (elem.firstChild)
-    strong.appendChild(elem.removeChild(elem.firstChild))
+  for (i = 0; i < elem.childNodes.length; i += 1)
+    strong.appendChild(elem.childNodes[i].cloneNode(true))
 
   return { node: strong }
 }

@@ -8,6 +8,7 @@
  * As long as you retain this notice you can do whatever you want with this stuff. If we meet some
  * day, and you think this stuff is worth it, you can buy me a beer in return.
  */
+'use strict';
 
 function fireEvent (element, event, keyCode, ctrlKey, target, relatedTarget) {
   var evt
@@ -65,4 +66,32 @@ function setContent (elem, html) {
     sel.removeAllRanges()
     sel.addRange(range)
   } else elem.innerHTML = html
+}
+
+// Some custom jasmine matchers.
+var customMatchers = {
+
+  /**
+   * toBeOneOf() takes an array or potential values, and checks
+   * that the actual value matches at least one of the potential
+   * values.
+   */
+  toBeOneOf: function (utils, equalityTesters) {
+
+    function compare (actual, expected) {
+      var result = { pass: false },
+          i
+
+      for (i = 0; i < expected.length; i += 1) {
+        if (utils.equals(actual, expected[i], equalityTesters)) {
+          result.pass = true
+          break
+        }
+      }
+
+      return result
+    }
+
+    return { compare: compare }
+  }
 }

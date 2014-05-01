@@ -153,10 +153,7 @@ describe('Rich mode', function () {
     })
 
     it('bold should report the correct state (2)', function () {
-      setContent(this.elem, '<p>One |two| three</p>')
-
-      this.quill.bold()
-      this.quill.italic()
+      setContent(this.elem, '<p>One |<em><strong>two</strong></em>| three</p>')
 
       expect(this.quill.bold.getState()).toBe(true)
     })
@@ -180,10 +177,7 @@ describe('Rich mode', function () {
     })
 
     it('italic should report the correct state (2)', function () {
-      setContent(this.elem, '<p>One |two| three</p>')
-
-      this.quill.italic()
-      this.quill.bold()
+      setContent(this.elem, '<p>One |<strong><em>two</em></strong>| three</p>')
 
       expect(this.quill.italic.getState()).toBe(true)
     })
@@ -467,6 +461,8 @@ describe('Rich mode', function () {
       }
 
       this.quill.sanitizer.addFilter('a', filter)
+
+      jasmine.addMatchers(customMatchers)
     })
 
     afterEach(function (done) {
@@ -479,7 +475,7 @@ describe('Rich mode', function () {
       }.bind(this), 10)
     })
 
-    it('can insert absolute urls (1).', function () {
+    it('can insert links over text.', function () {
       setContent(this.elem, '<p>Stuff |and| things</p>')
 
       this.quill.link('http://www.example.com')
@@ -493,13 +489,13 @@ describe('Rich mode', function () {
         .toEqual('<p>Stuff and things</p>')
     })
 
-    it('can insert absolute urls (2).', function (done) {
+    it('can insert link over mixed content (1).', function (done) {
       setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
 
-      this.quill.link('http://www.example.com')
+      this.quill.link('#')
 
       expect(this.elem.innerHTML)
-        .toEqual('<h2>One tw<a href="http://www.example.com">o <em>th</em></a><em>ree</em></h2>')
+        .toEqual('<h2>One tw<a href="#">o <em>th</em></a><em>ree</em></h2>')
 
       this.quill.link(false)
 
@@ -513,47 +509,67 @@ describe('Rich mode', function () {
       }.bind(this), 0)
     })
 
-    it('can insert relative urls (1).', function () {
-      setContent(this.elem, '<p>Stuff |and| things</p>')
+    it('can insert links over entire elements (1).', function (done) {
+      setContent(this.elem, '<p>One |<strong>two</strong>| three</p>')
 
-      this.quill.link('/word')
+      this.quill.link('/')
 
-      expect(this.elem.innerHTML)
-        .toEqual('<p>Stuff <a href="/word">and</a> things</p>')
-    })
+      // Different browsers treat this differently. We don't care, as
+      // long as it's relatively semantic.
+      expect(this.elem.innerHTML).toBeOneOf([
+        '<p>One <a href="/"><strong>two</strong></a> three</p>',
+        '<p>One <strong><a href="/">two</a></strong> three</p>'])
 
-    it('can insert relative urls (2).', function (done) {
-      setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
-
-      this.quill.link('/word')
+      this.quill.link(false)
 
       setTimeout(function () {
         expect(this.elem.innerHTML)
-          .toEqual('<h2>One tw<a href="/word">o <em>th</em></a><em>ree</em></h2>')
+          .toEqual('<p>One <strong>two</strong> three</p>')
 
         done()
       }.bind(this), 0)
     })
 
-    it('can insert whatever you want (1).', function () {
-      setContent(this.elem, '<p>Stuff |and| things</p>')
+    it('can insert links over entire elements (2).', function (done) {
+      setContent(this.elem, '<p>One <em>|two|</em> three</p>')
 
-      this.quill.link('ELEPHANTS!')
+      this.quill.link('/')
 
+      // Different browsers treat this differently. We don't care, as
+      // long as it's relatively semantic.
       expect(this.elem.innerHTML)
-        .toEqual('<p>Stuff <a href="ELEPHANTS!">and</a> things</p>')
-    })
+        .toEqual('<p>One <em><a href="/">two</a></em> three</p>')
 
-    it('can insert whatever you want (2).', function (done) {
-      setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
-
-      this.quill.link('#something')
+      this.quill.link(false)
 
       setTimeout(function () {
         expect(this.elem.innerHTML)
-          .toEqual('<h2>One tw<a href="#something">o <em>th</em></a><em>ree</em></h2>')
+          .toEqual('<p>One <em>two</em> three</p>')
 
         done()
+      }.bind(this), 0)
+    })
+
+    it('can insert links over entire elements (3).', function (done) {
+      setContent(this.elem, '<p>One |<strong>two|</strong> three</p>')
+
+      this.quill.link('mailto:abc@example.com')
+
+      // This operation sometimes creates orphaned <strong>s; Sanitization
+      // is responsible for reomving those.
+      setTimeout(function () {
+        expect(this.elem.innerHTML).toBeOneOf([
+          '<p>One <strong><a href="mailto:abc@example.com">two</a></strong> three</p>',
+          '<p>One <a href="mailto:abc@example.com"><strong>two</strong></a> three</p>'])
+
+        this.quill.link(false)
+
+        setTimeout(function () {
+          expect(this.elem.innerHTML)
+            .toEqual('<p>One <strong>two</strong> three</p>')
+
+          done()
+        }.bind(this), 0)
       }.bind(this), 0)
     })
   })

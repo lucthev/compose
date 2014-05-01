@@ -137,6 +137,19 @@ function onInput () {
 }
 
 /**
+ * removeCollapsedInline() is a Sanitizer filter which removes
+ * collapsed inline elements. Collapsed inline elements are not
+ * selectable, so this should not have any effects on usability.
+ *
+ * @param {Element} elem
+ * @return {Object}
+ */
+function removeCollapsedInline (elem) {
+  if (this.node.isInline(elem) && !elem.firstChild)
+    return { remove: true }
+}
+
+/**
  * mergeSimilar() is a Sanitizer filter that merges similar elements
  * (e.g. two adjacent <em>s).
  *
@@ -196,23 +209,25 @@ function RichMode (Quill) {
   this.onFocus = onFocus.bind(Quill)
   this.onKeydown = onKeydown.bind(Quill)
   this.onKeyup = fixSelection.bind(Quill)
-  this.mergeSimilar = mergeSimilar.bind(Quill)
-
   this.elem.addEventListener('keydown', this.onKeydown)
   this.elem.addEventListener('keyup', this.onKeyup)
   this.elem.addEventListener('focus', this.onFocus)
 
-  if (!this.elem.firstElementChild)
-    appendParagraph(this.elem)
+  this.mergeSimilar = mergeSimilar.bind(Quill)
+  this.removeCollapsedInline = removeCollapsedInline.bind(Quill)
 
   Quill.sanitizer
     .addElements(['p', 'br'])
     .addFilter(this.mergeSimilar)
+    .addFilter(this.removeCollapsedInline)
 
   this.onInput = onInput.bind(Quill)
   this.afterClean = afterClean.bind(Quill)
   Quill.on('input', this.onInput)
   Quill.on('afterclean', this.afterClean)
+
+  if (!this.elem.firstElementChild)
+    appendParagraph(this.elem)
 }
 
 /**

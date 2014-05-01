@@ -5,10 +5,11 @@
  * tags into <em> tags.
  */
 function italicFilter (elem) {
-  var em = document.createElement('em')
+  var em = document.createElement('em'),
+      i
 
-  while (elem.firstChild)
-    em.appendChild(elem.removeChild(elem.firstChild))
+  for (i = 0; i < elem.childNodes.length; i += 1)
+    em.appendChild(elem.childNodes[i].cloneNode(true))
 
   return { node: em }
 }
