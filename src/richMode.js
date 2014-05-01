@@ -148,9 +148,9 @@ function mergeSimilar (elem) {
   if (this.isInline(elem) && this.isInline(prev) &&
       this.areSimilar(prev, elem)) {
 
-    while (prev.firstChild) {
+    while (prev.lastChild) {
       elem.insertBefore(
-        prev.removeChild(prev.firstChild),
+        prev.removeChild(prev.lastChild),
         elem.firstChild
       )
     }
