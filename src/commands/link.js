@@ -27,6 +27,8 @@ function LinkPlugin (Quill) {
 
     sel.removeAllRanges()
     sel.addRange(range)
+
+    Quill.emit('input')
   }
 
   /**
