@@ -32,9 +32,7 @@ function ItalicPlugin (Quill) {
    */
   Italic.getState = function () {
     var sel = window.getSelection(),
-        child,
-        node,
-        i
+        node
 
     // If there's no selection, it won't be true.
     if (!sel.rangeCount) return false
@@ -47,16 +45,10 @@ function ItalicPlugin (Quill) {
     // Check condition (2).
     node = sel.getRangeAt(0).cloneContents()
 
+    // Occasionally, there are bogus text nodes. Normalizing removes them.
+    node.normalize()
+
     while (node && !node.previousSibling && !node.nextSibling) {
-
-      // Occasionally, there are bogus text nodes. We remove them.
-      for (i = 0; i < node.childNodes.length; i += 1) {
-        child = node.childNodes[i]
-
-        if (Quill.node.isText(child) && !child.data)
-          node.removeChild(child)
-      }
-
       if (/^(EM|I)$/.test(node.nodeName)) return true
 
       node = node.firstChild
