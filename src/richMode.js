@@ -5,7 +5,6 @@ var wrapInline = require('./formatting/wrapInline')
 var formattingPlugins = [
   require('./commands/bold'),
   require('./commands/italic'),
-  require('./commands/underline'),
   require('./commands/heading'),
   require('./commands/link'),
   require('./commands/blockquote'),
