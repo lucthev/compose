@@ -489,7 +489,7 @@ describe('Rich mode', function () {
         .toEqual('<p>Stuff and things</p>')
     })
 
-    it('can insert link over mixed content (1).', function (done) {
+    it('can insert link over mixed content (1).', function () {
       setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
 
       this.quill.link('#')
@@ -499,17 +499,11 @@ describe('Rich mode', function () {
 
       this.quill.link(false)
 
-      // Sanitization, deferred until the next event loop, is responsible
-      // for joining adjacent <em>s etc. We need to go async.
-      setTimeout(function () {
-        expect(this.elem.innerHTML)
-          .toEqual('<h2>One two <em>three</em></h2>')
-
-        done()
-      }.bind(this), 0)
+      expect(this.elem.innerHTML)
+        .toEqual('<h2>One two <em>three</em></h2>')
     })
 
-    it('can insert links over entire elements (1).', function (done) {
+    it('can insert links over entire elements (1).', function () {
       setContent(this.elem, '<p>One |<strong>two</strong>| three</p>')
 
       this.quill.link('/')
@@ -522,15 +516,11 @@ describe('Rich mode', function () {
 
       this.quill.link(false)
 
-      setTimeout(function () {
-        expect(this.elem.innerHTML)
-          .toEqual('<p>One <strong>two</strong> three</p>')
-
-        done()
-      }.bind(this), 0)
+      expect(this.elem.innerHTML)
+        .toEqual('<p>One <strong>two</strong> three</p>')
     })
 
-    it('can insert links over entire elements (2).', function (done) {
+    it('can insert links over entire elements (2).', function () {
       setContent(this.elem, '<p>One <em>|two|</em> three</p>')
 
       this.quill.link('/')
@@ -542,35 +532,23 @@ describe('Rich mode', function () {
 
       this.quill.link(false)
 
-      setTimeout(function () {
-        expect(this.elem.innerHTML)
-          .toEqual('<p>One <em>two</em> three</p>')
-
-        done()
-      }.bind(this), 0)
+      expect(this.elem.innerHTML)
+        .toEqual('<p>One <em>two</em> three</p>')
     })
 
-    it('can insert links over entire elements (3).', function (done) {
+    it('can insert links over entire elements (3).', function () {
       setContent(this.elem, '<p>One |<strong>two|</strong> three</p>')
 
       this.quill.link('mailto:abc@example.com')
 
-      // This operation sometimes creates orphaned <strong>s; Sanitization
-      // is responsible for reomving those.
-      setTimeout(function () {
-        expect(this.elem.innerHTML).toBeOneOf([
-          '<p>One <strong><a href="mailto:abc@example.com">two</a></strong> three</p>',
-          '<p>One <a href="mailto:abc@example.com"><strong>two</strong></a> three</p>'])
+      expect(this.elem.innerHTML).toBeOneOf([
+        '<p>One <strong><a href="mailto:abc@example.com">two</a></strong> three</p>',
+        '<p>One <a href="mailto:abc@example.com"><strong>two</strong></a> three</p>'])
 
-        this.quill.link(false)
+      this.quill.link(false)
 
-        setTimeout(function () {
-          expect(this.elem.innerHTML)
-            .toEqual('<p>One <strong>two</strong> three</p>')
-
-          done()
-        }.bind(this), 0)
-      }.bind(this), 0)
+      expect(this.elem.innerHTML)
+        .toEqual('<p>One <strong>two</strong> three</p>')
     })
   })
 })
