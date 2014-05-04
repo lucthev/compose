@@ -117,6 +117,15 @@ describe('The Smart Text plugin', function () {
         .toEqual('<ul><li>One</li><li>‘Two’</li></ul>')
     })
 
+    it('converts straight single quotes to curly quotes (11).', function () {
+      setContent(this.elem, '<p>(\'</p>')
+
+      this.Quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>(‘</p>')
+    })
+
     it('should not replace quotes in code blocks.', function () {
       this.Quill.sanitizer.addElements('pre')
 
@@ -241,6 +250,15 @@ describe('The Smart Text plugin', function () {
 
       expect(this.elem.innerHTML)
         .toEqual('<ul><li>One</li><li>“Two”</li></ul>')
+    })
+
+    it('converts straight double quotes to curly quotes (11).', function () {
+      setContent(this.elem, '<p>("</p>')
+
+      this.Quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>(“</p>')
     })
 
     it('should not replace quotes in code blocks.', function () {

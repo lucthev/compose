@@ -2,14 +2,14 @@
 
 /**
  * isWordChar(char) determines if the given character is a word
- * character. For our purposes, that's anything that's not whitespace
- * or a bracket of any sort.
+ * character. For our purposes, anything that’s not whitespace or an
+ * open bracket of any sort.
  *
  * @param {String} char
  * @return {Boolean}
  */
 function isWordChar (char) {
-  return /[^\s()\{\}\[\]]/.test(char)
+  return /[^\s(\{\[]/.test(char)
 }
 
 /**
@@ -39,12 +39,34 @@ function getAdjacentChar (elem, node, after) {
   return text && text.data ? text.data[text.data.length - 1] : ''
 }
 
+/**
+ * getPrevious(root, node, index) gets the character before the given
+ * index in the given text node. If that's not possible, uses the given
+ * element as a frame of reference for determining the character that
+ * comes before the given text node.
+ *
+ * @param {Element} root
+ * @param {Text} node
+ * @param {Number >= 0} index
+ * @return {String}
+ */
 function getPrevious (root, node, index) {
   if (!index) return getAdjacentChar(root, node)
 
   return node.data[index - 1]
 }
 
+/**
+ * getNext(root, node, index) gets the character after the given
+ * index in the given text node. If that's not possible, uses the given
+ * element as a frame of reference for determining the character that
+ * comes after the given text node.
+ *
+ * @param {Element} root
+ * @param {Text} node
+ * @param {Number >= 0} index
+ * @return {String}
+ */
 function getNext (root, node, index) {
   if (index === node.data.length - 1)
     return getAdjacentChar(root, node, true)
@@ -52,6 +74,11 @@ function getNext (root, node, index) {
   return node.data[index + 1]
 }
 
+/**
+ * replaceQuotes(...) replaces straight quotes wiht curly ones.
+ *
+ * @return {Function}
+ */
 function replaceQuotes (root, textNode, open, close) {
   return function (match, index) {
     var before,
@@ -60,20 +87,17 @@ function replaceQuotes (root, textNode, open, close) {
     before = getPrevious(root, textNode, index) || ''
     after = getNext(root, textNode, index) || ''
 
-    // The second condition allows closing in the following:
-    // "(Stuff)" -> “(Stuff)”
-    if (isWordChar(before) ||
-        (before && !/\s/.test(before) && (/\s/.test(after) || !after))) {
-      return close
-    }
+    if (isWordChar(before)) return close
 
     return open
   }
 }
 
 /**
- * primes() replaces digits followed by quotation marks with primes
- * (e.g. 4'11" -> 4′11″)
+ * replacePrimes(...) replaces digits followed by straight quotes with
+ * primes (e.g. 4'11" -> 4′11″)
+ *
+ * @return {Function}
  */
 function replacePrimes (root, textNode) {
   return function (match, digit, quotmark, offset) {
@@ -111,6 +135,9 @@ function formatter (textNode) {
       .replace(/(\d)?(['"])/g, replacePrimes(container, textNode))
       .replace(/'/g, replaceQuotes(container, textNode, '‘', '’'))
       .replace(/"/g, replaceQuotes(container, textNode, '“', '”'))
+
+      // We don’t bother with complicated look-behinds with ellipses.
+      .replace(/\.\.\./g, '…')
   }
 }
 
