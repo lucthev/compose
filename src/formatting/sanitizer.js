@@ -4,13 +4,160 @@
 var PROTOCOL_REGEX = /^([A-Za-z0-9\+\-\.\&\;\*\s]*?)(?:\:|&*0*58|&*x0*3a)/i,
     Slice = Array.prototype.slice
 
+/**
+ * clean(node) takes a node and decides what kind of transformations
+ * to apply to it.
+ *
+ * @param {Node} node
+ */
+function clean (node) {
+  var type = node.nodeType
+
+  if (type === Node.TEXT_NODE) {
+    formatText.call(this,node)
+  } else if (type === Node.ELEMENT_NODE) {
+    cleanElement.call(this, node)
+  } else {
+    // Remove all nodes that aren't elements or text.
+
+    node.parentNode.removeChild(node)
+  }
+}
+
+/**
+ * cleanElement(elem) cleans the given element.
+ *
+ * @param {Element} elem
+ */
+function cleanElement (elem) {
+  var transformed = transformElem.call(this, elem),
+      whitelisted = transformed.whitelist,
+      replacement = transformed.node,
+      children,
+      parent,
+      attrs,
+      attr,
+      name,
+      val,
+      i
+
+  parent = this.current
+
+  if (replacement) {
+    parent.replaceChild(replacement, elem)
+    elem = replacement
+  }
+
+  if (!transformed.remove) {
+    name = elem.nodeName.toLowerCase()
+    children = Slice.call(elem.childNodes)
+  } else children = []
+
+  if (transformed.remove) {
+    parent.removeChild(elem)
+  } else if (whitelisted) {
+    this.current = elem
+  } else if (this.elements[name]) {
+    this.current = elem
+
+    // Clean attributes
+    attrs = this.attributes[name] || []
+
+    Slice.call(elem.attributes)
+      .forEach(function (attribute) {
+        attr = attribute.name
+
+        if (attrs.indexOf(attr) < 0)
+          elem.removeAttribute(attr)
+        else if (attr === 'href') {
+
+          /**
+           * We use elem.href; this way, any relative URLs are converted
+           * to their absolute equivalent, where possible. This means
+           * potentially garbage values will be OK'd; care must be taken.
+           */
+          val = elem.href.toLowerCase().match(PROTOCOL_REGEX)
+
+          if (!val || this.protocols.indexOf(val[1]) < 0)
+            elem.removeAttribute(attr)
+        }
+      }.bind(this))
+
+  } else {
+    while (elem.firstChild) {
+      parent.insertBefore(
+        elem.removeChild(elem.firstChild),
+        elem
+      )
+    }
+
+    parent.removeChild(elem)
+  }
+
+  // Iterate over child nodes
+  for (i = 0; i < children.length; i += 1) {
+    clean.call(this, children[i])
+  }
+
+  this.current = parent
+}
+
+/**
+ * transformElem(node) applies element filters to the given element.
+ *
+ * @param {Element} node
+ * @return {Object}
+ */
+function transformElem (node) {
+  var name = node.nodeName.toLowerCase(),
+      returned,
+      filters,
+      output
+
+  returned = {
+    node: false,
+    whitelist: false,
+    remove: false
+  }
+
+  // Apply transformations for the elements and wildcards.
+  filters = this.filters[name] || []
+  filters.concat(this.filters['*'] || [])
+    .forEach(function (fn) {
+
+      // There no point in applying further transformation if the
+      // node is going to be removed.
+      if (!returned.remove)
+        output = fn(node) || {}
+
+      if (output.node) returned.node = output.node
+      if (output.whitelist) returned.whitelist = true
+      if (output.remove) returned.remove = true
+    })
+
+  return returned
+}
+
+/**
+ * formatText(node) applies text formatters to a text node.
+ *
+ * @param {Node} node
+ */
+function formatText (node) {
+  var i
+
+  for (i = 0; i < this.textFormatters.length; i += 1)
+    this.textFormatters[i](node)
+}
+
 function Sanitizer (Quill) {
   this.attributes = {}
   this.elements = {}
   this.filters = {}
+  this.textFormatters = []
   this.protocols = []
 
-  this.Quill = Quill
+  this.emit = Quill.emit.bind(Quill)
 }
 
 /**
@@ -22,126 +169,9 @@ function Sanitizer (Quill) {
 Sanitizer.prototype.clean = function (container) {
 
   // Emit a 'beforeclean' event with the container as an argument.
-  this.Quill.emit('beforeclean', container)
+  this.emit('beforeclean', container)
 
   this.current = container
-
-  function clean (node) {
-    /* jshint validthis:true */
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      cleanElement.call(this, node)
-    } else if (node.nodeType !== Node.TEXT_NODE) {
-      // Remove all nodes that aren't elements or text.
-
-      node.parentNode.removeChild(node)
-    }
-  }
-
-  function cleanElement (elem) {
-    /* jshint validthis:true*/
-    var transformed = transform.call(this, elem),
-        whitelisted = transformed.whitelist,
-        replacement = transformed.node,
-        children,
-        parent,
-        attrs,
-        attr,
-        name,
-        val,
-        i
-
-    parent = this.current
-
-    if (replacement) {
-      parent.replaceChild(replacement, elem)
-      elem = replacement
-    }
-
-    if (!transformed.remove) {
-      name = elem.nodeName.toLowerCase()
-      children = Slice.call(elem.childNodes)
-    } else children = []
-
-    if (transformed.remove) {
-      parent.removeChild(elem)
-    } else if (whitelisted) {
-      this.current = elem
-    } else if (this.elements[name]) {
-      this.current = elem
-
-      // Clean attributes
-      attrs = this.attributes[name] || []
-
-      Slice.call(elem.attributes)
-        .forEach(function (attribute) {
-          attr = attribute.name
-
-          if (attrs.indexOf(attr) < 0)
-            elem.removeAttribute(attr)
-          else if (attr === 'href') {
-
-            /**
-             * We use elem.href; this way, any relative URL are converted
-             * to their absolute equivalent, where possible. This means
-             * potentially garbage values, like 'ELEPHANT', will be OK'd;
-             * care must be taken.
-             */
-            val = elem.href.toLowerCase().match(PROTOCOL_REGEX)
-
-            if (!val || this.protocols.indexOf(val[1]) < 0)
-              elem.removeAttribute(attr)
-          }
-        }.bind(this))
-
-    } else {
-      while (elem.firstChild) {
-        parent.insertBefore(
-          elem.removeChild(elem.firstChild),
-          elem
-        )
-      }
-
-      parent.removeChild(elem)
-    }
-
-    // Iterate over child nodes
-    for (i = 0; i < children.length; i += 1) {
-      clean.call(this, children[i])
-    }
-
-    this.current = parent
-  }
-
-  function transform (node) {
-    /* jshint validthis:true */
-    var name = node.nodeName.toLowerCase(),
-        returned,
-        filters,
-        output
-
-    returned = {
-      node: false,
-      whitelist: false,
-      remove: false
-    }
-
-    // Apply transformations for the elements and wildcards.
-    filters = this.filters[name] || []
-    filters.concat(this.filters['*'] || [])
-      .forEach(function (fn) {
-
-        // There no point in applying further transformation if the
-        // node is going to be removed.
-        if (!returned.remove)
-          output = fn(node) || {}
-
-        if (output.node) returned.node = output.node
-        if (output.whitelist) returned.whitelist = true
-        if (output.remove) returned.remove = true
-      })
-
-    return returned
-  }
 
   Slice.call(container.childNodes).forEach(clean.bind(this))
 
@@ -149,7 +179,7 @@ Sanitizer.prototype.clean = function (container) {
   container.normalize()
 
   // Emit an 'afterclean' event with the container as an argument.
-  this.Quill.emit('afterclean', container)
+  this.emit('afterclean', container)
 
   return this
 }
@@ -292,6 +322,32 @@ Sanitizer.prototype.removeFilter = function (name, filter) {
 }
 
 /**
+ * Sanitizer.addTextFormatter(fn) adds the given text formatter.
+ *
+ * @param {Function} fn
+ * @return {Context}
+ */
+Sanitizer.prototype.addTextFormatter = function (fn) {
+  this.textFormatters.push(fn)
+
+  return this
+}
+
+/**
+ * Sanitizer.removeTextFormatter(fn) removes the given text formatter.
+ *
+ * @param {Function} fn
+ * @return {Context}
+ */
+Sanitizer.prototype.removeTextFormatter = function (fn) {
+  var index = this.textFormatters.indexOf(fn)
+
+  if (index >= 0) this.textFormatters.splice(index, 0)
+
+  return this
+}
+
+/**
  * Sanitizer.addProtocols() adds to the list of allowed protocols.
  *
  * @param {Array} protocols
@@ -325,6 +381,17 @@ Sanitizer.prototype.removeProtocols = function (protocols) {
 
 
   return this
+}
+
+Sanitizer.prototype.destroy = function () {
+
+  delete this.attributes
+  delete this.elements
+  delete this.filters
+  delete this.textFormatters
+  delete this.protocols
+
+  delete this.emit
 }
 
 Sanitizer.plugin = 'sanitizer'

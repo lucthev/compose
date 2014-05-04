@@ -7,7 +7,8 @@ var EventEmitter = require('./vendor/eventEmitter/EventEmitter'),
     Sanitizer = require('./formatting/sanitizer'),
     History = require('./history'),
     Throttle = require('./throttle'),
-    NodePlugin = require('./node')
+    NodePlugin = require('./node'),
+    SmartText = require('./formatting/smartText')
 
 /**
  * setup(elem) sets up the given element. If a string is passed
@@ -47,6 +48,9 @@ function Quill (elem, opts) {
   this.use(Selection)
   this.use(History)
   this.use(Throttle)
+
+  // We're forcing smart text on people.
+  this.use(SmartText)
 
   // Establish the mode:
   Mode = opts.mode
