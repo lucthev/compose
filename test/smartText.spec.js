@@ -87,7 +87,7 @@ describe('The Smart Text plugin', function () {
         .toEqual('<p>‘Once upon a time.’</p>')
     })
 
-    it('converts straight double quotes to curly quotes (8).', function () {
+    it('converts straight single quotes to curly quotes (8).', function () {
       // The position of the cursor means a marker will be inserted between
       // the quotation mark and the rest of word; this should not affect the
       // outcome.
@@ -99,13 +99,22 @@ describe('The Smart Text plugin', function () {
         .toEqual('<p>‘Yes,’ he replied.</p>')
     })
 
-    it('converts straight double quotes to curly quotes (9).', function () {
+    it('converts straight single quotes to curly quotes (9).', function () {
       setContent(this.elem, '<p>\'(Words)\'</p>')
 
       this.Quill.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>‘(Words)’</p>')
+    })
+
+    it('converts straight single quotes to curly quotes (10).', function () {
+      setContent(this.elem, '<ul><li>One</li><li>\'Two\'</li></ul>')
+
+      this.Quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<ul><li>One</li><li>‘Two’</li></ul>')
     })
 
     it('should not replace quotes in code blocks.', function () {
@@ -223,6 +232,15 @@ describe('The Smart Text plugin', function () {
 
       expect(this.elem.innerHTML)
         .toEqual('<p>“(Words)”</p>')
+    })
+
+    it('converts straight double quotes to curly quotes (10).', function () {
+      setContent(this.elem, '<ul><li>One</li><li>"Two"</li></ul>')
+
+      this.Quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<ul><li>One</li><li>“Two”</li></ul>')
     })
 
     it('should not replace quotes in code blocks.', function () {

@@ -100,8 +100,11 @@ function replacePrimes (root, textNode) {
 function formatter (textNode) {
   var container = this.getContaining(textNode)
 
-  // Only “smarten” quotes when not in a code block. We don’t, however,
-  // transform curly quotes in code blocks into dumb ones.
+  if (/^[OU]L$/.test(container.nodeName))
+    container = this.childOf(textNode, 'li')
+
+  // Only “smarten” quotes and whatnot when not in a code block. We
+  // don’t, however, transform curly quotes in code blocks into dumb ones.
   if (!this.childOf(textNode, 'pre') && !this.childOf(textNode, 'code')) {
 
     textNode.data = textNode.data
