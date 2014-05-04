@@ -8,21 +8,19 @@ function scheduleSave () {
 
   // Force a state save every so often.
   if (throttle.min && !throttle.forced)
-    throttle.forced = setTimeout(function () {
+    throttle.forced = setTimeout(function scheduleForced () {
 
       // Don't save twice.
       clearTimeout(throttle.scheduled)
       throttle.forced = null
-      throttle.Quill.emit('change')
+      throttle.emit('change')
     }, throttle.min)
 
-  if (!throttle.max) return throttle.Quill.emit('change')
-
   // Schedule a state save once the user finishes typing.
-  throttle.scheduled = setTimeout(function () {
+  throttle.scheduled = setTimeout(function scheduleTimed () {
 
     throttle.forced = clearTimeout(throttle.forced)
-    throttle.Quill.emit('change')
+    throttle.emit('change')
   }, throttle.max)
 }
 
@@ -31,10 +29,12 @@ function onInput () {
 }
 
 function Throttle (Quill) {
-  this.Quill = Quill
+  this.emit = Quill.emit.bind(Quill)
+  this.off = Quill.off.bind(Quill)
+  this.elem = Quill.elem
 
-  this.max = 150
-  this.min = 320
+  this.max = 200
+  this.min = 460
 
   // Saving bound event listeners for later removal.
   this.scheduleSave = scheduleSave.bind(this)
@@ -59,13 +59,15 @@ Throttle.prototype.setSpeed = function (max, min) {
 }
 
 Throttle.prototype.destroy = function () {
-  this.Quill.elem.removeEventListener('input', this.onInput)
-  this.Quill.off('input', this.scheduleSave)
+  this.elem.removeEventListener('input', this.onInput)
+  this.off('input', this.scheduleSave)
 
   clearTimeout(this.scheduled)
   clearTimeout(this.forced)
-  delete this.scheduleSave
-  delete this.Quill
+
+  delete this.elem
+  delete this.emit
+  delete this.off
 
   return null
 }
