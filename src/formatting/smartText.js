@@ -1,28 +1,6 @@
 'use strict';
 
 /**
- * allMatches(str, regexp) gets all matches of a regular expression
- * in a string. This is so that when using multiple-character regexes,
- * adjacent matches will all get picked up.
- * Adapted from http://stackoverflow.com/a/18029592
- *
- * @param {String}
- * @param {RegExp}
- * @return {Array}
- */
-function allMatches (str, regexp) {
-  var matches = [],
-      match
-
-  while (match = regexp.exec(str)) { // jshint ignore:line
-    matches.push(match)
-    regexp.lastIndex = match.index + 1
-  }
-
-  return matches
-}
-
-/**
  * isWordChar(char) determines if the given character is a word
  * character. For our purposes, that's anything that's not whitespace
  * or a bracket of any sort.
@@ -61,20 +39,35 @@ function getAdjacentChar (elem, node, after) {
   return text && text.data ? text.data[text.data.length - 1] : ''
 }
 
+function getPrevious (root, node, index) {
+  if (!index) return getAdjacentChar(root, node)
+
+  return node.data[index - 1]
+}
+
+function getNext (root, node, index) {
+  if (index === node.data.length - 1)
+    return getAdjacentChar(root, node, true)
+
+  return node.data[index + 1]
+}
+
 function replaceQuotes (root, textNode, open, close) {
-  return function (match, prev, next) {
+  return function (match, index) {
     var before,
         after
 
-    prev = prev || ''
-    next = next || ''
+    before = getPrevious(root, textNode, index) || ''
+    after = getNext(root, textNode, index) || ''
 
-    before = prev || getAdjacentChar(root, textNode)
-    after = next || getAdjacentChar(root, textNode, after)
+    // The second condition allows closing in the following:
+    // "(Stuff)" -> “(Stuff)”
+    if (isWordChar(before) ||
+        (before && !/\s/.test(before) && (/\s/.test(after) || !after))) {
+      return close
+    }
 
-    if (isWordChar(before)) return prev + close + next
-
-    return prev + open + next
+    return open
   }
 }
 
@@ -84,7 +77,7 @@ function replaceQuotes (root, textNode, open, close) {
  */
 function replacePrimes (root, textNode) {
   return function (match, digit, quotmark, offset) {
-    var prime = /['‘’]/.test(quotmark) ? '′' : '″',
+    var prime = quotmark === '\'' ? '′' : '″',
         digitBefore
 
     digit = digit || ''
@@ -104,16 +97,17 @@ function replacePrimes (root, textNode) {
  *
  * @param {Text} node
  */
-function formatter (node) {
+function formatter (textNode) {
+  var container = this.getContaining(textNode)
 
   // Only “smarten” quotes when not in a code block. We don’t, however,
   // transform curly quotes in code blocks into dumb ones.
-  if (!this.childOf(node, 'pre') && !this.childOf(node, 'code')) {
+  if (!this.childOf(textNode, 'pre') && !this.childOf(textNode, 'code')) {
 
-    node.data = node.data
-      .replace(/([\s\S])?['‘’]([\s\S])?/g, replaceQuotes(this.elem, node, '‘', '’'))
-      .replace(/([\s\S])?["“”]([\s\S])?/g, replaceQuotes(this.elem, node, '“', '”'))
-      .replace(/(\d)?(['‘’"“”])/g, replacePrimes(this.elem, node))
+    textNode.data = textNode.data
+      .replace(/(\d)?(['"])/g, replacePrimes(container, textNode))
+      .replace(/'/g, replaceQuotes(container, textNode, '‘', '’'))
+      .replace(/"/g, replaceQuotes(container, textNode, '“', '”'))
   }
 }
 

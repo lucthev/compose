@@ -99,6 +99,15 @@ describe('The Smart Text plugin', function () {
         .toEqual('<p>‘Yes,’ he replied.</p>')
     })
 
+    it('converts straight double quotes to curly quotes (9).', function () {
+      setContent(this.elem, '<p>\'(Words)\'</p>')
+
+      this.Quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>‘(Words)’</p>')
+    })
+
     it('should not replace quotes in code blocks.', function () {
       this.Quill.sanitizer.addElements('pre')
 
@@ -205,6 +214,15 @@ describe('The Smart Text plugin', function () {
 
       expect(this.elem.innerHTML)
         .toEqual('<p>“Yes,” he replied.</p>')
+    })
+
+    it('converts straight double quotes to curly quotes (9).', function () {
+      setContent(this.elem, '<p>"(Words)"</p>')
+
+      this.Quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p>“(Words)”</p>')
     })
 
     it('should not replace quotes in code blocks.', function () {
