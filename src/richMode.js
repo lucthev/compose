@@ -126,8 +126,8 @@ function onKeydown (e) {
   // Pressing enter after an <h[1-6]> or <blockquote> creates divs or
   // blockquotes, not paragraphs. We override this behaviour.
   // TODO: Ideally, this would be in the plugins themselves.
-  if (e.keyCode === 13 && sel.isCollapsed &&
-      /^H[1-6]|BLOCKQUOTE$/i.test(container.nodeName)) {
+  if (e.keyCode === 13 && sel.isCollapsed && !e.shiftKey &&
+      /^(?:H[1-6]|BLOCKQUOTE|PRE)$/i.test(container.nodeName)) {
 
     if (this.selection.at('end', container)) {
       e.preventDefault()
