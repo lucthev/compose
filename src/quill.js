@@ -29,6 +29,21 @@ function setup (elem) {
   return elem
 }
 
+/**
+ * new Quill(elem [, opts]) creates an instance of Quill. elem can be
+ * an Element or a String; if a string, tries to query an element
+ * using querySelector. opts is an options object with the following
+ * keys, all optional:
+ *   mode: A Function to use as the mode, or the Strings 'inline' or
+ *     'rich' to use the built-in inline and rich modes. Defaults
+ *     to 'rich'.
+ *   debug: a boolean indicating debug mode. In debug mode, things
+ *     are logged to the console.
+ *
+ * @param {Element || String} elem
+ * @param {Object} opts
+ * @return {Quill}
+ */
 function Quill (elem, opts) {
   var Mode
 
@@ -60,6 +75,7 @@ function Quill (elem, opts) {
   this.use(Mode)
 }
 
+// Quill is an EventEmitter.
 Quill.prototype = Object.create(EventEmitter.prototype)
 
 /**

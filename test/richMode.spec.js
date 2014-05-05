@@ -34,33 +34,6 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
     })
 
-    it('should properly convert multiple paragraphs to headings.', function () {
-      setContent(this.elem, '<p>S|tuff</p><p>Thin|gs</p>')
-
-      this.quill.heading(2)
-
-      expect(this.elem.innerHTML)
-        .toEqual('<h2>Stuff</h2><h2>Things</h2>')
-    })
-
-    it('and headings to paragraphs.', function () {
-      setContent(this.elem, '<h2>S|tuff</h2><h2>Thin|gs</h2>')
-
-      this.quill.heading(0)
-
-      expect(this.elem.innerHTML).toEqual('<p>Stuff</p><p>Things</p>')
-    })
-
-    it('should insert paragraphs after headings.', function () {
-      setContent(this.elem, '<h2>Stuff|</h2><p>Things</p>')
-
-      fireEvent(this.elem, 'keydown', 13)
-      expect(this.elem.innerHTML)
-        .toEqual('<h2>Stuff</h2><p><br></p><p>Things</p>')
-      expect(this.quill.selection.getContaining())
-        .toEqual(this.elem.firstChild.nextSibling)
-    })
-
     // NOTE: these don't work in PhantomJS, for whatever reason.
     if (!/PhantomJS/i.test(navigator.userAgent)) {
       it('should place the caret in the correct place when focusing (1).', function () {
@@ -211,7 +184,7 @@ describe('Rich mode', function () {
       }.bind(this), 10)
     })
 
-    it('should not fail when converting paragraphs to headings (1).', function () {
+    it('should correctly convert paragraphs to headings (1).', function () {
       setContent(this.elem, '<p>Stuff|</p>')
 
       this.quill.heading(2)
@@ -219,7 +192,7 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
 
-    it('should not fail when converting paragraphs to headings (2).', function () {
+    it('should correctly convert paragraphs to headings (2).', function () {
       setContent(this.elem, '<p>|Stuff</p>')
 
       this.quill.heading(2)
@@ -227,7 +200,7 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
 
-    it('should not fail when converting paragraphs to headings (3).', function () {
+    it('should correctly convert paragraphs to headings (3).', function () {
       setContent(this.elem, '<p>St|uf|f</p>')
 
       this.quill.heading(2)
@@ -235,7 +208,7 @@ describe('Rich mode', function () {
       expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
 
-    it('should not fail when converting paragraphs to headings (4).', function () {
+    it('should correctly convert paragraphs to headings (4).', function () {
       setContent(this.elem, '<p>|Stuff</p><p>Things|</p>')
 
       this.quill.heading(2)
@@ -256,6 +229,137 @@ describe('Rich mode', function () {
 
       expect(this.elem.innerHTML)
         .toEqual('<h2 id="word">Stuff</h2><h2 name="blue">Things</h2>')
+    })
+
+    it('should properly convert multiple paragraphs to headings.', function () {
+      setContent(this.elem, '<p>S|tuff</p><p>Thin|gs</p>')
+
+      this.quill.heading(2)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<h2>Stuff</h2><h2>Things</h2>')
+    })
+
+    it('and headings to paragraphs.', function () {
+      setContent(this.elem, '<h2>S|tuff</h2><h2>Thin|gs</h2>')
+
+      this.quill.heading(0)
+
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p><p>Things</p>')
+    })
+
+    it('should insert paragraphs after headings.', function () {
+      setContent(this.elem, '<h2>Stuff|</h2><p>Things</p>')
+
+      fireEvent(this.elem, 'keydown', 13)
+      expect(this.elem.innerHTML)
+        .toEqual('<h2>Stuff</h2><p><br></p><p>Things</p>')
+      expect(this.quill.selection.getContaining())
+        .toEqual(this.elem.firstChild.nextSibling)
+    })
+  })
+
+  describe('pre', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
+    })
+
+    afterEach(function (done) {
+      document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
+    })
+
+    it('should correctly convert paragraphs to <pre>s (1).', function () {
+      setContent(this.elem, '<p>Stuff|</p>')
+
+      this.quill.pre(true)
+
+      expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre>')
+    })
+
+    it('should correctly convert paragraphs to <pre>s (2).', function () {
+      setContent(this.elem, '<p>|Stuff</p>')
+
+      this.quill.pre(true)
+
+      expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre>')
+    })
+
+    it('should correctly convert paragraphs to <pre>s (3).', function () {
+      setContent(this.elem, '<p>St|uf|f</p>')
+
+      this.quill.pre(true)
+
+      expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre>')
+    })
+
+    it('should correctly convert paragraphs to <pre>s (4).', function () {
+      setContent(this.elem, '<p>|Stuff</p><p>Things|</p>')
+
+      this.quill.pre(true)
+
+      expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre><pre>Things</pre>')
+    })
+
+    it('should correctly convert <pre>s to <p>s (1).', function () {
+      setContent(this.elem, '<pre>Stuff|</pre>')
+
+      this.quill.pre(false)
+
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
+    })
+
+    it('should correctly convert <pre>s to <p>s (2).', function () {
+      setContent(this.elem, '<pre>|Stuff</pre>')
+
+      this.quill.pre()
+
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
+    })
+
+    it('should correctly convert <pre>s to <p>s (3).', function () {
+      setContent(this.elem, '<pre>St|uf|f</pre>')
+
+      this.quill.pre()
+
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
+    })
+
+    it('should correctly convert <pre>s to <p>s (4).', function () {
+      setContent(this.elem, '<pre>|Stuff</pre><pre>Things|</pre>')
+
+      this.quill.pre()
+
+      expect(this.elem.innerHTML).toEqual('<p>Stuff</p><p>Things</p>')
+    })
+
+    it('should conserve attributes when converting.', function () {
+      // We have to add attributes to the sanitizer.
+      this.quill.sanitizer.addAttributes({
+        p: ['id', 'name'],
+        pre: ['id', 'name']
+      })
+
+      setContent(this.elem, '<p id="word">|Stuff</p><p name="blue">Thing|s</p>')
+
+      this.quill.pre(true)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<pre id="word">Stuff</pre><pre name="blue">Things</pre>')
+
+      this.quill.pre(false)
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p id="word">Stuff</p><p name="blue">Things</p>')
     })
   })
 

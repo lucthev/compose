@@ -3,6 +3,11 @@
 function HeadingPlugin (Quill) {
   var allHeadings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
+  /**
+   * heading(level) creates a heading of the given level.
+   *
+   * @param {Number} level
+   */
   function heading (level) {
     level = level ? 'h' + level + '' : 'p'
 
@@ -65,6 +70,10 @@ function HeadingPlugin (Quill) {
     return allHeading
   }
 
+  /**
+   * heading.isEnabled( ) determines if the pre command can be successfully
+   * executed under the current conditions.
+   */
   // FIXME: what are the conditions that allow headings?
   heading.isEnabled = function () {
     return true
@@ -78,6 +87,7 @@ function HeadingPlugin (Quill) {
 
   return heading
 }
+
 HeadingPlugin.plugin = 'heading'
 
 module.exports = HeadingPlugin

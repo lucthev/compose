@@ -8,6 +8,7 @@ var formattingPlugins = [
   require('./commands/heading'),
   require('./commands/link'),
   require('./commands/blockquote'),
+  require('./commands/pre'),
   require('./plugins/list'),
   require('./plugins/hr')
 ]
