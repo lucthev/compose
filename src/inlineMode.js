@@ -11,15 +11,22 @@ function onKeydown (e) {
 }
 
 function onInput () {
-  var first
 
   this.selection.save()
 
   this.sanitizer.clean(this.elem)
 
+  this.selection.restore()
+}
+
+function afterClean () {
+  var first
+
+
   // Remove all whitespace at the beginning of the element.
+  // FIXME: doesn't really work.
   first = this.elem.firstChild
-  while (this.node.isText(first) && !first.data) {
+  while (this.node.isText(first) && !first.data.trim()) {
     this.elem.removeChild(first)
 
     first = this.elem.firstChild
@@ -28,8 +35,6 @@ function onInput () {
   // Append a <br> if need be.
   if (!this.elem.textContent)
     this.elem.appendChild(br())
-
-  this.selection.restore()
 }
 
 /**
@@ -56,10 +61,12 @@ function InlineMode (Quill) {
 
   // Store bound event handlers for later removal.
   this.onInput = onInput.bind(Quill)
+  this.afterClean = afterClean.bind(Quill)
   this.insertSpaces = insertSpaces.bind(Quill)
 
   this.elem.addEventListener('keydown', onKeydown)
   Quill.on('input', this.onInput)
+  Quill.on('afterclean', this.afterClean)
 
   Quill.sanitizer.addFilter(this.insertSpaces)
 
@@ -71,6 +78,7 @@ function InlineMode (Quill) {
 InlineMode.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', onKeydown)
   this.off('input', this.onInput)
+  this.off('afterclean', this.afterClean)
 
   delete this.off
   delete this.elem
