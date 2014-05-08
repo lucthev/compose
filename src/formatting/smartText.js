@@ -13,27 +13,19 @@ function isWordChar (char) {
 }
 
 /**
- * getAdjacentChar(node) gets the character adjacent to the given node.
- * If after is true, returns the character after the node; otherwise, the
- * character before (e.g. <em>One</em>Two : getAdjacentChar(Two) would
- * return 'e'). Uses a TreeWalker with 'elem' as the root.
+ * getAdjacentChar(node) gets the character before the given node.
+ * Uses a TreeWalker with 'elem' as the root.
  *
  * @param {Element} elem
  * @param {Text} node
- * @param {Boolean} after
  * @return {String}
  */
-function getAdjacentChar (elem, node, after) {
+function getAdjacentChar (elem, node) {
   var walker = document.createTreeWalker(elem, NodeFilter.SHOW_TEXT),
       text = walker.firstChild()
 
   while (text && text !== node)
     text = walker.nextSibling()
-
-  if (after) {
-    text = walker.nextSibling()
-    return text && text.data ? text.data[0] : ''
-  }
 
   text = walker.previousSibling()
   return text && text.data ? text.data[text.data.length - 1] : ''
@@ -57,35 +49,15 @@ function getPrevious (root, node, index) {
 }
 
 /**
- * getNext(root, node, index) gets the character after the given
- * index in the given text node. If that's not possible, uses the given
- * element as a frame of reference for determining the character that
- * comes after the given text node.
- *
- * @param {Element} root
- * @param {Text} node
- * @param {Number >= 0} index
- * @return {String}
- */
-function getNext (root, node, index) {
-  if (index === node.data.length - 1)
-    return getAdjacentChar(root, node, true)
-
-  return node.data[index + 1]
-}
-
-/**
  * replaceQuotes(...) replaces straight quotes wiht curly ones.
  *
  * @return {Function}
  */
 function replaceQuotes (root, textNode, open, close) {
   return function (match, index) {
-    var before,
-        after
+    var before
 
     before = getPrevious(root, textNode, index) || ''
-    after = getNext(root, textNode, index) || ''
 
     if (isWordChar(before)) return close
 
