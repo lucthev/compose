@@ -1,6 +1,7 @@
 'use strict';
 
 var EventEmitter = require('./vendor/eventEmitter/EventEmitter'),
+    SetImmediate = require('./setImmediate'),
     Selection = require('./selection'),
     InlineMode = require('./inlineMode'),
     RichMode = require('./richMode'),
@@ -162,6 +163,11 @@ Quill.prototype.destroy = function () {
 
   this._destroyed = true
   return null
+}
+
+// We bundle up plugins here.
+Quill.plugin = {
+  placeHolder: require('./plugins/placeHolder')
 }
 
 module.exports = Quill

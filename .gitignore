@@ -4,7 +4,6 @@ node_modules/
 *.log
 src/vendor/*
 
-*.old.*
 temp.*
 TODO.txt
 _SpecRunner.html
