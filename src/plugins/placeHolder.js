@@ -34,6 +34,7 @@ function beforeInput (e) {
 function onMousedown (e) {
   if (this.isActive()) {
     e.preventDefault()
+    this.elem.focus()
     this.selection.placeCaret(this.target().querySelector('.' + PlaceHolderClass))
   }
 }
@@ -156,8 +157,13 @@ Placeholder.prototype.set = function (dontFocus) {
     holder = makePlaceholder(this.value)
     target.insertBefore(holder, target.firstChild)
 
-    if (!dontFocus)
+    if (!dontFocus) {
+
+      // We have explicitly give it Focus; otherwise, Firefox doesn't
+      // allow us to place the cursor inside the element.
+      this.elem.focus()
       this.selection.placeCaret(holder)
+    }
   }
 }
 
