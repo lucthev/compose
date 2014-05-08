@@ -2,7 +2,7 @@
 
 var wrapInline = require('./formatting/wrapInline')
 
-var formattingPlugins = [
+var Commands = [
   require('./commands/bold'),
   require('./commands/italic'),
   require('./commands/heading'),
@@ -134,7 +134,7 @@ function onKeydown (e) {
 
       paragraph = appendParagraph()
       container.parentNode
-        .insertBefore(paragraph, container.nextElementSibling)
+        .insertBefore(paragraph, container.nextSibling)
 
       this.selection.placeCaret(paragraph)
 
@@ -214,7 +214,7 @@ function afterClean (elem) {
  */
 function RichMode (Quill) {
 
-  formattingPlugins.forEach(function (Plugin) {
+  Commands.forEach(function (Plugin) {
     Quill.use(Plugin)
   })
 

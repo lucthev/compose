@@ -78,6 +78,10 @@ function Quill (elem, opts) {
 // Quill is an EventEmitter.
 Quill.prototype = Object.create(EventEmitter.prototype)
 
+// Quill also makes available a setImmediate shim.
+Quill.prototype.setImmediate = SetImmediate.setImmediate
+Quill.prototype.clearImmediate = SetImmediate.clearImmediate
+
 /**
  * Quill.use(Plugin, opts) adds a plugin to the Quill instance. Plugins
  * will be passed the Quill instance as a first parameter and opts as the
