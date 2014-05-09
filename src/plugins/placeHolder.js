@@ -151,7 +151,7 @@ Placeholder.prototype.set = function (dontFocus) {
       holder
 
   if (this.useBlock())
-    required = required && !target.nextSibling && !target.previousSibling
+    required = !target.nextSibling && !target.previousSibling && target.nodeName === 'P'
 
   if (required && !target.textContent) {
     holder = makePlaceholder(this.value)
