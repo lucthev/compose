@@ -1,6 +1,7 @@
 'use strict';
 
-var wrapInline = require('./formatting/wrapInline')
+var wrapInline = require('./formatting/wrapInline'),
+    styleToElement = require('./formatting/styleToElement')
 
 var Commands = [
   require('./commands/bold'),
@@ -236,6 +237,7 @@ function RichMode (Quill) {
     .addElements(['p', 'br'])
     .addFilter(this.mergeSimilar)
     .addFilter(this.removeCollapsedInline)
+    .addFilter(styleToElement)
 
   this.onInput = onInput.bind(Quill)
   this.afterClean = afterClean.bind(Quill)
@@ -260,6 +262,8 @@ RichMode.prototype.destroy = function () {
   this.Quill.sanitizer
     .removeElements(['p', 'br'])
     .removeFilter(this.mergeSimilar)
+    .removeFilter(this.removeCollapsedInline)
+    .removeFilter(styleToElement)
 
   this.Quill.off('input', this.onInput)
   this.Quill.off('afterclean', this.afterclean)
