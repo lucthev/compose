@@ -10,7 +10,6 @@
  * Currently applied transformations:
  *   font-weight: bold -> <strong>
  *   font-style: italic|oblique -> <em>
- *   font-size: (xx-)?large -> <h[23]>
  */
 'use strict';
 
@@ -23,6 +22,7 @@
  */
 function wrapContents (inner, outer) {
   var elems = Array.prototype.slice.call(outer.querySelectorAll(inner)),
+      tagName = inner.split(',')[0],
       parent
 
   // Remove all elements of the same type that we're about to wrap with.
@@ -39,7 +39,7 @@ function wrapContents (inner, outer) {
     parent.removeChild(elem)
   })
 
-  inner = document.createElement(inner)
+  inner = document.createElement(tagName)
 
   while (outer.firstChild)
     inner.appendChild(outer.removeChild(outer.firstChild))
@@ -47,6 +47,7 @@ function wrapContents (inner, outer) {
   outer.appendChild(inner)
 }
 
+// The Sanitizer filter.
 function styleToElement (elem) {
 
   // NOTE: we're relying on the sanitizer to strip the style attribute.
@@ -54,10 +55,10 @@ function styleToElement (elem) {
   // up for them.
 
   if (elem.style.fontWeight === 'bold')
-    wrapContents('strong', elem)
+    wrapContents('strong, b', elem)
 
   if (/(?:italic|oblique)/.test(elem.style.fontStyle))
-    wrapContents('em', elem)
+    wrapContents('em, i', elem)
 }
 
 module.exports = styleToElement

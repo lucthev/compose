@@ -655,4 +655,99 @@ describe('Rich mode', function () {
         .toEqual('<p>One <strong>two</strong> three</p>')
     })
   })
+
+  describe('inline styles', function () {
+
+    beforeEach(function () {
+      this.elem = document.createElement('div')
+      document.body.appendChild(this.elem)
+
+      this.quill = new Quill(this.elem)
+
+      jasmine.addMatchers(customMatchers)
+    })
+
+    afterEach(function (done) {
+      document.body.removeChild(this.elem)
+
+      setTimeout(function () {
+        this.quill.destroy()
+
+        done()
+      }.bind(this), 10)
+    })
+
+    it('should convert inline styles to the appropriate element (1).', function () {
+      setContent(this.elem, '<p style="font-weight: bold;">One two|</p>')
+
+      // Fake input.
+      this.quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p><strong>One two</strong></p>')
+    })
+
+    it('should convert inline styles to the appropriate element (2).', function () {
+      setContent(this.elem, '<p style="font-style: italic;">One two|</p>')
+
+      // Fake input.
+      this.quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p><em>One two</em></p>')
+    })
+
+    it('should convert inline styles to the appropriate element (3).', function () {
+      setContent(this.elem, '<p style="font-weight: bold;">One <strong>two</strong> three|</p>')
+
+      // Fake input.
+      this.quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p><strong>One two three</strong></p>')
+    })
+
+    it('should convert inline styles to the appropriate element (4).', function () {
+      setContent(this.elem, '<p style="font-style: italic;">One <em>two</em> three|</p>')
+
+      // Fake input.
+      this.quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p><em>One two three</em></p>')
+    })
+
+    it('should convert inline styles to the appropriate element (5).', function () {
+      setContent(this.elem, '<p style="font-weight: bold;">One <b>two</b> three|</p>')
+
+      // Fake input.
+      this.quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p><strong>One two three</strong></p>')
+    })
+
+    it('should convert inline styles to the appropriate element (6).', function () {
+      setContent(this.elem, '<p style="font-style: oblique;">One <i>two</i> three|</p>')
+
+      // Fake input.
+      this.quill.emit('input')
+
+      expect(this.elem.innerHTML)
+        .toEqual('<p><em>One two three</em></p>')
+    })
+
+    it('should convert inline styles to the appropriate element (6).', function () {
+      setContent(this.elem,
+        '<p style="font-style: oblique; font-weight: bold;">One <i>two</i> <strong>thr|ee</strong></p>')
+
+      // Fake input.
+      this.quill.emit('input')
+
+      expect(this.elem.innerHTML).toBeOneOf([
+        '<p><em><strong>One two three</strong></em></p>',
+        '<p><strong><em>One two three</em></strong></p>'
+      ])
+    })
+  })
 })
