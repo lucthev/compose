@@ -15,8 +15,12 @@ function beforeInput (e) {
    * keys. This is pretty ugly.
    * FIXME: use the input event or something similar, to avoid this
    * problem altogether.
+   *
+   * Presumably, a key whose action has been prevented won't produce
+   * input either, so we check for that too.
    */
-  if (key === 9 || (key > 15 && key < 21) || key === 91 || key === 93)
+  if (key === 9 || (key > 15 && key < 21) || key === 91 || key === 93 ||
+      e.defaultPrevented)
     return
 
   if (this.placeHolder.isActive()) {
