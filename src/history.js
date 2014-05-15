@@ -49,7 +49,9 @@ function onFocus () {
 
 function History (Quill) {
   this.elem = Quill.elem
-  this.Quill = Quill
+  this.emit = Quill.emit.bind(Quill)
+  this.off = Quill.off.bind(Quill)
+  this.selection = Quill.selection
   this._debug = Quill._debug
   this.max = 100
 
@@ -64,7 +66,7 @@ function History (Quill) {
 
   this.elem.addEventListener('focus', this.onFocus)
   this.elem.addEventListener('keydown', this.onKeydown)
-  this.Quill.on('change', this.onChange)
+  Quill.on('change', this.onChange)
 }
 
 History.prototype.push = function (item) {
@@ -83,36 +85,36 @@ History.prototype.undo = function () {
   if (this.length <= 1) return
 
   this.elem.innerHTML = this.stack[this.length - 2]
-  this.Quill.selection.restore()
+  this.selection.restore()
 
   this.length -= 1
 
   // We pass 'ignore' as a parameter to prevent ourselves
   // from pushing the changes we just undid.
-  this.Quill.emit('change', 'ignore')
+  this.emit('change', 'ignore')
 }
 
 History.prototype.redo = function () {
   if (!this.stack.length || this.stack.length === this.length) return
 
   this.elem.innerHTML = this.stack[this.length]
-  this.Quill.selection.restore()
+  this.selection.restore()
 
   this.length += 1
 
-  this.Quill.emit('change', 'ignore')
+  this.emit('change', 'ignore')
 }
 
 History.prototype.destroy = function () {
-  this.Quill.off('change', this.onChange)
+  this.off('change', this.onChange)
   this.elem.removeEventListener('keydown', this.onKeydown)
   this.elem.removeEventListener('focus', this.onFocus)
 
-  delete this.onFocus
-  delete this.onKeydown
-  delete this.onFocus
   delete this.elem
-  delete this.Quill
+  delete this.selection
+  delete this.emit
+  delete this.off
+  delete this.stack
 
   return
 }
