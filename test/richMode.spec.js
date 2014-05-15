@@ -559,12 +559,9 @@ describe('Rich mode', function () {
 
       this.quill = new Quill(this.elem)
 
-      // We're adding a filter to allow basically any <a>.
-      function filter (a) {
-        return { whitelist: true }
-      }
-
-      this.quill.sanitizer.addFilter('a', filter)
+      // We have to add the file protocol; when testing locally,
+      // relative URLs will be of the form file://.../#
+      this.quill.sanitizer.addProtocols('file')
 
       jasmine.addMatchers(customMatchers)
     })
