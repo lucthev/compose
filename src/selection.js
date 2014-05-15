@@ -334,7 +334,8 @@ Selection.prototype.isNewLine = function () {
   var sel = window.getSelection(),
       elem = this.getContaining()
 
-  return elem && sel.isCollapsed && !elem.textContent
+  return elem && sel.isCollapsed &&
+    (!elem.textContent || !!elem.querySelector('.Quill-placeholder'))
 }
 
 /**
