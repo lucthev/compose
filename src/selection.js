@@ -148,7 +148,7 @@ Selection.prototype.save = function () {
       endRange,
       range
 
-  if (!sel.rangeCount) return
+  if (!sel.rangeCount || document.activeElement !== this.elem) return
   range = sel.getRangeAt(0)
 
   startRange = range.cloneRange()
