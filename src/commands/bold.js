@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * boldFilter() is a filter for Quill's sanitizer that turns <b> tags
+ * boldFilter() is a filter for Compose's sanitizer that turns <b> tags
  * into <strong> tags.
  */
 function boldFilter (elem) {
@@ -15,7 +15,7 @@ function boldFilter (elem) {
 }
 
 // The actual plugin 'adapter'.
-function BoldPlugin (Quill) {
+function BoldPlugin (Compose) {
 
   function Bold () {
     document.execCommand('bold', false, null)
@@ -39,7 +39,7 @@ function BoldPlugin (Quill) {
     if (!sel.rangeCount) return false
 
     // Check condition (1).
-    if (Quill.selection.childOf(/^(STRONG|B)$/i)) return true
+    if (Compose.selection.childOf(/^(STRONG|B)$/i)) return true
 
     // Check condition (2).
     node = sel.getRangeAt(0).cloneContents()
@@ -57,16 +57,16 @@ function BoldPlugin (Quill) {
   }
 
   Bold.isEnabled = function () {
-    return document.queryCommandEnabled('bold') && !Quill.selection.childOf(/^(?:H[1-6])$/)
+    return document.queryCommandEnabled('bold') && !Compose.selection.childOf(/^(?:H[1-6])$/)
   }
 
   Bold.destroy = function () {
-    Quill.sanitizer
+    Compose.sanitizer
       .removeElements('strong')
       .removeFilter('b', boldFilter)
   }
 
-  Quill.sanitizer
+  Compose.sanitizer
     .addElements('strong')
     .addFilter('b', boldFilter)
 

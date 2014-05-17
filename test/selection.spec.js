@@ -3,7 +3,7 @@
 describe('The Selection plugin:', function () {
 
   var Selection,
-      quill
+      compose
 
   describe('Selection#getContaining', function () {
 
@@ -14,15 +14,15 @@ describe('The Selection plugin:', function () {
       document.body.appendChild(this.elem)
 
       if (!Selection) {
-        var temp = new Quill(this.elem)
+        var temp = new Compose(this.elem)
         Selection = temp.selection.constructor
         temp.destroy()
       }
 
-      quill = new Quill(this.elem)
-      quill.disable('selection')
+      compose = new Compose(this.elem)
+      compose.disable('selection')
 
-      quill.selection = this.selection = new Selection(quill)
+      compose.selection = this.selection = new Selection(compose)
     })
 
     afterEach(function () {
@@ -54,10 +54,10 @@ describe('The Selection plugin:', function () {
       this.elem.innerHTML = '<p><br></p>'
       document.body.appendChild(this.elem)
 
-      quill = new Quill(this.elem)
-      quill.disable('selection')
+      compose = new Compose(this.elem)
+      compose.disable('selection')
 
-      quill.selection = this.selection = new Selection(quill)
+      compose.selection = this.selection = new Selection(compose)
     })
 
     afterEach(function () {
@@ -111,10 +111,10 @@ describe('The Selection plugin:', function () {
 
       document.body.appendChild(this.elem)
 
-      quill = new Quill(this.elem)
-      quill.disable('selection')
+      compose = new Compose(this.elem)
+      compose.disable('selection')
 
-      quill.selection = this.selection = new Selection(quill)
+      compose.selection = this.selection = new Selection(compose)
     })
 
     afterEach(function () {
@@ -164,10 +164,10 @@ describe('The Selection plugin:', function () {
 
       document.body.appendChild(this.elem)
 
-      quill = new Quill(this.elem)
-      quill.disable('selection')
+      compose = new Compose(this.elem)
+      compose.disable('selection')
 
-      quill.selection = this.selection = new Selection(quill)
+      compose.selection = this.selection = new Selection(compose)
     })
 
     afterEach(function () {
@@ -208,10 +208,10 @@ describe('The Selection plugin:', function () {
       this.elem.innerHTML = '<p><br></p>'
       document.body.appendChild(this.elem)
 
-      quill = new Quill(this.elem)
-      quill.disable('selection')
+      compose = new Compose(this.elem)
+      compose.disable('selection')
 
-      quill.selection = this.selection = new Selection(quill)
+      compose.selection = this.selection = new Selection(compose)
     })
 
     afterEach(function () {
@@ -269,25 +269,25 @@ describe('The Selection plugin:', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      quill = new Quill(this.elem)
-      quill.disable('selection')
+      compose = new Compose(this.elem)
+      compose.disable('selection')
 
       // Add some attributes used for testing.
-      quill.sanitizer.addAttributes({
+      compose.sanitizer.addAttributes({
         p: ['id'],
         h2: ['id'],
         li: ['id']
       })
 
-      quill.selection = this.selection = new Selection(quill)
+      compose.selection = this.selection = new Selection(compose)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        if (quill && !quill._destroyed)
-          quill.destroy()
+        if (compose && !compose._destroyed)
+          compose.destroy()
 
         done()
       }, 10)
@@ -429,7 +429,7 @@ describe('The Selection plugin:', function () {
         ids.push(block.id)
 
         if (block.nodeName === 'LI')
-          quill.list.splitList(block, true)
+          compose.list.splitList(block, true)
       })
 
       expect(ids).toEqual(['v', 'w', 'x', 'y', 'z'])
@@ -451,7 +451,7 @@ describe('The Selection plugin:', function () {
         ids.push(block.id)
 
         if (block.nodeName === 'LI')
-          quill.list.splitList(block, true)
+          compose.list.splitList(block, true)
       })
 
       expect(ids).toEqual(['x', 'y', 'z'])
@@ -478,7 +478,7 @@ describe('The Selection plugin:', function () {
         ids.push(block.id)
 
         if (block.nodeName === 'LI')
-          quill.list.splitList(block, true)
+          compose.list.splitList(block, true)
       })
 
       expect(ids).toEqual(['x', 'y', 'w2', 'x2', 'y2', 'z'])
@@ -505,7 +505,7 @@ describe('The Selection plugin:', function () {
         ids.push(block.id)
 
         if (block.nodeName === 'LI')
-          quill.list.splitList(block, true)
+          compose.list.splitList(block, true)
       })
 
       expect(ids).toEqual(['x', 'y', 'w2', 'x2'])

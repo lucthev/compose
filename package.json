@@ -1,8 +1,8 @@
 {
-  "name": "quill",
+  "name": "compose",
   "version": "0.0.1",
   "description": "Yet another contentEditable thing.",
-  "main": "dist/quill.min.js",
+  "main": "dist/compose.min.js",
   "scripts": {
     "test": "npm run js && ./node_modules/.bin/grunt",
     "js": "./node_modules/.bin/gulp",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/lucthev/quill"
+    "url": "git://github.com/lucthev/compose"
   },
   "author": "Luc Thevenard <lucthevenard@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lucthev/quill/issues"
+    "url": "https://github.com/lucthev/compose/issues"
   },
-  "homepage": "https://github.com/lucthev/quill",
+  "homepage": "https://github.com/lucthev/compose",
   "devDependencies": {
     "gulp": "^3.6.1",
     "gulp-browserify": "^0.5.0",

@@ -50,7 +50,7 @@ function onKeydown (e) {
 }
 
 // This handles the case where clicking on an <hr> place the caret
-// on the <hr> (see https://github.com/lucthev/quill/issues/24).
+// on the <hr> (see https://github.com/lucthev/compose/issues/24).
 function onClick () {
   var container = this.selection.getContaining()
 
@@ -59,18 +59,20 @@ function onClick () {
     this.selection.placeCaret(container.nextSibling)
 }
 
-function AutoHR (Quill) {
+function AutoHR (Compose) {
+
+  this.elem = Compose.elem
+  this.sanitizer = Compose.sanitizer
+  this.emit = Compose.emit.bind(Compose)
 
   // Store bound event handlers for later removal.
-  this.onKeydown = onKeydown.bind(Quill)
-  this.onClick = onClick.bind(Quill)
+  this.onKeydown = onKeydown.bind(Compose)
+  this.onClick = onClick.bind(Compose)
 
-  this.elem = Quill.elem
-  this.Quill = Quill
-  this.elem.addEventListener('keydown', this.onKeydown)
-  this.elem.addEventListener('click', this.onClick)
+  Compose.elem.addEventListener('keydown', this.onKeydown)
+  Compose.elem.addEventListener('click', this.onClick)
 
-  Quill.sanitizer.addElements('hr')
+  Compose.sanitizer.addElements('hr')
 }
 
 /**
@@ -89,16 +91,16 @@ AutoHR.prototype.insertBefore = function (elem) {
 
   parent.insertBefore(hr, elem)
 
-  this.Quill.emit('input')
+  this.emit('input')
 }
 
 AutoHR.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.onKeydown)
   this.elem.removeEventListener('click', this.onClick)
 
-  this.Quill.sanitizer.removeElements('hr')
+  this.sanitizer.removeElements('hr')
 
-  delete this.Quill
+  delete this.sanitizer
   delete this.elem
 }
 

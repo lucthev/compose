@@ -1,9 +1,9 @@
 /* jshint ignore:start */
 
-describe('Quill', function () {
+describe('Compose', function () {
 
   var id = 'editor',
-      quill
+      compose
 
   beforeEach(function () {
     this.elem = document.createElement('div')
@@ -15,27 +15,27 @@ describe('Quill', function () {
     document.body.removeChild(this.elem)
 
     setTimeout(function () {
-      if (quill && quill.destroy && !quill._destroyed)
-        quill = quill.destroy()
+      if (compose && compose.destroy && !compose._destroyed)
+        compose = compose.destroy()
 
       done()
     }, 10)
   })
 
   it('should be available as a global.', function () {
-    expect(window.Quill).not.toBeUndefined()
+    expect(window.Compose).not.toBeUndefined()
   })
 
   it('can be called as a constructor.', function () {
-    quill = new Quill('#' + id)
+    compose = new Compose('#' + id)
 
-    expect(quill).toEqual(jasmine.any(Quill))
+    expect(compose).toEqual(jasmine.any(Compose))
   })
 
   it('can be called as a function.', function () {
-    quill = Quill(document.getElementById(id))
+    compose = Compose(document.getElementById(id))
 
-    expect(quill).toEqual(jasmine.any(Quill))
+    expect(compose).toEqual(jasmine.any(Compose))
   })
 
   it('should allow multiple instances.', function () {
@@ -43,8 +43,8 @@ describe('Quill', function () {
     el.id = 'temp'
     document.body.appendChild(el)
 
-    var q1 = Quill('#' + id)
-    var q2 = new Quill(el)
+    var q1 = Compose('#' + id)
+    var q2 = new Compose(el)
 
     q1.destroy()
     q2.destroy()
@@ -53,21 +53,21 @@ describe('Quill', function () {
   })
 
   it('can take an element as a first parameter.', function () {
-    quill = Quill(document.getElementById(id))
+    compose = Compose(document.getElementById(id))
 
-    expect(quill.elem).toEqual(this.elem)
+    expect(compose.elem).toEqual(this.elem)
   })
 
   it('can take a string as a first parameter.', function () {
-    quill = new Quill('#' + id)
+    compose = new Compose('#' + id)
 
-    expect(quill.elem).toEqual(this.elem)
+    expect(compose.elem).toEqual(this.elem)
   })
 
   it('should present a destroy method.', function () {
-    quill = new Quill('#' + id)
+    compose = new Compose('#' + id)
 
-    expect(quill.destroy).toEqual(jasmine.any(Function))
+    expect(compose.destroy).toEqual(jasmine.any(Function))
   })
 
   // Note that this doesn't actually check that listeners were properly
@@ -76,30 +76,30 @@ describe('Quill', function () {
     spyOn(this.elem, 'addEventListener').and.callThrough()
     spyOn(this.elem, 'removeEventListener').and.callThrough()
 
-    new Quill('#' + id).destroy()
+    new Compose('#' + id).destroy()
 
     expect(this.elem.addEventListener.calls.count())
       .toEqual(this.elem.removeEventListener.calls.count())
   })
 
   it('should delete references to the element upon destruction.', function () {
-    quill = Quill(this.elem)
-    expect(quill.elem).toEqual(this.elem)
+    compose = Compose(this.elem)
+    expect(compose.elem).toEqual(this.elem)
 
-    quill.destroy()
-    expect(quill.elem).not.toEqual(this.elem)
+    compose.destroy()
+    expect(compose.elem).not.toEqual(this.elem)
   })
 
   it('can use custom modes.', function () {
 
     // This mode is going to change the content to be 'abc' on every
     // keyup event.
-    function sillyMode (Quill) {
+    function sillyMode (Compose) {
       this.onKeyup = function () {
-        Quill.elem.innerHTML = 'abc'
+        Compose.elem.innerHTML = 'abc'
       }
 
-      this.elem = Quill.elem
+      this.elem = Compose.elem
       this.elem.addEventListener('keyup', this.onKeyup)
     }
 
@@ -110,14 +110,14 @@ describe('Quill', function () {
     // Don't forget the mode's name:
     sillyMode.plugin = 'silly'
 
-    quill = new Quill(this.elem, { mode: sillyMode })
+    compose = new Compose(this.elem, { mode: sillyMode })
 
     setContent(this.elem, 'xyz')
     expect(this.elem.innerHTML).toEqual('xyz')
     fireEvent(this.elem, 'keyup')
     expect(this.elem.innerHTML).toEqual('abc')
 
-    quill.destroy()
+    compose.destroy()
   })
 
   describe('has a plugin system which', function () {
@@ -125,7 +125,7 @@ describe('Quill', function () {
     function fakePlugin () {}
     fakePlugin.prototype.destroy = function () {}
 
-    var quill,
+    var compose,
         elem
 
     beforeEach(function () {
@@ -134,65 +134,65 @@ describe('Quill', function () {
 
       fakePlugin.plugin = 'fake'
 
-      quill = new Quill(elem)
+      compose = new Compose(elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(elem)
 
       setTimeout(function () {
-        if (!quill._destroyed)
-          quill.destroy()
+        if (!compose._destroyed)
+          compose.destroy()
 
         done()
       }, 10)
     })
 
     it('can add plugins via the \'use\' method.', function () {
-      expect(quill.use).toEqual(jasmine.any(Function))
+      expect(compose.use).toEqual(jasmine.any(Function))
     })
 
     it('should only accept plugins named via a \'plugin\' property.', function () {
       expect(function () {
-        quill.use(fakePlugin)
+        compose.use(fakePlugin)
       }).not.toThrow()
 
       delete fakePlugin.plugin
       expect(function () {
-        new Quill.use(fakePlugin)
+        new Compose.use(fakePlugin)
       }).toThrow()
     })
 
     it('should reject plugins with the same name.', function () {
-      quill.use(fakePlugin)
+      compose.use(fakePlugin)
 
       function newPlugin () {}
       newPlugin.plugin = 'fake'
 
       expect(function () {
-        quill.use(newPlugin)
+        compose.use(newPlugin)
       }).toThrow()
     })
 
     it('should add a property matching the plugin name.', function () {
       fakePlugin.plugin = 'fake'
-      quill.use(fakePlugin)
+      compose.use(fakePlugin)
 
-      expect(quill.fake).not.toBeUndefined()
-      expect(quill.fake).toEqual(jasmine.any(fakePlugin))
+      expect(compose.fake).not.toBeUndefined()
+      expect(compose.fake).toEqual(jasmine.any(fakePlugin))
     })
 
     it('should call a plugin\'s destroy method upon destruction.', function () {
       var temp = new fakePlugin()
-      quill.plugins.push(fakePlugin.plugin)
-      quill.fake = temp
+      compose.plugins.push(fakePlugin.plugin)
+      compose.fake = temp
 
       spyOn(temp, 'destroy')
 
-      quill.destroy()
+      compose.destroy()
 
       expect(temp.destroy).toHaveBeenCalled()
-      expect(quill.fake).toBeUndefined()
+      expect(compose.fake).toBeUndefined()
     })
 
     it('should not fail if a plugin fails.', function () {
@@ -202,7 +202,7 @@ describe('Quill', function () {
       sillyPlugin.plugin = 'silly'
 
       expect(function () {
-        quill.use(sillyPlugin)
+        compose.use(sillyPlugin)
       }).not.toThrow()
     })
 
@@ -211,9 +211,9 @@ describe('Quill', function () {
           opts = { one: 1, two: 2 }
 
       fakePlugin.plugin = 'fakePlugin'
-      quill.use(fakePlugin, opts)
+      compose.use(fakePlugin, opts)
 
-      expect(fakePlugin).toHaveBeenCalledWith(jasmine.any(Quill), opts)
+      expect(fakePlugin).toHaveBeenCalledWith(jasmine.any(Compose), opts)
     })
   })
 })

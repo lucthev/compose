@@ -1,4 +1,4 @@
-/* global beforeEach, describe, it, Quill, expect, afterEach */
+/* global beforeEach, describe, it, Compose, expect, afterEach */
 
 'use strict';
 
@@ -13,17 +13,17 @@ describe('The Sanitizer plugin', function () {
     document.body.appendChild(this.elem)
 
     if (!Sanitizer) {
-      temp = new Quill(this.elem)
+      temp = new Compose(this.elem)
       Sanitizer = temp.sanitizer.constructor
       temp.destroy()
     }
 
-    // Mock quill.
-    this.Quill = {
+    // Mock Compose.
+    this.Compose = {
       emit: function () {}
     }
 
-    this.Sanitizer = new Sanitizer(this.Quill)
+    this.Sanitizer = new Sanitizer(this.Compose)
   })
 
   afterEach(function () {
@@ -388,15 +388,15 @@ describe('The Sanitizer plugin', function () {
 
     // A filter that whitelists certain <span>s.
     function filter (span) {
-      return { whitelist: span.classList.contains('Quill-marker') }
+      return { whitelist: span.classList.contains('Compose-marker') }
     }
 
     this.Sanitizer.addFilter('span', filter)
 
-    this.elem.innerHTML = '<p>One</p><p>Two<span class="Quill-marker"></span></p>'
+    this.elem.innerHTML = '<p>One</p><p>Two<span class="Compose-marker"></span></p>'
     this.Sanitizer.clean(this.elem)
 
     expect(this.elem.innerHTML)
-      .toEqual('OneTwo<span class="Quill-marker"></span>')
+      .toEqual('OneTwo<span class="Compose-marker"></span>')
   })
 })

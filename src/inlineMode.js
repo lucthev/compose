@@ -53,21 +53,21 @@ function insertSpaces (elem) {
   }
 }
 
-function InlineMode (Quill) {
+function InlineMode (Compose) {
 
-  this.elem = Quill.elem
-  this.off = Quill.off.bind(Quill)
+  this.elem = Compose.elem
+  this.off = Compose.off.bind(Compose)
 
   // Store bound event handlers for later removal.
-  this.onInput = onInput.bind(Quill)
-  this.afterClean = afterClean.bind(Quill)
-  this.insertSpaces = insertSpaces.bind(Quill)
+  this.onInput = onInput.bind(Compose)
+  this.afterClean = afterClean.bind(Compose)
+  this.insertSpaces = insertSpaces.bind(Compose)
 
   this.elem.addEventListener('keydown', onKeydown)
-  Quill.on('input', this.onInput)
-  Quill.on('afterclean', this.afterClean)
+  Compose.on('input', this.onInput)
+  Compose.on('afterclean', this.afterClean)
 
-  Quill.sanitizer.addFilter(this.insertSpaces)
+  Compose.sanitizer.addFilter(this.insertSpaces)
 
   // Remove all (presumably) unwanted elements present on initialization
   // by simulating input.

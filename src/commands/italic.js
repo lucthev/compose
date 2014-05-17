@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * italicFilter() is a filter for Quill's sanitizer that turns <i>
+ * italicFilter() is a filter for Compose's sanitizer that turns <i>
  * tags into <em> tags.
  */
 function italicFilter (elem) {
@@ -14,7 +14,7 @@ function italicFilter (elem) {
   return { node: em }
 }
 
-function ItalicPlugin (Quill) {
+function ItalicPlugin (Compose) {
 
   function Italic () {
     document.execCommand('italic', false, null)
@@ -38,7 +38,7 @@ function ItalicPlugin (Quill) {
     if (!sel.rangeCount) return false
 
     // Check condition (1).
-    if (Quill.selection.childOf(/^(EM|I)$/i)) return true
+    if (Compose.selection.childOf(/^(EM|I)$/i)) return true
 
     // Check condition (2).
     node = sel.getRangeAt(0).cloneContents()
@@ -60,12 +60,12 @@ function ItalicPlugin (Quill) {
   }
 
   Italic.destroy = function () {
-    Quill.sanitizer
+    Compose.sanitizer
       .removeElements('em')
       .removeFilter('i', italicFilter)
   }
 
-  Quill.sanitizer
+  Compose.sanitizer
     .addElements('em')
     .addFilter('i', italicFilter)
 

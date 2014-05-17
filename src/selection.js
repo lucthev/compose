@@ -36,17 +36,17 @@ function removeBogusText (node) {
 // Whitelist marker elements.
 function markerFilter (span) {
   return {
-    whitelist: span.classList.contains('Quill-marker')
+    whitelist: span.classList.contains('Compose-marker')
   }
 }
 
-function Selection (Quill) {
-  this.elem = Quill.elem
-  this._debug = Quill._debug
-  this.Quill = Quill
-  this.node = Quill.node
+function Selection (Compose) {
+  this.elem = Compose.elem
+  this._debug = Compose._debug
+  this.sanitizer = Compose.sanitizer
+  this.node = Compose.node
 
-  Quill.sanitizer.addFilter('span', markerFilter)
+  Compose.sanitizer.addFilter('span', markerFilter)
 }
 
 /**
@@ -59,7 +59,7 @@ function Selection (Quill) {
 Selection.prototype.createMarker = function (end) {
   var span = document.createElement('span')
 
-  span.classList.add('Quill-marker')
+  span.classList.add('Compose-marker')
   span.classList.add(end ? 'end' : 'start')
 
   return span
@@ -73,7 +73,7 @@ Selection.prototype.createMarker = function (end) {
  */
 Selection.prototype.isMarker = function (node) {
   return this.node.isElem(node) && node.nodeName === 'SPAN' &&
-    node.classList.contains('Quill-marker')
+    node.classList.contains('Compose-marker')
 }
 
 /**
@@ -82,7 +82,7 @@ Selection.prototype.isMarker = function (node) {
  * @return {NodeList}
  */
 Selection.prototype.getMarkers = function () {
-  return this.elem.querySelectorAll('.Quill-marker')
+  return this.elem.querySelectorAll('.Compose-marker')
 }
 
 /**
@@ -335,7 +335,7 @@ Selection.prototype.isNewLine = function () {
       elem = this.getContaining()
 
   return elem && sel.isCollapsed &&
-    (!elem.textContent || !!elem.querySelector('.Quill-placeholder'))
+    (!elem.textContent || !!elem.querySelector('.Compose-placeholder'))
 }
 
 /**
@@ -382,11 +382,11 @@ Selection.prototype.placeCaret = function (node, atEnd) {
 }
 
 Selection.prototype.destroy = function () {
-  this.Quill.sanitizer.removeFilter('span', markerFilter)
+  this.sanitizer.removeFilter('span', markerFilter)
 
   delete this.elem
   delete this.node
-  delete this.Quill
+  delete this.sanitizer
 
   return null
 }

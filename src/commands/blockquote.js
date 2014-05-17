@@ -1,6 +1,6 @@
 'use strict';
 
-function BlockquotePlugin (Quill) {
+function BlockquotePlugin (Compose) {
 
   /**
    * blockquote(quote) creates a blockquote if quote is truthy, or
@@ -12,19 +12,19 @@ function BlockquotePlugin (Quill) {
   function blockquote (quote) {
     var pullQuote = typeof quote === 'string'
 
-    Quill.selection.save()
+    Compose.selection.save()
 
     // Convert <li>s to <p>s.
-    Quill.selection.forEachBlock(function (block) {
+    Compose.selection.forEachBlock(function (block) {
       if (block.nodeName === 'LI')
-        Quill.list.splitList(block)
+        Compose.list.splitList(block)
     })
 
     // We have to restore the selection in between, otherwise the
     // selection gets weird and the second forEachBlock does nothing.
-    Quill.selection.restore(true)
+    Compose.selection.restore(true)
 
-    Quill.selection.forEachBlock(function (elem) {
+    Compose.selection.forEachBlock(function (elem) {
       var block = quote ? document.createElement('blockquote') :
                           document.createElement('p'),
           attributes = Array.prototype.slice.call(elem.attributes)
@@ -45,9 +45,9 @@ function BlockquotePlugin (Quill) {
       elem.parentNode.replaceChild(block, elem)
     })
 
-    Quill.selection.restore()
+    Compose.selection.restore()
 
-    Quill.emit('input')
+    Compose.emit('input')
   }
 
   /**
@@ -64,7 +64,7 @@ function BlockquotePlugin (Quill) {
    * @return String || Boolean
    */
   blockquote.getState = function () {
-    var block = Quill.selection.childOf(/^blockquote$/i),
+    var block = Compose.selection.childOf(/^blockquote$/i),
         allBlock = true,
         allPull = true
 
@@ -73,7 +73,7 @@ function BlockquotePlugin (Quill) {
       return block.className ? block.className : true
 
     // Check for other conditions.
-    Quill.selection.forEachBlock(function (block) {
+    Compose.selection.forEachBlock(function (block) {
 
       if (block.nodeName !== 'BLOCKQUOTE') {
         allBlock = allPull = false
@@ -82,7 +82,7 @@ function BlockquotePlugin (Quill) {
     })
 
     // If all element were pullquotes, return the class.
-    if (allPull) return Quill.selection.getContaining().className
+    if (allPull) return Compose.selection.getContaining().className
 
     return allBlock
   }
@@ -93,14 +93,14 @@ function BlockquotePlugin (Quill) {
   }
 
   blockquote.destroy = function () {
-    Quill.sanitizer
+    Compose.sanitizer
       .removeElements('blockquote')
       .removeAttributes({
         blockquote: ['class']
       })
   }
 
-  Quill.sanitizer
+  Compose.sanitizer
     .addElements('blockquote')
     .addAttributes({
       blockquote: ['class']

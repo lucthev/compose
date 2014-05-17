@@ -211,38 +211,39 @@ function afterClean (elem) {
 /**
  * The Rich mode constructor.
  *
- * @param {Quill} Quill
+ * @param {Compose} Compose
  */
-function RichMode (Quill) {
+function RichMode (Compose) {
 
   Commands.forEach(function (Plugin) {
-    Quill.use(Plugin)
+    Compose.use(Plugin)
   })
 
-  this.elem = Quill.elem
-  this.Quill = Quill
+  this.elem = Compose.elem
+  this.sanitizer = Compose.sanitizer
+  this.off = Compose.off.bind(Compose)
 
   // Store bound handlers for later removal.
-  this.onFocus = onFocus.bind(Quill)
-  this.onKeydown = onKeydown.bind(Quill)
-  this.fixSelection = fixSelection.bind(Quill)
-  this.elem.addEventListener('keydown', this.onKeydown)
-  this.elem.addEventListener('keydown', this.fixSelection)
-  this.elem.addEventListener('focus', this.onFocus)
+  this.onFocus = onFocus.bind(Compose)
+  this.onKeydown = onKeydown.bind(Compose)
+  this.fixSelection = fixSelection.bind(Compose)
+  Compose.elem.addEventListener('keydown', this.onKeydown)
+  Compose.elem.addEventListener('keydown', this.fixSelection)
+  Compose.elem.addEventListener('focus', this.onFocus)
 
-  this.mergeSimilar = mergeSimilar.bind(Quill)
-  this.removeCollapsedInline = removeCollapsedInline.bind(Quill)
+  this.mergeSimilar = mergeSimilar.bind(Compose)
+  this.removeCollapsedInline = removeCollapsedInline.bind(Compose)
 
-  Quill.sanitizer
+  Compose.sanitizer
     .addElements(['p', 'br'])
     .addFilter(this.mergeSimilar)
     .addFilter(this.removeCollapsedInline)
     .addFilter(styleToElement)
 
-  this.onInput = onInput.bind(Quill)
-  this.afterClean = afterClean.bind(Quill)
-  Quill.on('input', this.onInput)
-  Quill.on('afterclean', this.afterClean)
+  this.onInput = onInput.bind(Compose)
+  this.afterClean = afterClean.bind(Compose)
+  Compose.on('input', this.onInput)
+  Compose.on('afterclean', this.afterClean)
 
   if (!this.elem.firstElementChild)
     appendParagraph(this.elem)
@@ -259,19 +260,18 @@ RichMode.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.fixSelection)
   this.elem.removeEventListener('focus', this.onFocus)
 
-  this.Quill.sanitizer
+  this.sanitizer
     .removeElements(['p', 'br'])
     .removeFilter(this.mergeSimilar)
     .removeFilter(this.removeCollapsedInline)
     .removeFilter(styleToElement)
 
-  this.Quill.off('input', this.onInput)
-  this.Quill.off('afterclean', this.afterclean)
+  this.off('input', this.onInput)
+  this.off('afterclean', this.afterclean)
 
-  delete this.Quill
+  delete this.sanitizer
+  delete this.off
   delete this.elem
-
-  return null
 }
 
 // Plugin name.

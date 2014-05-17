@@ -45,9 +45,9 @@ function setContent (elem, html) {
   if (/\|/.test(html)) {
     elem.focus()
 
-    elem.innerHTML = html.replace(/\|/g, '<span class="Quill-marker"></span>')
+    elem.innerHTML = html.replace(/\|/g, '<span class="Compose-marker"></span>')
 
-    markers = elem.querySelectorAll('.Quill-marker')
+    markers = elem.querySelectorAll('.Compose-marker')
 
     range.setStartBefore(markers[0])
 

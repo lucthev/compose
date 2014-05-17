@@ -31,20 +31,20 @@ function onInput () {
   this.emit('input')
 }
 
-function Throttle (Quill) {
-  this.emit = Quill.emit.bind(Quill)
-  this.off = Quill.off.bind(Quill)
-  this.elem = Quill.elem
+function Throttle (Compose) {
+  this.emit = Compose.emit.bind(Compose)
+  this.off = Compose.off.bind(Compose)
+  this.elem = Compose.elem
 
   this.max = 200
   this.min = 460
 
   // Saving bound event listeners for later removal.
   this.scheduleSave = scheduleSave.bind(this)
-  this.onInput = onInput.bind(Quill)
+  this.onInput = onInput.bind(Compose)
 
-  Quill.elem.addEventListener('input', this.onInput)
-  Quill.on('input', this.scheduleSave)
+  Compose.elem.addEventListener('input', this.onInput)
+  Compose.on('input', this.scheduleSave)
 }
 
 /**

@@ -13,7 +13,7 @@ describe('The Node plugin', function () {
       document.body.appendChild(this.elem)
 
       if (!Node) {
-        temp = new Quill(this.elem)
+        temp = new Compose(this.elem)
         Node = temp.node.constructor
         temp.destroy()
       }
@@ -66,7 +66,7 @@ describe('The Node plugin', function () {
       document.body.appendChild(this.elem)
 
       if (!Node) {
-        temp = new Quill(this.elem)
+        temp = new Compose(this.elem)
         Node = temp.node.constructor
         temp.destroy()
       }
@@ -111,7 +111,7 @@ describe('The Node plugin', function () {
       document.body.appendChild(this.elem)
 
       if (!Node) {
-        temp = new Quill(this.elem)
+        temp = new Compose(this.elem)
         Node = temp.node.constructor
         temp.destroy()
       }

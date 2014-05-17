@@ -12,14 +12,14 @@ var paths = {
 }
 
 gulp.task('js', function () {
-  gulp.src('src/quill.js')
+  gulp.src('src/compose.js')
     .pipe(browserify({
-      standalone: 'Quill'
+      standalone: 'Compose'
     }))
     .pipe(uglify({
       preserveComments: 'some'
     }))
-    .pipe(rename('quill.min.js'))
+    .pipe(rename('compose.min.js'))
     .pipe(gulp.dest('./dist/'))
 })
 

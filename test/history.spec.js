@@ -6,31 +6,31 @@ describe('The History (undo) Plugin', function () {
       Selection,
       callback,
       history,
-      quill,
+      compose,
       elem
 
   beforeEach(function () {
     elem = document.createElement('div')
     document.body.appendChild(elem)
 
-    // Make our fake Quill
+    // Make our fake Compose
     if (!History) {
-      var temp = new Quill(elem)
+      var temp = new Compose(elem)
       History = temp.history.constructor
       Selection = temp.selection.constructor
       temp.destroy()
     }
 
-    quill = new Quill(elem)
-    quill.disable('history')
-    spyOn(quill, 'on')
-    spyOn(quill, 'off')
-    spyOn(quill, 'emit')
+    compose = new Compose(elem)
+    compose.disable('history')
+    spyOn(compose, 'on')
+    spyOn(compose, 'off')
+    spyOn(compose, 'emit')
 
-    quill.history = history = new History(quill)
+    compose.history = history = new History(compose)
 
     // This is the change listener:
-    callback = quill.on.calls.argsFor(0)[1]
+    callback = compose.on.calls.argsFor(0)[1]
   })
 
   afterEach(function (done) {
@@ -39,7 +39,7 @@ describe('The History (undo) Plugin', function () {
     // Remove extraneous markers. This happens because we are firing
     // the change callback when the element is not focussed; this
     // shouldn't happen in real life.
-    var markers = document.body.querySelectorAll('.Quill-marker')
+    var markers = document.body.querySelectorAll('.Compose-marker')
     markers = Array.prototype.slice.call(markers)
     markers.forEach(function (marker) {
       marker.parentNode.removeChild(marker)
@@ -52,8 +52,8 @@ describe('The History (undo) Plugin', function () {
     }, 10)
   })
 
-  it('should listen to Quill\'s change event.', function () {
-    expect(quill.on).toHaveBeenCalledWith('change', jasmine.any(Function))
+  it('should listen to Compose\'s change event.', function () {
+    expect(compose.on).toHaveBeenCalledWith('change', jasmine.any(Function))
   })
 
   it('should save initial state as soon as the element is focussed.',
@@ -147,16 +147,16 @@ describe('The History (undo) Plugin', function () {
     callback()
     callback()
 
-    expect(quill.emit).not.toHaveBeenCalled()
+    expect(compose.emit).not.toHaveBeenCalled()
 
     history.undo()
-    expect(quill.emit)
+    expect(compose.emit)
       .toHaveBeenCalledWith('change', jasmine.any(String))
 
-    quill.emit.calls.reset()
+    compose.emit.calls.reset()
 
     history.redo()
-    expect(quill.emit)
+    expect(compose.emit)
       .toHaveBeenCalledWith('change', jasmine.any(String))
   })
 
@@ -174,7 +174,7 @@ describe('The History (undo) Plugin', function () {
     history.undo()
 
     expect(history.push).not.toHaveBeenCalled()
-    expect(quill.emit).toHaveBeenCalled()
+    expect(compose.emit).toHaveBeenCalled()
     expect(history.stack.length).toEqual(realLength)
     expect(history.length).toEqual(length - 2) // We undid twice.
   })
@@ -187,7 +187,7 @@ describe('The History (undo) Plugin', function () {
     spyOn(elem, 'addEventListener').and.callThrough()
     spyOn(elem, 'removeEventListener').and.callThrough()
 
-    new History(quill).destroy()
+    new History(compose).destroy()
 
     expect(elem.addEventListener.calls.count())
       .toEqual(elem.removeEventListener.calls.count())

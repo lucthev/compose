@@ -2,7 +2,7 @@
 
 // The class given to the placeholder element for internal reasons
 // and to allow it to be styled differently (e.g. a different color).
-var PlaceHolderClass = 'Quill-placeholder'
+var PlaceHolderClass = 'Compose-placeholder'
 
 function beforeInput (e) {
   var key = e.keyCode,
@@ -66,10 +66,10 @@ function makePlaceholder (value) {
  * of the placeholder can be specified via a 'data-placeholder' attribute
  * on the editable element.
  *
- * @param {Quill} Quill
+ * @param {Compose} Compose
  * @param {String || Object} value
  */
-function Placeholder (Quill, value) {
+function Placeholder (Compose, value) {
   var first
 
   // Maybe they passed in an options object instead of a string.
@@ -78,40 +78,40 @@ function Placeholder (Quill, value) {
 
   // Check for a data-placeholder attribute.
   if (!value)
-    value = Quill.elem.getAttribute('data-placeholder')
+    value = Compose.elem.getAttribute('data-placeholder')
 
   // If there's still no value, there's nothing we can do; throw an error.
   if (!value) {
-    throw new Error('Quill\'s placeHolder plugin requires a placeholder ' +
+    throw new Error('Compose\'s placeHolder plugin requires a placeholder ' +
       'string as a second parameter.')
   }
 
   this.value = value + ''
-  this.elem = Quill.elem
-  this.selection = Quill.selection
+  this.elem = Compose.elem
+  this.selection = Compose.selection
 
-  this.beforeInput = beforeInput.bind(Quill)
+  this.beforeInput = beforeInput.bind(Compose)
   this.onMousedown = onMousedown.bind(this)
 
-  Quill.elem.addEventListener('keydown', this.beforeInput)
+  Compose.elem.addEventListener('keydown', this.beforeInput)
 
   // We have to listen to the paste event; right-click pasting, for
   // example, does not trigger key down.
-  Quill.elem.addEventListener('paste', this.beforeInput)
-  Quill.elem.addEventListener('mousedown', this.onMousedown)
+  Compose.elem.addEventListener('paste', this.beforeInput)
+  Compose.elem.addEventListener('mousedown', this.onMousedown)
 
   // We do a quick check to see if the current mode allows block elements.
   // We assume it allows block elements if its first child is an
   // element and that element is not a <br>.
-  first = Quill.elem.firstChild
-  this.block = Quill.node.isElem(first) && first.nodeName !== 'BR'
+  first = Compose.elem.firstChild
+  this.block = Compose.node.isElem(first) && first.nodeName !== 'BR'
 
   // Add the placeholder immediately, if needed.
-  this.set(document.activeElement !== Quill.elem)
+  this.set(document.activeElement !== Compose.elem)
 }
 
 /**
- * Placeholder.useBlock() determines if the mode Quill is using allows
+ * Placeholder.useBlock() determines if the mode Compose is using allows
  * block elements.
  *
  * @return {Boolean}

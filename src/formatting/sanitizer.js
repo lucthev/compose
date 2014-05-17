@@ -150,14 +150,14 @@ function formatText (node) {
     this.textFormatters[i](node)
 }
 
-function Sanitizer (Quill) {
+function Sanitizer (Compose) {
   this.attributes = {}
   this.elements = {}
   this.filters = {}
   this.textFormatters = []
   this.protocols = []
 
-  this.emit = Quill.emit.bind(Quill)
+  this.emit = Compose.emit.bind(Compose)
 }
 
 /**

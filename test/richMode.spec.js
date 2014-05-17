@@ -8,14 +8,14 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -40,7 +40,7 @@ describe('Rich mode', function () {
         this.elem.focus()
 
         expect(this.elem.firstChild.nodeName.toLowerCase()).toEqual('p')
-        expect(this.quill.selection.getContaining()).toEqual(this.elem.firstChild)
+        expect(this.compose.selection.getContaining()).toEqual(this.elem.firstChild)
       })
 
       it('should place the caret in the correct place when focusing (2).', function () {
@@ -75,14 +75,14 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -91,7 +91,7 @@ describe('Rich mode', function () {
     it('bold should use the <strong> tag.', function (done) {
       setContent(this.elem, '<p>One |two| three</p>')
 
-      this.quill.bold()
+      this.compose.bold()
 
       // Sanitization, which is responsible for converting <b> and <i>
       // to <strong> and <em>, is deferred until the next event loop;
@@ -107,7 +107,7 @@ describe('Rich mode', function () {
     it('italic should use the <em> tag.', function (done) {
       setContent(this.elem, '<p>One |two| three</p>')
 
-      this.quill.italic()
+      this.compose.italic()
 
       setTimeout(function () {
         expect(this.elem.innerHTML)
@@ -120,15 +120,15 @@ describe('Rich mode', function () {
     it('bold should report the correct state (1)', function () {
       setContent(this.elem, '<p>One |two| three</p>')
 
-      this.quill.bold()
+      this.compose.bold()
 
-      expect(this.quill.bold.getState()).toBe(true)
+      expect(this.compose.bold.getState()).toBe(true)
     })
 
     it('bold should report the correct state (2)', function () {
       setContent(this.elem, '<p>One |<em><strong>two</strong></em>| three</p>')
 
-      expect(this.quill.bold.getState()).toBe(true)
+      expect(this.compose.bold.getState()).toBe(true)
     })
 
     it('bold should report the correct state (3)', function () {
@@ -138,21 +138,21 @@ describe('Rich mode', function () {
       // anyways.
       this.elem.firstChild.style.fontWeight = 'bold'
 
-      expect(this.quill.bold.getState()).toBe(false)
+      expect(this.compose.bold.getState()).toBe(false)
     })
 
     it('italic should report the correct state (1)', function () {
       setContent(this.elem, '<p>One |two| three</p>')
 
-      this.quill.italic()
+      this.compose.italic()
 
-      expect(this.quill.italic.getState()).toBe(true)
+      expect(this.compose.italic.getState()).toBe(true)
     })
 
     it('italic should report the correct state (2)', function () {
       setContent(this.elem, '<p>One |<strong><em>two</em></strong>| three</p>')
 
-      expect(this.quill.italic.getState()).toBe(true)
+      expect(this.compose.italic.getState()).toBe(true)
     })
 
     it('italic should report the correct state (3)', function () {
@@ -161,7 +161,7 @@ describe('Rich mode', function () {
       // We'll pretend blockquotes are italicized.
       this.elem.firstChild.style.fontStyle = 'italic'
 
-      expect(this.quill.italic.getState()).toBe(false)
+      expect(this.compose.italic.getState()).toBe(false)
     })
   })
 
@@ -171,14 +171,14 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -187,7 +187,7 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to headings (1).', function () {
       setContent(this.elem, '<p>Stuff|</p>')
 
-      this.quill.heading(2)
+      this.compose.heading(2)
 
       expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
@@ -195,7 +195,7 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to headings (2).', function () {
       setContent(this.elem, '<p>|Stuff</p>')
 
-      this.quill.heading(2)
+      this.compose.heading(2)
 
       expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
@@ -203,7 +203,7 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to headings (3).', function () {
       setContent(this.elem, '<p>St|uf|f</p>')
 
-      this.quill.heading(2)
+      this.compose.heading(2)
 
       expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2>')
     })
@@ -211,21 +211,21 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to headings (4).', function () {
       setContent(this.elem, '<p>|Stuff</p><p>Things|</p>')
 
-      this.quill.heading(2)
+      this.compose.heading(2)
 
       expect(this.elem.innerHTML).toEqual('<h2>Stuff</h2><h2>Things</h2>')
     })
 
     it('should conserve attributes when converting.', function () {
       // We have to add attributes to the sanitizer.
-      this.quill.sanitizer.addAttributes({
+      this.compose.sanitizer.addAttributes({
         p: ['id', 'name'],
         h2: ['id', 'name']
       })
 
       setContent(this.elem, '<p id="word">|Stuff</p><p name="blue">Thing|s</p>')
 
-      this.quill.heading(2)
+      this.compose.heading(2)
 
       expect(this.elem.innerHTML)
         .toEqual('<h2 id="word">Stuff</h2><h2 name="blue">Things</h2>')
@@ -234,7 +234,7 @@ describe('Rich mode', function () {
     it('should properly convert multiple paragraphs to headings.', function () {
       setContent(this.elem, '<p>S|tuff</p><p>Thin|gs</p>')
 
-      this.quill.heading(2)
+      this.compose.heading(2)
 
       expect(this.elem.innerHTML)
         .toEqual('<h2>Stuff</h2><h2>Things</h2>')
@@ -243,7 +243,7 @@ describe('Rich mode', function () {
     it('and headings to paragraphs.', function () {
       setContent(this.elem, '<h2>S|tuff</h2><h2>Thin|gs</h2>')
 
-      this.quill.heading(0)
+      this.compose.heading(0)
 
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p><p>Things</p>')
     })
@@ -254,7 +254,7 @@ describe('Rich mode', function () {
       fireEvent(this.elem, 'keydown', 13)
       expect(this.elem.innerHTML)
         .toEqual('<h2>Stuff</h2><p><br></p><p>Things</p>')
-      expect(this.quill.selection.getContaining())
+      expect(this.compose.selection.getContaining())
         .toEqual(this.elem.firstChild.nextSibling)
     })
   })
@@ -265,14 +265,14 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -281,7 +281,7 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to <pre>s (1).', function () {
       setContent(this.elem, '<p>Stuff|</p>')
 
-      this.quill.pre(true)
+      this.compose.pre(true)
 
       expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre>')
     })
@@ -289,7 +289,7 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to <pre>s (2).', function () {
       setContent(this.elem, '<p>|Stuff</p>')
 
-      this.quill.pre(true)
+      this.compose.pre(true)
 
       expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre>')
     })
@@ -297,7 +297,7 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to <pre>s (3).', function () {
       setContent(this.elem, '<p>St|uf|f</p>')
 
-      this.quill.pre(true)
+      this.compose.pre(true)
 
       expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre>')
     })
@@ -305,7 +305,7 @@ describe('Rich mode', function () {
     it('should correctly convert paragraphs to <pre>s (4).', function () {
       setContent(this.elem, '<p>|Stuff</p><p>Things|</p>')
 
-      this.quill.pre(true)
+      this.compose.pre(true)
 
       expect(this.elem.innerHTML).toEqual('<pre>Stuff</pre><pre>Things</pre>')
     })
@@ -313,7 +313,7 @@ describe('Rich mode', function () {
     it('should correctly convert <pre>s to <p>s (1).', function () {
       setContent(this.elem, '<pre>Stuff|</pre>')
 
-      this.quill.pre(false)
+      this.compose.pre(false)
 
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
     })
@@ -321,7 +321,7 @@ describe('Rich mode', function () {
     it('should correctly convert <pre>s to <p>s (2).', function () {
       setContent(this.elem, '<pre>|Stuff</pre>')
 
-      this.quill.pre()
+      this.compose.pre()
 
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
     })
@@ -329,7 +329,7 @@ describe('Rich mode', function () {
     it('should correctly convert <pre>s to <p>s (3).', function () {
       setContent(this.elem, '<pre>St|uf|f</pre>')
 
-      this.quill.pre()
+      this.compose.pre()
 
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
     })
@@ -337,26 +337,26 @@ describe('Rich mode', function () {
     it('should correctly convert <pre>s to <p>s (4).', function () {
       setContent(this.elem, '<pre>|Stuff</pre><pre>Things|</pre>')
 
-      this.quill.pre()
+      this.compose.pre()
 
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p><p>Things</p>')
     })
 
     it('should conserve attributes when converting.', function () {
       // We have to add attributes to the sanitizer.
-      this.quill.sanitizer.addAttributes({
+      this.compose.sanitizer.addAttributes({
         p: ['id', 'name'],
         pre: ['id', 'name']
       })
 
       setContent(this.elem, '<p id="word">|Stuff</p><p name="blue">Thing|s</p>')
 
-      this.quill.pre(true)
+      this.compose.pre(true)
 
       expect(this.elem.innerHTML)
         .toEqual('<pre id="word">Stuff</pre><pre name="blue">Things</pre>')
 
-      this.quill.pre(false)
+      this.compose.pre(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p id="word">Stuff</p><p name="blue">Things</p>')
@@ -369,14 +369,14 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -433,14 +433,14 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -449,12 +449,12 @@ describe('Rich mode', function () {
     it('can be inserted normally.', function () {
       setContent(this.elem, '<p>Stuff|</p>')
 
-      this.quill.blockquote(true)
+      this.compose.blockquote(true)
 
       expect(this.elem.innerHTML)
         .toEqual('<blockquote>Stuff</blockquote>')
 
-      this.quill.blockquote(false)
+      this.compose.blockquote(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p>Stuff</p>')
@@ -463,7 +463,7 @@ describe('Rich mode', function () {
     it('can be inserted with an optional class.', function () {
       setContent(this.elem, '<p>Stuff|</p>')
 
-      this.quill.blockquote('test')
+      this.compose.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('test')
@@ -473,12 +473,12 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p>S|tuff|</p>')
       this.elem.focus()
 
-      this.quill.blockquote('test')
+      this.compose.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('test')
 
-      this.quill.blockquote(false)
+      this.compose.blockquote(false)
 
       expect(this.elem.innerHTML).toEqual('<p>Stuff</p>')
       expect(this.elem.firstChild.hasAttribute('class')).toBe(false)
@@ -488,12 +488,12 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p>St|u|ff</p>')
       this.elem.focus()
 
-      this.quill.blockquote('test')
+      this.compose.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('test')
 
-      this.quill.blockquote(true)
+      this.compose.blockquote(true)
 
       expect(this.elem.innerHTML).toEqual('<blockquote>Stuff</blockquote>')
       expect(this.elem.firstChild.hasAttribute('class')).toBe(false)
@@ -503,12 +503,12 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p>Stu|ff</p>')
       this.elem.focus()
 
-      this.quill.blockquote('test')
+      this.compose.blockquote('test')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('test')
 
-      this.quill.blockquote('word')
+      this.compose.blockquote('word')
 
       expect(this.elem.firstChild.nodeName).toEqual('BLOCKQUOTE')
       expect(this.elem.firstChild.className).toEqual('word')
@@ -518,20 +518,20 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p>St|uff</p><p>Thin|gs</p>')
       this.elem.focus()
 
-      this.quill.blockquote(true)
+      this.compose.blockquote(true)
 
       expect(this.elem.innerHTML)
         .toEqual('<blockquote>Stuff</blockquote><blockquote>Things</blockquote>')
 
-      this.quill.blockquote(false)
+      this.compose.blockquote(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p>Stuff</p><p>Things</p>')
     })
 
     it('should preserve other attributes.', function () {
-      // We have to add the attributes to Quill's sanitizer.
-      this.quill.sanitizer.addAttributes({
+      // We have to add the attributes to Compose's sanitizer.
+      this.compose.sanitizer.addAttributes({
         p: ['name'],
         blockquote: ['name']
       })
@@ -539,12 +539,12 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p name="word">S|tuff</p>')
       this.elem.focus()
 
-      this.quill.blockquote(true)
+      this.compose.blockquote(true)
 
       expect(this.elem.innerHTML)
         .toEqual('<blockquote name="word">Stuff</blockquote>')
 
-      this.quill.blockquote(false)
+      this.compose.blockquote(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p name="word">Stuff</p>')
@@ -557,11 +557,11 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
 
       // We have to add the file protocol; when testing locally,
       // relative URLs will be of the form file://.../#
-      this.quill.sanitizer.addProtocols('file')
+      this.compose.sanitizer.addProtocols('file')
 
       jasmine.addMatchers(customMatchers)
     })
@@ -570,7 +570,7 @@ describe('Rich mode', function () {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -579,12 +579,12 @@ describe('Rich mode', function () {
     it('can insert links over text.', function () {
       setContent(this.elem, '<p>Stuff |and| things</p>')
 
-      this.quill.link('http://www.example.com')
+      this.compose.link('http://www.example.com')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>Stuff <a href="http://www.example.com">and</a> things</p>')
 
-      this.quill.link(false)
+      this.compose.link(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p>Stuff and things</p>')
@@ -593,12 +593,12 @@ describe('Rich mode', function () {
     it('can insert link over mixed content (1).', function () {
       setContent(this.elem, '<h2>One tw|o <em>th|ree</em></h2>')
 
-      this.quill.link('#')
+      this.compose.link('#')
 
       expect(this.elem.innerHTML)
         .toEqual('<h2>One tw<a href="#">o <em>th</em></a><em>ree</em></h2>')
 
-      this.quill.link(false)
+      this.compose.link(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<h2>One two <em>three</em></h2>')
@@ -607,7 +607,7 @@ describe('Rich mode', function () {
     it('can insert links over entire elements (1).', function () {
       setContent(this.elem, '<p>One |<strong>two</strong>| three</p>')
 
-      this.quill.link('/')
+      this.compose.link('/')
 
       // Different browsers treat this differently. We don't care, as
       // long as it's relatively semantic.
@@ -615,7 +615,7 @@ describe('Rich mode', function () {
         '<p>One <a href="/"><strong>two</strong></a> three</p>',
         '<p>One <strong><a href="/">two</a></strong> three</p>'])
 
-      this.quill.link(false)
+      this.compose.link(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One <strong>two</strong> three</p>')
@@ -624,14 +624,14 @@ describe('Rich mode', function () {
     it('can insert links over entire elements (2).', function () {
       setContent(this.elem, '<p>One <em>|two|</em> three</p>')
 
-      this.quill.link('/')
+      this.compose.link('/')
 
       // Different browsers treat this differently. We don't care, as
       // long as it's relatively semantic.
       expect(this.elem.innerHTML)
         .toEqual('<p>One <em><a href="/">two</a></em> three</p>')
 
-      this.quill.link(false)
+      this.compose.link(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One <em>two</em> three</p>')
@@ -640,13 +640,13 @@ describe('Rich mode', function () {
     it('can insert links over entire elements (3).', function () {
       setContent(this.elem, '<p>One |<strong>two|</strong> three</p>')
 
-      this.quill.link('mailto:abc@example.com')
+      this.compose.link('mailto:abc@example.com')
 
       expect(this.elem.innerHTML).toBeOneOf([
         '<p>One <strong><a href="mailto:abc@example.com">two</a></strong> three</p>',
         '<p>One <a href="mailto:abc@example.com"><strong>two</strong></a> three</p>'])
 
-      this.quill.link(false)
+      this.compose.link(false)
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One <strong>two</strong> three</p>')
@@ -659,7 +659,7 @@ describe('Rich mode', function () {
       this.elem = document.createElement('div')
       document.body.appendChild(this.elem)
 
-      this.quill = new Quill(this.elem)
+      this.compose = new Compose(this.elem)
 
       jasmine.addMatchers(customMatchers)
     })
@@ -668,7 +668,7 @@ describe('Rich mode', function () {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.quill.destroy()
+        this.compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -678,7 +678,7 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p style="font-weight: bold;">One two|</p>')
 
       // Fake input.
-      this.quill.emit('input')
+      this.compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p><strong>One two</strong></p>')
@@ -688,7 +688,7 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p style="font-style: italic;">One two|</p>')
 
       // Fake input.
-      this.quill.emit('input')
+      this.compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p><em>One two</em></p>')
@@ -698,7 +698,7 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p style="font-weight: bold;">One <strong>two</strong> three|</p>')
 
       // Fake input.
-      this.quill.emit('input')
+      this.compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p><strong>One two three</strong></p>')
@@ -708,7 +708,7 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p style="font-style: italic;">One <em>two</em> three|</p>')
 
       // Fake input.
-      this.quill.emit('input')
+      this.compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p><em>One two three</em></p>')
@@ -718,7 +718,7 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p style="font-weight: bold;">One <b>two</b> three|</p>')
 
       // Fake input.
-      this.quill.emit('input')
+      this.compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p><strong>One two three</strong></p>')
@@ -728,7 +728,7 @@ describe('Rich mode', function () {
       setContent(this.elem, '<p style="font-style: oblique;">One <i>two</i> three|</p>')
 
       // Fake input.
-      this.quill.emit('input')
+      this.compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p><em>One two three</em></p>')
@@ -739,7 +739,7 @@ describe('Rich mode', function () {
         '<p style="font-style: oblique; font-weight: bold;">One <i>two</i> <strong>thr|ee</strong></p>')
 
       // Fake input.
-      this.quill.emit('input')
+      this.compose.emit('input')
 
       expect(this.elem.innerHTML).toBeOneOf([
         '<p><em><strong>One two three</strong></em></p>',

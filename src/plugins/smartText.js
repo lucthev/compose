@@ -113,10 +113,10 @@ function formatter (textNode) {
   }
 }
 
-function SmartText (Quill) {
-  this.sanitizer = Quill.sanitizer
+function SmartText (Compose) {
+  this.sanitizer = Compose.sanitizer
 
-  this.formatter = formatter.bind(Quill.node)
+  this.formatter = formatter.bind(Compose.node)
 
   this.sanitizer.addTextFormatter(this.formatter)
 }

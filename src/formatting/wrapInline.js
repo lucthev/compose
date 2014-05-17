@@ -55,7 +55,7 @@ function wrapText (parent) {
           node = node.lastChild
 
         // We don't, however, want it to end up in a marker.
-        if (!node.classList.contains('Quill-marker'))
+        if (!node.classList.contains('Compose-marker'))
           node.appendChild(br)
         else node.parentNode.insertBefore(br, node.nextSibling)
       }

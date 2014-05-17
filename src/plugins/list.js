@@ -135,17 +135,17 @@ function listFilter (elem) {
   }
 }
 
-function AutoList (Quill) {
-  this.selection = Quill.selection
-  this.elem = Quill.elem
-  this.sanitizer = Quill.sanitizer
+function AutoList (Compose) {
+  this.selection = Compose.selection
+  this.elem = Compose.elem
+  this.sanitizer = Compose.sanitizer
 
   // Store bound event handlers for later removal.
-  this.onKeydown = onKeydown.bind(Quill)
+  this.onKeydown = onKeydown.bind(Compose)
 
   this.elem.addEventListener('keydown', this.onKeydown)
 
-  Quill.sanitizer
+  Compose.sanitizer
     .addElements(['ol', 'ul', 'li'])
     .addFilter('ul', listFilter)
     .addFilter('ol', listFilter)

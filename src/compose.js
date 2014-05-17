@@ -31,7 +31,7 @@ function setup (elem) {
 }
 
 /**
- * new Quill(elem [, opts]) creates an instance of Quill. elem can be
+ * new Compose(elem [, opts]) creates an instance of Compose. elem can be
  * an Element or a String; if a string, tries to query an element
  * using querySelector. opts is an options object with the following
  * keys, all optional:
@@ -43,13 +43,13 @@ function setup (elem) {
  *
  * @param {Element || String} elem
  * @param {Object} opts
- * @return {Quill}
+ * @return {Compose}
  */
-function Quill (elem, opts) {
+function Compose (elem, opts) {
   var Mode
 
-  if (!(this instanceof Quill))
-    return new Quill(elem, opts)
+  if (!(this instanceof Compose))
+    return new Compose(elem, opts)
 
   opts = opts || {}
 
@@ -76,23 +76,23 @@ function Quill (elem, opts) {
   this.use(Mode)
 }
 
-// Quill is an EventEmitter.
-Quill.prototype = Object.create(EventEmitter.prototype)
+// Compose is an EventEmitter.
+Compose.prototype = Object.create(EventEmitter.prototype)
 
-// Quill also makes available a setImmediate shim.
-Quill.prototype.setImmediate = SetImmediate.setImmediate
-Quill.prototype.clearImmediate = SetImmediate.clearImmediate
+// Compose also makes available a setImmediate shim.
+Compose.prototype.setImmediate = SetImmediate.setImmediate
+Compose.prototype.clearImmediate = SetImmediate.clearImmediate
 
 /**
- * Quill.use(Plugin, opts) adds a plugin to the Quill instance. Plugins
- * will be passed the Quill instance as a first parameter and opts as the
+ * Compose.use(Plugin, opts) adds a plugin to the Compose instance. Plugins
+ * will be passed the Compose instance as a first parameter and opts as the
  * second.
  *
  * @param {Function} Plugin
  * @param {*} opts
  * @return Context
  */
-Quill.prototype.use = function (Plugin, opts) {
+Compose.prototype.use = function (Plugin, opts) {
   if (!Plugin) return
 
   // Plugins should be named via a 'plugin' property.
@@ -108,25 +108,25 @@ Quill.prototype.use = function (Plugin, opts) {
     } catch (e) {
       if (this._debug) throw e
     }
-  } else throw new Error('Quill is already using a plugin ' + name)
+  } else throw new Error('Compose is already using a plugin ' + name)
 
   return this
 }
 
 /**
- * Quill.disable(name) disables the plugin with name 'name'.
+ * Compose.disable(name) disables the plugin with name 'name'.
  *
  * @param {String} name
  * @return Context
  */
-Quill.prototype.disable = function (name) {
+Compose.prototype.disable = function (name) {
   var i
 
   if (!name) return
 
   i = this.plugins.indexOf(name)
   if (i < 0)
-    throw new Error('Quill is not using a plugin ' + name)
+    throw new Error('Compose is not using a plugin ' + name)
 
   if (typeof this[name].destroy === 'function')
     this[name].destroy()
@@ -139,12 +139,12 @@ Quill.prototype.disable = function (name) {
 }
 
 /**
- * Quill.destroy() removes event listeners and deletes references
+ * Compose.destroy() removes event listeners and deletes references
  * to elements etc.
  *
  * @return null
  */
-Quill.prototype.destroy = function () {
+Compose.prototype.destroy = function () {
   if (this._destroyed) return
 
   var i = this.plugins.length
@@ -166,8 +166,8 @@ Quill.prototype.destroy = function () {
 }
 
 // We bundle up plugins here.
-Quill.plugin = {
+Compose.plugin = {
   placeHolder: require('./plugins/placeHolder')
 }
 
-module.exports = Quill
+module.exports = Compose

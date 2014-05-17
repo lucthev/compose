@@ -5,7 +5,7 @@
  *
  * This is done to ensure psting from other sources renders correctly,
  * and also to fix at least one bug
- * (see https://github.com/lucthev/quill/issues/39)
+ * (see https://github.com/lucthev/compose/issues/39)
  *
  * Currently applied transformations:
  *   font-weight: bold -> <strong>

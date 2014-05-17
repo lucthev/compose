@@ -1,6 +1,6 @@
 'use strict';
 
-function HeadingPlugin (Quill) {
+function HeadingPlugin (Compose) {
   var allHeadings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
   /**
@@ -11,24 +11,24 @@ function HeadingPlugin (Quill) {
   function heading (level) {
     level = level ? 'h' + level + '' : 'p'
 
-    Quill.selection.save()
+    Compose.selection.save()
 
     // Turn all list items into <p>s before changing them into
     // headings.
     // TODO: conserve attributes?
-    Quill.selection.forEachBlock(function (block) {
+    Compose.selection.forEachBlock(function (block) {
       if (block.nodeName === 'LI')
-        Quill.list.splitList(block)
+        Compose.list.splitList(block)
     })
 
     // We have to restore the selection in between, otherwise the
     // selection gets weird and the second forEachBlock does nothing.
-    Quill.selection.restore(true)
+    Compose.selection.restore(true)
 
     // We manually convert each paragraph into a heading; formatBlock
     // introduces weird issues.
-    // (see https://github.com/lucthev/quill/issues/7)
-    Quill.selection.forEachBlock(function (block) {
+    // (see https://github.com/lucthev/Compose/issues/7)
+    Compose.selection.forEachBlock(function (block) {
       var elem = document.createElement(level),
           attributes = Array.prototype.slice.call(block.attributes)
 
@@ -43,9 +43,9 @@ function HeadingPlugin (Quill) {
       block.parentNode.replaceChild(elem, block)
     })
 
-    Quill.selection.restore()
+    Compose.selection.restore()
 
-    Quill.emit('input')
+    Compose.emit('input')
   }
 
   /**
@@ -59,11 +59,11 @@ function HeadingPlugin (Quill) {
     level = 'H' + level
 
     // Check for condition (1); we can stop if true.
-    if (Quill.selection.childOf(level))
+    if (Compose.selection.childOf(level))
       return true
 
     // Check for condition (2).
-    Quill.selection.forEachBlock(function (block) {
+    Compose.selection.forEachBlock(function (block) {
       if (block.nodeName !== level) allHeading = false
     })
 
@@ -81,10 +81,10 @@ function HeadingPlugin (Quill) {
   }
 
   heading.destroy = function () {
-    Quill.sanitizer.removeElements(allHeadings)
+    Compose.sanitizer.removeElements(allHeadings)
   }
 
-  Quill.sanitizer.addElements(allHeadings)
+  Compose.sanitizer.addElements(allHeadings)
 
   return heading
 }

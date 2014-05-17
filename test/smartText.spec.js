@@ -1,4 +1,4 @@
-/* global describe, it, beforeEach, afterEach, expect, Quill, setContent */
+/* global describe, it, beforeEach, afterEach, expect, Compose, setContent */
 'use strict';
 
 describe('The Smart Text plugin', function () {
@@ -9,14 +9,14 @@ describe('The Smart Text plugin', function () {
       this.elem = document.createElement('article')
       document.body.appendChild(this.elem)
 
-      this.Quill = new Quill(this.elem)
+      this.Compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.Quill.destroy()
+        this.Compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -27,7 +27,7 @@ describe('The Smart Text plugin', function () {
 
       // Simulate input; this should trigger Sanitization, which is responsible
       // good punctuation.
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>It’s a nice day.</p>')
@@ -36,7 +36,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (2).', function () {
       setContent(this.elem, '<p>One \'two\' three</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One ‘two’ three</p>')
@@ -45,7 +45,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (3).', function () {
       setContent(this.elem, '<p>One (\'two\') three</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One (‘two’) three</p>')
@@ -54,7 +54,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (4).', function () {
       setContent(this.elem, '<p>One <strong>\'two</strong>\' three</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One <strong>‘two</strong>’ three</p>')
@@ -63,7 +63,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (5).', function () {
       setContent(this.elem, '<p>One \'<strong><em>two</em> three</strong> four\'</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One ‘<strong><em>two</em> three</strong> four’</p>')
@@ -72,7 +72,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (6).', function () {
       setContent(this.elem, '<p>One \'\' two</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One ‘’ two</p>')
@@ -81,7 +81,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (7).', function () {
       setContent(this.elem, '<p>\'Once upon a time.\'</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>‘Once upon a time.’</p>')
@@ -93,7 +93,7 @@ describe('The Smart Text plugin', function () {
       // outcome.
       setContent(this.elem, '<p>\'Yes,|\' he replied.</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>‘Yes,’ he replied.</p>')
@@ -102,7 +102,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (9).', function () {
       setContent(this.elem, '<p>\'(Words)\'</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>‘(Words)’</p>')
@@ -111,7 +111,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (10).', function () {
       setContent(this.elem, '<ul><li>One</li><li>\'Two\'</li></ul>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<ul><li>One</li><li>‘Two’</li></ul>')
@@ -120,23 +120,23 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (11).', function () {
       setContent(this.elem, '<p>(\'</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>(‘</p>')
     })
 
     it('should not replace quotes in code blocks.', function () {
-      this.Quill.sanitizer.addElements('pre')
+      this.Compose.sanitizer.addElements('pre')
 
       setContent(this.elem, '<pre>var str = \'something\'</pre>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<pre>var str = \'something\'</pre>')
 
-      this.Quill.sanitizer.removeElements('pre')
+      this.Compose.sanitizer.removeElements('pre')
     })
   })
 
@@ -146,14 +146,14 @@ describe('The Smart Text plugin', function () {
       this.elem = document.createElement('article')
       document.body.appendChild(this.elem)
 
-      this.Quill = new Quill(this.elem)
+      this.Compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.Quill.destroy()
+        this.Compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -162,7 +162,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (1).', function () {
       setContent(this.elem, '<p>"It is a nice day," she said.</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>“It is a nice day,” she said.</p>')
@@ -171,7 +171,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (2).', function () {
       setContent(this.elem, '<p>One "two" three</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One “two” three</p>')
@@ -180,7 +180,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (3).', function () {
       setContent(this.elem, '<p>One ("two") three</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One (“two”) three</p>')
@@ -189,7 +189,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (4).', function () {
       setContent(this.elem, '<p>One <strong>"two</strong>" three</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One <strong>“two</strong>” three</p>')
@@ -198,7 +198,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (5).', function () {
       setContent(this.elem, '<p>One "<strong><em>two</em> three</strong> four"</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One “<strong><em>two</em> three</strong> four”</p>')
@@ -207,7 +207,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight single quotes to curly quotes (6).', function () {
       setContent(this.elem, '<p>One "" two</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>One “” two</p>')
@@ -216,7 +216,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (7).', function () {
       setContent(this.elem, '<p>"Once upon a time."</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>“Once upon a time.”</p>')
@@ -228,7 +228,7 @@ describe('The Smart Text plugin', function () {
       // outcome.
       setContent(this.elem, '<p>"Yes,|" he replied.</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>“Yes,” he replied.</p>')
@@ -237,7 +237,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (9).', function () {
       setContent(this.elem, '<p>"(Words)"</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>“(Words)”</p>')
@@ -246,7 +246,7 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (10).', function () {
       setContent(this.elem, '<ul><li>One</li><li>"Two"</li></ul>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<ul><li>One</li><li>“Two”</li></ul>')
@@ -255,23 +255,23 @@ describe('The Smart Text plugin', function () {
     it('converts straight double quotes to curly quotes (11).', function () {
       setContent(this.elem, '<p>("</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>(“</p>')
     })
 
     it('should not replace quotes in code blocks.', function () {
-      this.Quill.sanitizer.addElements('pre')
+      this.Compose.sanitizer.addElements('pre')
 
       setContent(this.elem, '<pre>var str = "something"</pre>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<pre>var str = "something"</pre>')
 
-      this.Quill.sanitizer.removeElements('pre')
+      this.Compose.sanitizer.removeElements('pre')
     })
   })
 
@@ -281,14 +281,14 @@ describe('The Smart Text plugin', function () {
       this.elem = document.createElement('article')
       document.body.appendChild(this.elem)
 
-      this.Quill = new Quill(this.elem)
+      this.Compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.Quill.destroy()
+        this.Compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -297,7 +297,7 @@ describe('The Smart Text plugin', function () {
     it('are inserted after a number (1).', function () {
       setContent(this.elem, '<p>4\'.</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>4′.</p>')
@@ -306,7 +306,7 @@ describe('The Smart Text plugin', function () {
     it('are inserted after a number (2).', function () {
       setContent(this.elem, '<p>He was short, at 4\'11".</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>He was short, at 4′11″.</p>')
@@ -315,7 +315,7 @@ describe('The Smart Text plugin', function () {
     it('are inserted after a number (3).', function () {
       setContent(this.elem, '<p>He was short, at <strong>4</strong>\'<em>11</em>".</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>He was short, at <strong>4</strong>′<em>11</em>″.</p>')
@@ -324,7 +324,7 @@ describe('The Smart Text plugin', function () {
     it('are inserted after a number (4).', function () {
       setContent(this.elem, '<p>He was short (he was 4\'11").</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>He was short (he was 4′11″).</p>')
@@ -333,7 +333,7 @@ describe('The Smart Text plugin', function () {
     it('should not be inserted after a word. (1).', function () {
       setContent(this.elem, '<p>He was short (he was four\').</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .not.toEqual('<p>He was short (he was four′).</p>')
@@ -342,7 +342,7 @@ describe('The Smart Text plugin', function () {
     it('should not be inserted after a word. (2).', function () {
       setContent(this.elem, '<p>%\':"</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>%’:”</p>')
@@ -355,14 +355,14 @@ describe('The Smart Text plugin', function () {
       this.elem = document.createElement('article')
       document.body.appendChild(this.elem)
 
-      this.Quill = new Quill(this.elem)
+      this.Compose = new Compose(this.elem)
     })
 
     afterEach(function (done) {
       document.body.removeChild(this.elem)
 
       setTimeout(function () {
-        this.Quill.destroy()
+        this.Compose.destroy()
 
         done()
       }.bind(this), 10)
@@ -371,7 +371,7 @@ describe('The Smart Text plugin', function () {
     it('everything (1).', function () {
       setContent(this.elem, '<p>"He\'s short," said John. "He\'s about 4\'11"."</p>')
 
-      this.Quill.emit('input')
+      this.Compose.emit('input')
 
       expect(this.elem.innerHTML)
         .toEqual('<p>“He’s short,” said John. “He’s about 4′11″.”</p>')

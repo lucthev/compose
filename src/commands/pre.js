@@ -1,6 +1,6 @@
 'use strict';
 
-function PrePlugin (Quill) {
+function PrePlugin (Compose) {
 
   /**
    * pre() formats a block-level element as a <pre> element if 'toPre'
@@ -11,21 +11,21 @@ function PrePlugin (Quill) {
   function pre (toPre) {
     var elem = toPre ? 'pre' : 'p'
 
-    Quill.selection.save()
+    Compose.selection.save()
 
     // Turn all list items into <p>s before changing them into <pre>s.
     // TODO: conserve attributes?
-    Quill.selection.forEachBlock(function (block) {
+    Compose.selection.forEachBlock(function (block) {
       if (block.nodeName === 'LI')
-        Quill.list.splitList(block)
+        Compose.list.splitList(block)
     })
 
     // We have to restore the selection in between, otherwise the
     // selection gets weird and the second forEachBlock does nothing.
-    Quill.selection.restore(true)
+    Compose.selection.restore(true)
 
     // Convert block elements to <pre>s.
-    Quill.selection.forEachBlock(function (block) {
+    Compose.selection.forEachBlock(function (block) {
       var pre = document.createElement(elem),
           attributes = Array.prototype.slice.call(block.attributes)
 
@@ -39,9 +39,9 @@ function PrePlugin (Quill) {
       block.parentNode.replaceChild(pre, block)
     })
 
-    Quill.selection.restore()
+    Compose.selection.restore()
 
-    Quill.emit('input')
+    Compose.emit('input')
   }
 
   /**
@@ -53,11 +53,11 @@ function PrePlugin (Quill) {
     var allPre = true
 
     // Check condition (1).
-    if (Quill.selection.childOf('pre'))
+    if (Compose.selection.childOf('pre'))
       return true
 
     // Check condition (2).
-    Quill.selection.forEachBlock(function (block) {
+    Compose.selection.forEachBlock(function (block) {
       allPre = allPre && block.nodeName === 'PRE'
     })
 
@@ -74,10 +74,10 @@ function PrePlugin (Quill) {
   }
 
   pre.destroy = function () {
-    Quill.sanitizer.removeElements('pre')
+    Compose.sanitizer.removeElements('pre')
   }
 
-  Quill.sanitizer.addElements('pre')
+  Compose.sanitizer.addElements('pre')
 
   return pre
 }

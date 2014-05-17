@@ -3,8 +3,8 @@
 /**
  * A collection of node and element-related utilities.
  */
-function NodePlugin (Quill) {
-  this.elem = Quill.elem
+function NodePlugin (Compose) {
+  this.elem = Compose.elem
 }
 
 /**

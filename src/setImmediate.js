@@ -1,8 +1,8 @@
 /**
  * This setImmediate shim is adapted from https://github.com/YuzuJS/setImmediate;
  * credit goes to the original authors. It has been modified somewhat to fit in
- * nicely with Quill (i.e. it is now a CommonJS module). I have also removed code
- * dealing with Node.js and Web Workers; I'm not sure why you would need Quill
+ * nicely with Compose (i.e. it is now a CommonJS module). I have also removed code
+ * dealing with Node.js and Web Workers; I'm not sure why you would need Compose
  * in those environments.
  */
 

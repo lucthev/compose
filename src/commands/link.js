@@ -1,6 +1,6 @@
 'use strict';
 
-function LinkPlugin (Quill) {
+function LinkPlugin (Compose) {
 
   // Default allowed protocols.
   var Protocols = ['http', 'https', 'mailto']
@@ -35,27 +35,27 @@ function LinkPlugin (Quill) {
     sel.removeAllRanges()
     sel.addRange(range)
 
-    Quill.emit('input')
+    Compose.emit('input')
   }
 
   /**
-   * Quill.link.getState() determines if a link exists in the selection
+   * Compose.link.getState() determines if a link exists in the selection
    * or the selection is a child of a link. Differs significantly from
    * document.queryCommandState('createLink').
    *
    * @return Boolean
    */
   Link.getState = function () {
-    return !!Quill.selection.childOf(/^a$/i) ||
-      Quill.selection.contains('a')
+    return !!Compose.selection.childOf(/^a$/i) ||
+      Compose.selection.contains('a')
   }
 
   Link.isEnabled = function () {
-    return !Quill.selection.contains('a')
+    return !Compose.selection.contains('a')
   }
 
   Link.destroy = function () {
-    Quill.sanitizer
+    Compose.sanitizer
       .removeElements('a')
       .removeAttributes({
         a: ['href']
@@ -63,7 +63,7 @@ function LinkPlugin (Quill) {
       .removeProtocols(Protocols)
   }
 
-  Quill.sanitizer
+  Compose.sanitizer
     .addElements('a')
     .addAttributes({
       a: ['href']

@@ -47,12 +47,12 @@ function onFocus () {
   }
 }
 
-function History (Quill) {
-  this.elem = Quill.elem
-  this.emit = Quill.emit.bind(Quill)
-  this.off = Quill.off.bind(Quill)
-  this.selection = Quill.selection
-  this._debug = Quill._debug
+function History (Compose) {
+  this.elem = Compose.elem
+  this.emit = Compose.emit.bind(Compose)
+  this.off = Compose.off.bind(Compose)
+  this.selection = Compose.selection
+  this._debug = Compose._debug
   this.max = 100
 
   this.stack = []
@@ -60,13 +60,13 @@ function History (Quill) {
 
   // Bound functions are being used as event listeners; they are
   // kept here so we can remove them upon destroying.
-  this.onFocus = onFocus.bind(Quill)
+  this.onFocus = onFocus.bind(Compose)
   this.onKeydown = onKeydown.bind(this)
-  this.onChange = onChange.bind(Quill)
+  this.onChange = onChange.bind(Compose)
 
   this.elem.addEventListener('focus', this.onFocus)
   this.elem.addEventListener('keydown', this.onKeydown)
-  Quill.on('change', this.onChange)
+  Compose.on('change', this.onChange)
 }
 
 /**
