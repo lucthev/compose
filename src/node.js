@@ -43,7 +43,7 @@ NodePlugin.prototype.isBlock = function (elem) {
   return this.isElem(elem) && blockRegex.test(elem.nodeName)
 }
 
-var inlines = ['b', 'i', 'em', 'strong', 'a', 'sub', 'sup'],
+var inlines = ['b', 'i', 'em', 'strong', 'a', 'sub', 'sup', 'code'],
     inlineRegex = new RegExp('^(' + inlines.join('|') + ')$', 'i')
 
 /**

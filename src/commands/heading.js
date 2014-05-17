@@ -73,8 +73,9 @@ function HeadingPlugin (Quill) {
   /**
    * heading.isEnabled( ) determines if the pre command can be successfully
    * executed under the current conditions.
+   *
+   * FIXME: what are the conditions that allow headings?
    */
-  // FIXME: what are the conditions that allow headings?
   heading.isEnabled = function () {
     return true
   }

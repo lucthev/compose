@@ -1,5 +1,6 @@
 'use strict';
 
+// Event listener. Decides when to insert <hr>s.
 function onKeydown (e) {
   var container = this.selection.getContaining(),
       sel = window.getSelection(),
@@ -72,10 +73,21 @@ function AutoHR (Quill) {
   Quill.sanitizer.addElements('hr')
 }
 
+/**
+ * hr.insertBefore(elem) inserts an <hr> before the given element.
+ * Will only insert <hr>s if 'elem' is a direct child of the
+ * editable element.
+ *
+ * @param {Element}
+ */
 AutoHR.prototype.insertBefore = function (elem) {
-  var hr = document.createElement('hr')
+  var hr = document.createElement('hr'),
+      parent = elem.parentNode
 
-  elem.parentNode.insertBefore(hr, elem)
+  if (parent !== this.elem)
+    throw new Error('HRs should only be inserted before top-level elements.')
+
+  parent.insertBefore(hr, elem)
 
   this.Quill.emit('input')
 }

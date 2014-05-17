@@ -22,7 +22,6 @@ function onInput () {
 function afterClean () {
   var first
 
-
   // Remove all whitespace at the beginning of the element.
   // FIXME: doesn't really work.
   first = this.elem.firstChild

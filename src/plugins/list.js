@@ -5,7 +5,9 @@
  * immediately by a space. An ordered list is created by typing '1.'
  * followed by a space. Text after the trigger does not matter, so
  * <p>1.|Stuff</p> (where | is the caret) and pressing space will
- * still make a list whose first item is 'Stuff'.
+ * still make a list whose first item is 'Stuff'. Lists will only
+ * ever replace <p>s, so <h2>1.|Stuff</h2> and pressing spacebar
+ * will just insert a space.
  */
 
 function onKeydown (e) {
@@ -66,7 +68,6 @@ function onKeydown (e) {
 
     this.selection.restore()
 
-    // Trigger change if necessary.
     this.emit('input')
 
   } else if (e.keyCode === 8 || e.keyCode === 13) {
@@ -90,6 +91,12 @@ function onKeydown (e) {
   }
 }
 
+/**
+ * A Sanitizer filter which performs various actions on lists,
+ * like merging consecutive lists.
+ *
+ * @param {Element} elem
+ */
 function listFilter (elem) {
   var node,
       next,
@@ -131,7 +138,7 @@ function listFilter (elem) {
 function AutoList (Quill) {
   this.selection = Quill.selection
   this.elem = Quill.elem
-  this.Quill = Quill
+  this.sanitizer = Quill.sanitizer
 
   // Store bound event handlers for later removal.
   this.onKeydown = onKeydown.bind(Quill)
@@ -200,14 +207,14 @@ AutoList.prototype.splitList = function (listItem) {
 AutoList.prototype.destroy = function () {
   this.elem.removeEventListener('keydown', this.onKeydown)
 
-  this.Quill.sanitizer
+  this.sanitizer
     .removeElements(['ol', 'ul', 'li'])
     .removeFilter('ol', listFilter)
     .removeFilter('ul', listFilter)
 
   delete this.elem
   delete this.selection
-  delete this.Quill
+  delete this.sanitizer
 }
 
 // Plugin name:

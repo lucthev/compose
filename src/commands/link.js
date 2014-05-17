@@ -2,8 +2,15 @@
 
 function LinkPlugin (Quill) {
 
+  // Default allowed protocols.
   var Protocols = ['http', 'https', 'mailto']
 
+  /**
+   * Link(href) creates a link with the given href. If href is not
+   * truthy, removes links from the selection.
+   *
+   * @param {String} href
+   */
   function Link (href) {
     var sel = window.getSelection(),
         content,

@@ -37,9 +37,7 @@ function ItalicPlugin (Quill) {
     // If there's no selection, it won't be true.
     if (!sel.rangeCount) return false
 
-    // Check condition (1). We need to check for both <em>s and <i>s
-    // because sanitization is deferred until the next event loop; if we
-    // check only <em>s, querying too soon would return false.
+    // Check condition (1).
     if (Quill.selection.childOf(/^(EM|I)$/i)) return true
 
     // Check condition (2).

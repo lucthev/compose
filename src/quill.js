@@ -9,7 +9,7 @@ var EventEmitter = require('./vendor/eventEmitter/EventEmitter'),
     History = require('./history'),
     Throttle = require('./throttle'),
     NodePlugin = require('./node'),
-    SmartText = require('./formatting/smartText')
+    SmartText = require('./plugins/smartText')
 
 /**
  * setup(elem) sets up the given element. If a string is passed

@@ -5,7 +5,7 @@ function BlockquotePlugin (Quill) {
   /**
    * blockquote(quote) creates a blockquote if quote is truthy, or
    * otherwise turns blocks into paragraphs. If quote is a string,
-   * gives the blockquote taht string as className.
+   * gives the blockquote that string as a class.
    *
    * @param {Boolean || String} quote
    */

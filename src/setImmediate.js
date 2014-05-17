@@ -6,6 +6,8 @@
  * in those environments.
  */
 
+/* jshint ignore:start */
+
 /**
  * Copyright (c) 2012 Barnesandnoble.com, llc, Donavon West, and Domenic Denicola
  *
@@ -28,9 +30,6 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-/* jshint ignore:start */
-
 'use strict';
 
 var global = window

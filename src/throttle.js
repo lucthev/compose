@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * scheduleSave() schedules a state save.
+ */
 function scheduleSave () {
   var throttle = this
 
@@ -58,6 +61,9 @@ Throttle.prototype.setSpeed = function (max, min) {
   this.min = min
 }
 
+/**
+ * Throtte.destroy() removes event listners etc.
+ */
 Throttle.prototype.destroy = function () {
   this.elem.removeEventListener('input', this.onInput)
   this.off('input', this.scheduleSave)

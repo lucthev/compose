@@ -69,6 +69,11 @@ function History (Quill) {
   Quill.on('change', this.onChange)
 }
 
+/**
+ * History.push(item) pushes the given item onto the stack.
+ *
+ * @param {*} item
+ */
 History.prototype.push = function (item) {
   this.stack[this.length] = item
   this.length += 1
@@ -81,6 +86,9 @@ History.prototype.push = function (item) {
   if (this._debug) console.log('History: pushed %s', item)
 }
 
+/**
+ * History.undo() reverts to a previous state, if possible.
+ */
 History.prototype.undo = function () {
   if (this.length <= 1) return
 
@@ -94,6 +102,9 @@ History.prototype.undo = function () {
   this.emit('change', 'ignore')
 }
 
+/**
+ * History.redo() moves ahead a state, if possible.
+ */
 History.prototype.redo = function () {
   if (!this.stack.length || this.stack.length === this.length) return
 
@@ -105,6 +116,9 @@ History.prototype.redo = function () {
   this.emit('change', 'ignore')
 }
 
+/**
+ * History.destroy() removes event listeners etc.
+ */
 History.prototype.destroy = function () {
   this.off('change', this.onChange)
   this.elem.removeEventListener('keydown', this.onKeydown)
@@ -115,8 +129,6 @@ History.prototype.destroy = function () {
   delete this.emit
   delete this.off
   delete this.stack
-
-  return
 }
 
 // Plugin name:
