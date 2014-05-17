@@ -185,6 +185,23 @@ Sanitizer.prototype.clean = function (container) {
 }
 
 /**
+ * Sanitizer.url(href) validates the given url against the Sanitizer's
+ * list of allowed protocols. Returns an object with the protocol and
+ * whether or not the protocol is valid.
+ *
+ * @param {String} href
+ * @return {Object}
+ */
+Sanitizer.prototype.url = function (href) {
+  var val = href.toLowerCase().match(PROTOCOL_REGEX)
+
+  return {
+    protocol: val ? val[1] : false,
+    valid: val && this.protocols.indexOf(val[1]) >= 0
+  }
+}
+
+/**
  * Sanitize.addElements(elements) adds to the list of allowed
  * elements. Takes an array of lowercase tag names.
  *
