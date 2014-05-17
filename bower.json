@@ -17,7 +17,6 @@
     "compose"
   ],
   "license": "MIT",
-  "private": true,
   "devDependencies": {
     "eventEmitter": "~4.2.7"
   }

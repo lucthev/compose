@@ -1,16 +1,16 @@
 # Compose
 
-Yet another rich text editing thing. See it in action [here](http://lucthev.github.io/compose).
+Yet another rich text editing thing. See it in action [here](http://thevenard.me/compose).
 
 ## Installation
 
-You can install compose via Bower, or just grab the files [here](https://github.com/lucthev/compose/releases/tag/v0.1.0).
+You can install compose via Bower, or just grab the files [here](https://github.com/lucthev/compose/releases/tag/v0.0.1).
 
 ```
 $ bower install compose
 ```
 
-On NPM, `compose` is something else. Don't try that.
+On npm, `compose` is something else. Don't try that.
 
 ## Usage
 
