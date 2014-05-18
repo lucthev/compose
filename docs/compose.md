@@ -1,45 +1,8 @@
-# Compose
+# compose.js
 
-Yet another rich text editing thing. See it in action [here](lucthev.github.io/compose/).
-
-## Installation
-
-You can install Compose via Bower, or just grab the files [here](https://github.com/lucthev/compose/releases/).
-
-```
-$ bower install compose
-```
-
-On npm, `compose` is something else. Don't try that.
-
-## Usage
-
-Include Compose on your page somewhere (it's not picky):
-
-```html
-<script src="/path/to/compose.min.js"></script>
-```
-
-Then:
-
-```javascript
-var editor = new Compose('#someID')
-
-// Maybe use some plugins.
-editor
-  .use(Compose.plugin.placeholder, 'Write something…')
-  .use(OtherPlugin)
-
-// And maybe you don't want to use the built-in list plugin.
-editor.disable('list')
-
-// Or maybe you want to disable editing completely, for some reason.
-editor.destroy()
-```
+The entry point for Compose.
 
 ## API
-
-More in-depth API docs can be found in the [docs](https://github.com/lucthev/compose/tree/master/docs/) directory.
 
 Compose is an [EventEmitter](http://git.io/ee), so it inherits those instance methods (e.g. `on(...)`, `off(...)`, etc).
 
@@ -63,6 +26,6 @@ Disables a plugin previously added via `Compose.use(...)`. `name` is the name of
 
 Removes all event listeners, references to elements, etc. Disables all plugins. Removes editing capabilities from the editor. Basically, makes everything unusable.
 
-## License
+### editor.setImmediate( fn )
 
-MIT.
+Compose provides a setImmediate polyfill, adapted from [YuzuJS/setImmediate](https://github.com/YuzuJS/setImmediate). It schedules actions to be performed on the next turn of the event loop; it's essentially a more efficient version of `setTimeout(fn, 0)`. Compose also proves `clearImmediate`, should you need it.
