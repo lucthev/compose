@@ -4,7 +4,7 @@ These files aim to provide API documentation for Compose. They should provide a 
 
 ## Structure
 
-The layout of these files matches that of the [src/](https://github.com/lucthev/compose/tree/master/src/) directory. If you'd like to see the API for [src/plugins/list.js](https://github.com/lucthev/compose/tree/master/src/plugins/list.js), for example, have a look at [docs/plugins/list.md](https://github.com/lucthev/compose/tree/master/docs/plugins/list.md).
+The layout of these files matches that of the [src/](https://github.com/lucthev/compose/tree/master/src/) directory. If you'd like to see the API for [src/selection.js](https://github.com/lucthev/compose/tree/master/src/selection.js), for example, have a look at [docs/selection.md](https://github.com/lucthev/compose/tree/master/docs/selection.md).
 
 ## Getting started
 

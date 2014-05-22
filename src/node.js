@@ -76,12 +76,12 @@ NodePlugin.prototype.getContaining = function (node) {
 }
 
 /**
- * Node.childOf(matcher) tests if the selection is a child of
- * a node with name matching the provided regular expression. If
- * so, returns the matched node; else, returns false.
+ * Node.childOf(node, matcher) tests if the given node is a child of
+ * an element with tagName matching the provided regular expression. If
+ * so, returns the matched element; else, returns false.
  *
- * @param {RegExp} matcher
- * @param {Node} elem
+ * @param {Node} node
+ * @param {RegExp} tagName
  * @return {Node || false}
  */
 NodePlugin.prototype.childOf = function (node, tagName) {
