@@ -62,7 +62,7 @@ function UpperCase (Compose) {
   Compose.on('input', onInput.bind(Compose))
 }
 
-UpperCase.plugin = 'UpperCase'
+UpperCase.plugin = 'upperCase'
 ```
 
 This should now work. But what what happends if you try to disable it?
@@ -115,7 +115,7 @@ UpperCase.prototype.destroy = function () {
   this.off('input', this.onInput)
 }
 
-UpperCase.plugin = 'UpperCase'
+UpperCase.plugin = 'upperCase'
 ```
 
 And that's it! We've made a plugin that converts all input to uppercase.
