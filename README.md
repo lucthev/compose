@@ -20,7 +20,7 @@ Include Compose on your page somewhere (it's not picky):
 <script src="/path/to/compose.min.js"></script>
 ```
 
-Then:
+Compose is a [UMD](https://github.com/umdjs/umd) module, which means you're not restricted to using it as a Global. Once you've loaded it:
 
 ```javascript
 var editor = new Compose('#someID')
@@ -53,7 +53,7 @@ Creates an instance of Compose. `elem` can be either an element or a query strin
 
 ### editor.use( Plugin, opts )
 
-Makes the Compose instance use the given plugin. Plugins should be named via a `plugin` property; the plugin will then be accessible by name through the Compose instance. `opts` is an options object (or anything, really) that gets passed along to the plugin. For more information, see [writing a plugin](https://github.com/lucthev/compose/tree/master/docs/plugins/README.md).
+Makes the Compose instance use the given plugin. Plugins should be named via a `plugin` property; the plugin will then be accessible by name through the Compose instance. `opts` is an options object (or anything, really) that gets passed along to the plugin. For more information, see [writing a plugin](https://github.com/lucthev/compose/tree/master/docs/plugins/).
 
 ### editor.disable( name )
 
