@@ -24,9 +24,6 @@
     "gulp-uglify": "^0.2.1",
     "gulp-rename": "^1.2.0",
     "gulp-jshint": "^1.5.3",
-    "jshint-stylish": "^0.1.5",
-    "grunt": "^0.4.4",
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-jasmine": "^0.6.3"
+    "jshint-stylish": "^0.1.5"
   }
 }
