@@ -55,7 +55,8 @@ Compose.prototype.use = function (plugin) {
   var mock = {
     elem: this.elem,
     require: this.require.bind(this),
-    provide: this.provide.bind(this)
+    provide: this.provide.bind(this),
+    use: this.use.bind(this)
   }
 
   plugin(mock)

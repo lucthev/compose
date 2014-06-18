@@ -84,6 +84,25 @@ describe('Compose\'s plugin system', function () {
     expect(checked).toBe(true)
   })
 
+  it('should allow plugins to use other plugins.', function () {
+    var checked = false
+
+    function plugin (Compose) {
+      Compose.use(other)
+    }
+
+    function other (Compose) {
+      checked = true
+
+      Compose.provide('some', 'thing')
+    }
+
+    compose.use(plugin)
+
+    expect(checked).toBe(true)
+    expect(compose.require('some')).toEqual('thing')
+  })
+
   it('should throw an error when requiring a module that doesn\'t exist.', function () {
     function plugin (Compose) {
       Compose.require('non-existant')

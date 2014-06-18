@@ -12,6 +12,8 @@ module.exports = function (grunt) {
         src: 'dist/<%= pkg.name %>.min.js',
         options: {
           specs: 'test/*.spec.js',
+          display: 'short',
+          summary: true,
           // helpers: 'test/utils.js',
           keepRunner: true
         }
