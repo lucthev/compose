@@ -8,7 +8,13 @@ function Compose (elem, opts) {
     return new Compose(elem, opts)
 
   this.elem = elem
-  this.plugins = {}
+  elem.setAttribute('contenteditable', true)
+
+  // Plugins. Some are bundled.
+  this.plugins = {
+    serialize: require('serialize-elem'),
+    'error-handler': require('./error-handler')
+  }
 }
 
 utils.inherits(Compose, EventEmitter)
