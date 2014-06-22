@@ -30,8 +30,8 @@
     "grunt-contrib-jasmine": "^0.6.3"
   },
   "dependencies": {
-    "choice": "0.0.2",
-    "serialize-elem": "0.3.2",
+    "choice": "0.1.0",
+    "serialize-elem": "0.3.3",
     "wolfy87-eventemitter": "^4.2.6"
   }
 }
