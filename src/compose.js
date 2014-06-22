@@ -65,6 +65,7 @@ Compose.prototype.use = function (plugin) {
   plugin({
     elem: this.elem,
     require: this.require.bind(this),
+    disable: this.disable.bind(this),
     provide: this.provide.bind(this),
     use: this.use.bind(this),
     on: this.on.bind(this),
@@ -72,8 +73,6 @@ Compose.prototype.use = function (plugin) {
     off: this.off.bind(this),
     emit: this.emit.bind(this)
   })
-
-  return this
 }
 
 /**
@@ -94,8 +93,6 @@ Compose.prototype.disable = function (module) {
     plugin.disable()
 
   delete this.plugins[module]
-
-  return this
 }
 
 module.exports = Compose

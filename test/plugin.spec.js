@@ -47,6 +47,19 @@ describe('Compose\'s plugin system', function () {
     expect(checked).toBe(true)
   })
 
+  it('should isolate plugins (3).', function () {
+    var checked = false
+
+    compose.use(function (Compose) {
+      var x = Compose.use(function () { checked = true })
+
+      if (x) x.some = 'thing'
+    })
+
+    expect(checked).toBe(true)
+    expect(compose.some).toBeUndefined()
+  })
+
   it('should allow plugins to export functionality via a "provide" method.', function () {
     var checked = false
 
