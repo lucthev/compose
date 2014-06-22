@@ -3,7 +3,7 @@ node_modules/
 .DS_Store
 *.log
 src/vendor/*
-
+dist/
 temp.*
 TODO.txt
 _SpecRunner.html
