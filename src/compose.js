@@ -1,6 +1,7 @@
 'use strict';
 
 var EventEmitter = require('wolfy87-eventemitter'),
+    EventDispatcher = require('./event-dispatcher'),
     utils = require('./utils')
 
 function Compose (elem, opts) {
@@ -12,9 +13,12 @@ function Compose (elem, opts) {
 
   // Plugins. Some are bundled.
   this.plugins = {
+    events: require('./events'),
     serialize: require('serialize-elem'),
     'error-handler': require('./error-handler')
   }
+
+  this.use(EventDispatcher)
 }
 
 utils.inherits(Compose, EventEmitter)

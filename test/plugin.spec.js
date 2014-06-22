@@ -8,7 +8,6 @@ describe('Compose\'s plugin system', function () {
 
   beforeEach(function () {
     this.elem = document.createElement('article')
-    this.elem.setAttribute('contenteditable', true)
     document.body.appendChild(this.elem)
 
     compose = new Compose(this.elem)
