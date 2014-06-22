@@ -8,6 +8,12 @@ function Compose (elem, opts) {
   if (!(this instanceof Compose))
     return new Compose(elem, opts)
 
+  if (typeof elem === 'string')
+    elem = document.querySelector(elem)
+
+  if (!elem)
+    throw new Error('Invalid element or query string provided to Compose.')
+
   this.elem = elem
   elem.setAttribute('contenteditable', true)
 
