@@ -20,7 +20,10 @@ function Compose (elem, opts) {
   // Plugins. Some are bundled.
   this.plugins = {
     events: require('./events'),
+    delta: require('./delta'),
     serialize: require('serialize-elem'),
+    timers: require('./timers'),
+    utils: utils,
     'error-handler': require('./error-handler')
   }
 

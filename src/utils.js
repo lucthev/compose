@@ -1,5 +1,9 @@
 'use strict';
 
+exports.toArray = function (obj) {
+  return Array.prototype.slice.call(obj)
+}
+
 exports.hasOwnProp = function (obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop)
 }
