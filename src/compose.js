@@ -2,6 +2,7 @@
 
 var EventEmitter = require('wolfy87-eventemitter'),
     EventDispatcher = require('./event-dispatcher'),
+    UndoManager = require('./undo-manager'),
     utils = require('./utils')
 
 function Compose (elem, opts) {
@@ -27,6 +28,7 @@ function Compose (elem, opts) {
   }
 
   this.use(EventDispatcher)
+  this.use(UndoManager)
 }
 
 utils.inherits(Compose, EventEmitter)
