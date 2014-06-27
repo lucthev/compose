@@ -23,8 +23,7 @@ function Compose (elem, opts) {
     delta: require('./delta'),
     serialize: require('serialize-elem'),
     timers: require('./timers'),
-    utils: utils,
-    'error-handler': require('./error-handler')
+    utils: utils
   }
 
   this.use(EventDispatcher)
@@ -34,7 +33,7 @@ utils.inherits(Compose, EventEmitter)
 
 /**
  * require(module) 'loads' the module with the given name, if it exists.
- * An error is throw otherwise.
+ * An error is thrown otherwise.
  *
  * @param {String} module
  * @return {*}
