@@ -4,9 +4,10 @@
   "description": "Yet another contentEditable thing.",
   "main": "src/compose.js",
   "scripts": {
-    "test": "npm run js && ./node_modules/.bin/grunt",
+    "test": "npm run js && ./node_modules/.bin/grunt test",
     "js": "./node_modules/.bin/gulp",
-    "dev": "./node_modules/.bin/gulp watch"
+    "dev": "./node_modules/.bin/gulp watch",
+    "server": "node ./test/functional/server.js & true"
   },
   "repository": {
     "type": "git",
@@ -19,19 +20,24 @@
   },
   "homepage": "https://github.com/lucthev/compose",
   "devDependencies": {
-    "gulp": "^3.6.1",
-    "gulp-browserify": "^0.5.0",
-    "gulp-uglify": "^0.2.1",
-    "gulp-rename": "^1.2.0",
-    "gulp-jshint": "^1.5.3",
-    "jshint-stylish": "^0.1.5",
     "grunt": "^0.4.4",
     "grunt-cli": "^0.1.13",
-    "grunt-contrib-jasmine": "^0.6.3"
+    "grunt-concurrent": "^0.5.0",
+    "grunt-contrib-jasmine": "^0.6.3",
+    "grunt-env": "^0.4.1",
+    "grunt-jasmine-node": "^0.2.1",
+    "gulp": "^3.6.1",
+    "gulp-browserify": "^0.5.0",
+    "gulp-jshint": "^1.5.3",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^0.2.1",
+    "jshint-stylish": "^0.1.5",
+    "st": "^0.5.1",
+    "webdriverjs": "^1.7.1"
   },
   "dependencies": {
-    "choice": "0.1.0",
-    "serialize-elem": "0.3.3",
+    "choice": "^0.1.0",
+    "serialize-elem": "^0.3.3",
     "wolfy87-eventemitter": "^4.2.6"
   }
 }
