@@ -24,6 +24,7 @@ function Compose (elem, opts) {
     delta: require('./delta'),
     serialize: require('serialize-elem'),
     timers: require('./timers'),
+    dom: require('./dom'),
     utils: utils
   }
 
