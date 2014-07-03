@@ -2,12 +2,24 @@
 
 var EventEmitter = require('wolfy87-eventemitter'),
     EventDispatcher = require('./event-dispatcher'),
+    RichMode = require('./richMode/richMode'),
     UndoManager = require('./undo-manager'),
     utils = require('./utils')
 
-function Compose (elem, opts) {
+/**
+ * Compose(elem [, mode]) is the constructor for Compose. Takes an
+ * element as a first parameter and optionally a string or function as
+ * a second parameter to define the mode. If a string, mode should be
+ * one of 'rich', 'inline'. If not specified, defaults to 'rich',
+ * meaning the editor will be in “rich” editing mode.
+ *
+ * @param {Element} elem
+ * @param {String || Function} mode
+ * @return {Compose}
+ */
+function Compose (elem, mode) {
   if (!(this instanceof Compose))
-    return new Compose(elem, opts)
+    return new Compose(elem, mode)
 
   if (typeof elem === 'string')
     elem = document.querySelector(elem)
@@ -30,6 +42,13 @@ function Compose (elem, opts) {
 
   this.use(EventDispatcher)
   this.use(UndoManager)
+
+  if (typeof mode === 'function')
+    this.use(mode)
+  // else if (mode === 'inline')
+  //   this.use(InlineMode)
+  else
+    this.use(RichMode)
 }
 
 utils.inherits(Compose, EventEmitter)
