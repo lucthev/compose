@@ -1,8 +1,11 @@
 /**
- * A module that fires a 'selectionchange' event on Compose. Note that
- * the event this module fires is NOT the same as the native selectionchange
- * event which some browser have implemented. The new selection, an instance
- * of Choice.Selection, is passed to listeners as a first parameter.
+ * A module that fires a 'selectionchange' event on Compose. The event
+ * this module fires is NOT the same as the native selectionchange event
+ * which some browser have implemented. The new selection, an instance
+ * of Choice.Selection, is passed to listeners as a first parameter;
+ * the old selection is passed as a second parameter. Note that the
+ * second parameter is not guaranteed to be an instance of Choice.Selection;
+ * in the case the editor was previously blurred, it will be false.
  *
  * NOTE: although this module is not specific to any mode, is does
  * require the 'getChildren' function of those modes. It should not
@@ -51,18 +54,30 @@ function Selection (Compose) {
     if (areSame(oldSelection, newSelection))
       return
 
-    Compose.emit('selectionchange', newSelection)
+    // Normalize the selection.
+    choice.restore(newSelection)
+
+    Compose.emit('selectionchange', newSelection, oldSelection)
     oldSelection = newSelection
   }
 
   checkChanged = setImmediate.bind(null, ifChanged)
 
-  Compose.on('mouseup', checkChanged)
-  Compose.on('focus', checkChanged)
-  Compose.on('blur', checkChanged)
-
   // TODO: be more specific with keydown event?
   Compose.on('keydown', checkChanged)
+  Compose.on('mouseup', checkChanged)
+  Compose.on('focus', checkChanged)
+
+  /*
+   * On blur, the selectionchange event is not fired; however, we
+   * want to make sure a selectionchange event is fired when the
+   * editor is focussed again. If we don’t set oldSelection to
+   * false, the selectionchange event will not be fired when the
+   * editor is repeatedly focussed and blurred in the same location.
+   */
+  Compose.on('blur', function () {
+    oldSelection = false
+  })
 }
 
 module.exports = Selection
