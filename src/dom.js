@@ -20,9 +20,9 @@ exports.isText = function (node) {
   return node && node.nodeType === Node.TEXT_NODE
 }
 
-var blocks = ['address', 'aside', 'blockquote', 'figure', 'figcaption',
-      'footer', 'h[1-6]', 'header', 'li', 'p', 'pre'],
-    blockRegex = new RegExp('^(' + blocks.join('|') + ')$', 'i')
+var blocks = ['ADDRESS', 'ASIDE', 'BLOCKQUOTE', 'FIGURE', 'FIGCAPTION',
+      'FOOTER', 'H[1-6]', 'HEADER', 'LI', 'P', 'PRE'],
+    blockRegex = new RegExp('^(' + blocks.join('|') + ')$')
 
 /**
  * isBlock(elem) determines if an element is a block element
@@ -35,8 +35,8 @@ exports.isBlock = function (elem) {
   return exports.isElem(elem) && blockRegex.test(elem.nodeName)
 }
 
-var inlines = ['b', 'i', 'em', 'strong', 'a', 'sub', 'sup', 'code'],
-    inlineRegex = new RegExp('^(' + inlines.join('|') + ')$', 'i')
+var inlines = ['B', 'I', 'EM', 'STRONG', 'A', 'SUB', 'SUP', 'CODE', 'IMG'],
+    inlineRegex = new RegExp('^(' + inlines.join('|') + ')$')
 
 /**
  * isInline(elem) determines if an element is a block element
