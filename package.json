@@ -36,8 +36,8 @@
     "webdriverjs": "^1.7.1"
   },
   "dependencies": {
-    "choice": "^0.1.0",
-    "serialize-elem": "^0.3.3",
+    "choice": "^0.1.2",
+    "serialize-elem": "^0.4.0",
     "wolfy87-eventemitter": "^4.2.6"
   }
 }
