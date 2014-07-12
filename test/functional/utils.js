@@ -1,6 +1,33 @@
 /* jshint node:true */
-
 'use strict';
+
+var http = require('http'),
+    st = require('st')
+
+exports.url = function (server) {
+  var address = server.address(),
+      url = 'http://'
+
+  if (!address) {
+    console.log('Server not listening.')
+    process.exit(1)
+  }
+
+  if (address.address === '0.0.0.0')
+    url += 'localhost'
+  else
+    url += address.address
+
+  url += (':' + address.port + '/test.html')
+
+  return url
+}
+
+exports.server = function () {
+  var server = http.createServer(st(__dirname))
+
+  return server
+}
 
 exports.opts = function () {
   var browser = process.env.BROWSER,
@@ -8,34 +35,45 @@ exports.opts = function () {
       key = process.env.SAUCE_ACCESS_KEY,
       opts
 
-  if (!browser)
-    throw new Error('BROWSER environment variable must be set.')
+  if (process.env.TRAVIS) {
+    if (!browser) {
+      console.log('BROWSER environment variable must be set when using Travis.')
+      process.exit(1)
+    }
 
-  if (!process.env.TRAVIS)
-    throw new Error('You should be running Travis.')
+    if (!user || !key) {
+      console.log('Sauce Labs user and key required when using Travis.')
+      process.exit(1)
+    }
 
-  if (!user || !key)
-    throw new Error('Sauce Labs user and key required.')
+    opts = {
+      desiredCapabilities: {
+        browserName: browser.toLowerCase(),
+        tags: ['Compose', 'CI'],
+        name: 'Compose functional tests.',
+        build: 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')',
+        'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
+      },
+      host: 'ondemand.saucelabs.com',
+      port: 80,
+      user: user,
+      key: key
+    }
 
-  opts = {
-    desiredCapabilities: {
-      browserName: browser,
-      'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
-    },
-    host: 'ondemand.saucelabs.com',
-    port: 80,
-    user: user,
-    key: key
+    if (process.env.VERSION)
+      opts.desiredCapabilities.version = process.env.VERSION
+    if (process.env.PLATFORM)
+      opts.desiredCapabilities.platform = process.env.PLATFORM
+
+  } else {
+    opts = {
+      desiredCapabilities: {
+        browserName: 'chrome'
+      }
+    }
   }
 
-  opts.desiredCapabilities.tags = ['Compose', 'CI']
-  opts.desiredCapabilities.name = 'Compose tests (' + browser + ').'
-
   return opts
-}
-
-exports.testPage = function () {
-  return 'http://localhost:8080/test.html'
 }
 
 // Selenium 'special keys'.

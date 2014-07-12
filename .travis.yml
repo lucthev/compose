@@ -2,12 +2,16 @@ language: node_js
 node_js:
 - '0.10'
 env:
+  matrix:
+    - BROWSER=Chrome PLATFORM='Linux' VERSION=35
+    - BROWSER=Chrome PLATFORM='Windows 7' VERSION=34
+    - BROWSER=Firefox PLATFORM='Linux' VERSION=30
+    - BROWSER=Firefox PLATFORM='OS X 10.9' VERSION=29
   global:
-  - secure: AAbayYPPJVsIaMiF5tmiFQWoxUKdXq74MHsJzdbFiMbUB0vdgnX9rBftatL+dftdBw36iIk8FhHeteV0rM1dH2wDyLviDsBdRKxkZ2xj2EcBQJRSji/Y0ZIh6klTRN7A1bektALrsVNDAK759N8RPM000HHfx/Ufw+ts+zxXxXE=
-  - secure: Qlt3nMSpOMuFCYD9D5gbnQHDbRQnUNmplr8oA4Y24c9plGVPYQ5s5DDUmy9x2/zMpsOniYZB13qtToVl6y93HRwKi6xDQ6B+88bRZ3kKW23NWJIY//+XVh4S0swegQwqXR2fdFGAELx34dwrqC1XRRM4zGI4JnyOtbaz3AAdda0=
+    - SAUCE_USERNAME=compose-ci
+    - SAUCE_ACCESS_KEY=60671366-2ef6-4ed3-8de0-cc95f065a41f
 addons:
   sauce_connect: true
 install:
+  - npm config set spin false
   - npm install -d --quiet
-before_script: npm run server
-after_script: killall node

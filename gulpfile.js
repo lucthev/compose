@@ -4,11 +4,10 @@ var gulp = require('gulp'),
     browserify = require('gulp-browserify'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
-    jshint = require('gulp-jshint'),
-    reporter = require('jshint-stylish')
+    jshint = require('gulp-jshint')
 
 var paths = {
-  js: ['src/**/*.js', '!src/vendor/**']
+  js: ['src/**/*.js']
 }
 
 gulp.task('js', function () {
@@ -26,7 +25,7 @@ gulp.task('js', function () {
 gulp.task('lint', function () {
   gulp.src(paths.js)
     .pipe(jshint())
-    .pipe(jshint.reporter(reporter))
+    .pipe(jshint.reporter('default'))
 })
 
 // We trigger minimization at start.

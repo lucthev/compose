@@ -1,6 +1,4 @@
-/* global describe, it, expect, beforeEach, afterEach, Compose */
-
-'use strict';
+/* jshint ignore:start */
 
 describe('Compose\'s plugin system', function () {
 
@@ -28,7 +26,7 @@ describe('Compose\'s plugin system', function () {
 
     compose.use(plugin)
 
-    expect(compose.some).toBeUndefined()
+    expect(compose.some).to.be.undefined
   })
 
   it('should isolate plugins (2).', function () {
@@ -39,12 +37,12 @@ describe('Compose\'s plugin system', function () {
     function plugin (Compose) {
       checked = true
 
-      expect(Compose.some).toBeUndefined()
+      expect(Compose.some).to.be.undefined
     }
 
     compose.use(plugin)
 
-    expect(checked).toBe(true)
+    expect(checked).to.be.true
   })
 
   it('should isolate plugins (3).', function () {
@@ -56,8 +54,8 @@ describe('Compose\'s plugin system', function () {
       if (x) x.some = 'thing'
     })
 
-    expect(checked).toBe(true)
-    expect(compose.some).toBeUndefined()
+    expect(checked).to.be.true
+    expect(compose.some).to.be.undefined
   })
 
   it('should allow plugins to export functionality via a "provide" method.', function () {
@@ -71,8 +69,8 @@ describe('Compose\'s plugin system', function () {
 
     compose.use(plugin)
 
-    expect(checked).toBe(true)
-    expect(compose.plugins.some).toEqual('thing')
+    expect(checked).to.be.true
+    expect(compose.plugins.some).to.equal('thing')
   })
 
   it('should allow plugins to access each other\'s exports via a "require" method.', function () {
@@ -93,7 +91,7 @@ describe('Compose\'s plugin system', function () {
     compose.use(plugin)
     compose.use(otherPlugin)
 
-    expect(checked).toBe(true)
+    expect(checked).to.be.true
   })
 
   it('should allow plugins to use other plugins.', function () {
@@ -111,8 +109,8 @@ describe('Compose\'s plugin system', function () {
 
     compose.use(plugin)
 
-    expect(checked).toBe(true)
-    expect(compose.require('some')).toEqual('thing')
+    expect(checked).to.be.true
+    expect(compose.require('some')).to.equal('thing')
   })
 
   it('should throw an error when requiring a module that doesn\'t exist.', function () {
@@ -124,7 +122,7 @@ describe('Compose\'s plugin system', function () {
       compose.use(plugin)
     }
 
-    expect(willThrow).toThrow()
+    expect(willThrow).to.throw(Error)
   })
 
   it('should throw an error when plugins exports things with the same name.', function () {
@@ -142,7 +140,7 @@ describe('Compose\'s plugin system', function () {
       compose.use(other)
     }
 
-    expect(willThrow).toThrow()
+    expect(willThrow).to.throw(Error)
   })
 
   it('can optionally disable plugins if they provide a "disable" method.', function () {
@@ -167,8 +165,8 @@ describe('Compose\'s plugin system', function () {
       compose.use(checker)
     }
 
-    expect(disabled).toBe(true)
-    expect(willThrow).toThrow()
+    expect(disabled).to.be.true
+    expect(willThrow).to.throw(Error)
   })
 
   it('hasOwnProperty edge case.', function () {
@@ -183,12 +181,12 @@ describe('Compose\'s plugin system', function () {
 
       checked = true
 
-      expect(prop).toEqual('Mwahaha.')
+      expect(prop).to.equal('Mwahaha.')
     }
 
     compose.use(silly)
     compose.use(other)
 
-    expect(checked).toBe(true)
+    expect(checked).to.be.true
   })
 })

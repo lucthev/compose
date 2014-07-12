@@ -1,6 +1,4 @@
-/* global describe, it, expect, beforeEach, afterEach, Compose */
-
-'use strict';
+/* jshint ignore:start */
 
 // Maximum undo/redo stack size (each).
 var MAX_STACK_SIZE = 100
@@ -29,22 +27,22 @@ describe('The undo manager', function () {
 
   it('stores saved states.', function () {
 
-    expect(UndoManager.undo()).toBe(false)
-    expect(UndoManager.redo()).toBe(false)
+    expect(UndoManager.undo()).to.be.false
+    expect(UndoManager.redo()).to.be.false
 
     UndoManager.push({
       undo: 'u' + 0,
       redo: 'r' + 0
     })
 
-    expect(UndoManager.redo()).toBe(false)
-    expect(UndoManager.undo()).toEqual('u0')
-    expect(UndoManager.undo()).toBe(false)
-    expect(UndoManager.redo()).toEqual('r0')
-    expect(UndoManager.redo()).toBe(false)
-    expect(UndoManager.undo()).toEqual('u0')
-    expect(UndoManager.undo()).toBe(false)
-    expect(UndoManager.redo()).toEqual('r0')
+    expect(UndoManager.redo()).to.be.false
+    expect(UndoManager.undo()).to.equal('u0')
+    expect(UndoManager.undo()).to.be.false
+    expect(UndoManager.redo()).to.equal('r0')
+    expect(UndoManager.redo()).to.be.false
+    expect(UndoManager.undo()).to.equal('u0')
+    expect(UndoManager.undo()).to.be.false
+    expect(UndoManager.redo()).to.equal('r0')
   })
 
   it('only stores a certain number of states.', function () {
@@ -60,8 +58,8 @@ describe('The undo manager', function () {
     for (i = 0; i < MAX_STACK_SIZE - 1; i += 1)
       UndoManager.undo()
 
-    expect(UndoManager.undo()).toEqual('u1')
-    expect(UndoManager.undo()).toEqual(false)
+    expect(UndoManager.undo()).to.equal('u1')
+    expect(UndoManager.undo()).to.be.false
   })
 
   it('wipe the redo stack when new changes are pushed.', function () {
@@ -82,6 +80,6 @@ describe('The undo manager', function () {
       redo: 'new-redo'
     })
 
-    expect(UndoManager.redo()).toBe(false)
+    expect(UndoManager.redo()).to.be.false
   })
 })

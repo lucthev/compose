@@ -1,6 +1,5 @@
-/* global describe, it, expect, beforeEach, afterEach, Compose */
-
-'use strict';
+/* jshint ignore:start */
+var expect = chai.expect
 
 describe('The event dispatcher', function () {
 
@@ -42,7 +41,7 @@ describe('The event dispatcher', function () {
 
     fireEvent(this.elem, 'mousedown')
 
-    expect(emitted).toBe(true)
+    expect(emitted).to.be.true
   })
 
   it('can stop emitting events on Compose.', function () {
@@ -56,7 +55,7 @@ describe('The event dispatcher', function () {
 
     fireEvent(this.elem, 'keypress')
 
-    expect(emitted).toBe(false)
+    expect(emitted).to.not.be.true
   })
 
   it('can resume emitting events on Compose', function () {
@@ -70,13 +69,13 @@ describe('The event dispatcher', function () {
 
     fireEvent(this.elem, 'mousedown')
 
-    expect(emitted).toBe(false)
+    expect(emitted).to.not.be.true
 
     compose.use(enabler)
 
     fireEvent(this.elem, 'mousedown')
 
-    expect(emitted).toBe(true)
+    expect(emitted).to.be.true
   })
 })
 
@@ -84,7 +83,7 @@ function fireEvent (element, event, keyCode, ctrlKey) {
   var evt
 
   evt = document.createEvent('HTMLEvents')
-  evt.initEvent(event, true, true )
+  evt.initEvent(event, true, true)
 
   if (keyCode) {
     evt.keyCode = keyCode
