@@ -5,7 +5,8 @@ var Types = {
   paragraphUpdate: 2,
   paragraphDelete: 3,
   sectionInsert: 4,
-  sectionDelete: 5
+  sectionUpdate: 5,
+  sectionDelete: 6
 }
 
 /**
@@ -19,6 +20,18 @@ function Delta (index, data, type) {
   this.index = index
   this.data = data
   this.type = Types[type]
+}
+
+/**
+ * Delta.compress(deltas) takes an array of Deltas and reduces it to
+ * the minimum number of deltas necessary to represent the same changes
+ * the original represented. For example, if there are two update
+ * operations on the same paragraph, the first will get discarded.
+ *
+ * @param {[Deltas]}
+ */
+Delta.compress = function (deltas) {
+
 }
 
 Delta.types = Types
