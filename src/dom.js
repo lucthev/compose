@@ -48,3 +48,71 @@ var inlines = ['B', 'I', 'EM', 'STRONG', 'A', 'SUB', 'SUP', 'CODE', 'IMG'],
 exports.isInline = function (elem) {
   return exports.isElem(elem) && inlineRegex.test(elem.nodeName)
 }
+
+/**
+ * remove(node) removes an element from its parent. Returns the same
+ * node.
+ *
+ * @param {Node} node
+ * @return {Node}
+ */
+exports.remove = function (node) {
+  if (node.parentNode)
+    node.parentNode.removeChild(node)
+
+  return node
+}
+
+/**
+ * after(node, after) inserts the node 'after' after the node 'node'.
+ * Returns the inserted node.
+ *
+ * @param {Node} node
+ * @param {Node}
+ * @return {Node}
+ */
+exports.after = function (node, after) {
+  return node.parentNode.insertBefore(after, node.nextSibling)
+}
+
+/**
+ * replace(node, other) replaces the node 'node' with the node 'other'.
+ * Returns the replaced node ('node', in this case).
+ *
+ * @param {Node} node
+ * @param {Node} after
+ * @return {Node}
+ */
+exports.replace = function (node, other) {
+  return node.parentNode.replaceChild(other, node)
+}
+
+/**
+ * split(child) splits a node’s parent in two at child (child stays
+ * in the first one). Returns the original parent. Example:
+ *
+ * <ul><li>…</li><li id="second">…</li><li>…</li></ul>
+ *
+ * ul.split(second) results in:
+ *
+ * <ul><li>…</li><li id="second">…</li></ul>
+ * <ul><li>…</li></ul>
+ *
+ * @param {Node} child
+ * @return {Node}
+ */
+exports.split = function (node) {
+  var parent = node.parentNode,
+      nextParent
+
+  if (node === parent.lastChild)
+    return parent
+
+  nextParent = document.createElement(parent.nodeName)
+  while (node.nextSibling)
+    nextParent.appendChild(exports.remove(node.nextSibling))
+
+  exports.after(parent, nextParent)
+
+  return parent
+}
