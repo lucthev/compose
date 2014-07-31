@@ -108,7 +108,7 @@ exports.split = function (node) {
   if (node === parent.lastChild)
     return parent
 
-  nextParent = document.createElement(parent.nodeName)
+  nextParent = parent.cloneNode(false)
   while (node.nextSibling)
     nextParent.appendChild(exports.remove(node.nextSibling))
 
