@@ -12,7 +12,6 @@ function setup (Compose) {
   var View = Compose.require('view'),
       getChildren = Compose.require('getChildren'),
       Converter = Compose.require('converter'),
-      errMsg = 'Failed to properly initialize Compose.',
       numHrs = 0,
       paragraphs,
       children,
@@ -40,14 +39,9 @@ function setup (Compose) {
     View.paragraphs.push(Converter.toParagraph(paragraphs[i]))
   }
 
-  try {
-    children = getChildren()
-  } catch (e) {
-    throw new Error(errMsg)
-  }
-
+  children = getChildren()
   if (children.length !== paragraphs.length - numHrs)
-    throw new Error(errMsg)
+    throw new Error('Failed to properly initialize Compose.')
 }
 
 module.exports = setup
