@@ -12,7 +12,7 @@
  * be 'used' by Compose itself but by the modes.
  *
  * Module overview:
- * @require {timers, getChildren}
+ * @require {setImmediate, getChildren}
  * @listen {mouseup, focus, blur, keydown}
  * @emit {selectionchange}
  */
@@ -42,7 +42,7 @@ function areSame (older, newer) {
 }
 
 function Selection (Compose) {
-  var setImmediate = Compose.require('timers').setImmediate,
+  var setImmediate = Compose.require('setImmediate'),
       getChildren = Compose.require('getChildren'),
       choice = new Choice(Compose.elem, getChildren),
       oldSelection = false,

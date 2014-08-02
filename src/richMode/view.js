@@ -4,7 +4,7 @@ var paragraphs = require('./paragraphs'),
     sections = require('./sections')
 
 function viewPlugin (Compose) {
-  var setImmediate = Compose.require('timers').setImmediate,
+  var setImmediate = Compose.require('setImmediate'),
       getChildren = Compose.require('getChildren'),
       Converter = Compose.require('converter'),
       Delta = Compose.require('delta'),

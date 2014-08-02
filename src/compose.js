@@ -4,7 +4,8 @@ var EventEmitter = require('wolfy87-eventemitter'),
     EventDispatcher = require('./event-dispatcher'),
     RichMode = require('./richMode/richMode'),
     UndoManager = require('./undo-manager'),
-    utils = require('./utils')
+    utils = require('./utils'),
+    timers = require('./timers')
 
 /**
  * Compose(elem [, mode]) is the constructor for Compose. Takes an
@@ -35,7 +36,8 @@ function Compose (elem, mode) {
     events: require('./events'),
     delta: require('./delta'),
     serialize: require('serialize-elem'),
-    timers: require('./timers'),
+    setImmediate: timers.setImmediate,
+    clearImmediate: timers.clearImmediate,
     dom: require('./dom'),
     utils: utils
   }
