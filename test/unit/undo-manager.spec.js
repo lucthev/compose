@@ -9,6 +9,7 @@ describe('The undo manager', function () {
 
   beforeEach(function () {
     this.elem = document.createElement('div')
+    this.elem.innerHTML = '<section><p><br></p></section>'
     document.body.appendChild(this.elem)
 
     this.compose = new Compose(this.elem)
