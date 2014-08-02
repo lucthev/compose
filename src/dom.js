@@ -21,7 +21,7 @@ exports.isText = function (node) {
 }
 
 var blocks = ['ADDRESS', 'ASIDE', 'BLOCKQUOTE', 'FIGURE', 'FIGCAPTION',
-      'FOOTER', 'H[1-6]', 'HEADER', 'LI', 'P', 'PRE'],
+      'FOOTER', 'H[1-6]', 'HEADER', 'OL', 'UL', 'LI', 'P', 'PRE'],
     blockRegex = new RegExp('^(' + blocks.join('|') + ')$')
 
 /**
