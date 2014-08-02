@@ -25,7 +25,7 @@ gulp.task('js', function () {
 gulp.task('lint', function () {
   gulp.src(paths.js)
     .pipe(jshint())
-    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter('jshint-stylish'))
 })
 
 // We trigger minimization at start.
