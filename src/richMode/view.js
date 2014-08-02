@@ -6,7 +6,7 @@ var paragraphs = require('./paragraphs'),
 function viewPlugin (Compose) {
   var setImmediate = Compose.require('timers').setImmediate,
       getChildren = Compose.require('getChildren'),
-      Serialize = Compose.require('serialize'),
+      Converter = Compose.require('converter'),
       Delta = Compose.require('delta'),
       ParagraphOperations,
       SectionOperations
@@ -63,7 +63,7 @@ function viewPlugin (Compose) {
 
       if (!child) return
 
-      state = new Serialize(child)
+      state = Converter.toParagraph(child)
 
       if (!state.equals(this.paragraphs[index]))
         this.paragraphs[index] = state

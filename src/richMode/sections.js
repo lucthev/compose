@@ -3,35 +3,35 @@
 /**
  * This module defines operations that can be performed on sections.
  *
+ * TODO: section-(first|last) classes.
+ *
  * NOTE: do not worry about the use of 'this'; it is only meant to
  * be used in the context of the View.
  */
 function SectionOperations (Compose) {
-  var getChildren = Compose.require('getChildren'),
+  var Converter = Compose.require('converter'),
+      getChildren = Compose.require('getChildren'),
       dom = Compose.require('dom')
 
   function insert (delta) {
-    var section = document.createElement('section'),
+    var section = Converter.toSectionElem(delta.section),
         children = getChildren(),
         start = children[delta.index],
         parent,
         i
 
-    if (start.nodeName === 'LI' && start.parentNode.lastChild !== start) {
-      parent = dom.split(start).nextSibling
-      dom.remove(start)
-
-      parent.insertBefore(start, parent.firstChild)
+    parent = start.parentNode
+    while (parent.nodeName !== 'SECTION') {
+      dom.split(start)
       start = parent
+      parent = start.parentNode
     }
 
-    parent = start.parentNode
     while (start.nextSibling)
       section.appendChild(dom.remove(start.nextSibling))
 
-    section.insertBefore(dom.remove(start), section.firstChild)
-
     dom.after(parent, section)
+
     for (i = 0; i < this.sections.length; i += 1) {
       if (this.sections[i].start > delta.index)
         break
@@ -51,37 +51,49 @@ function SectionOperations (Compose) {
   function remove (delta) {
     var children = getChildren(),
         node = children[delta.index],
+        section = node.parentNode,
         sectionBefore,
-        section,
+        first,
         last,
+        end,
         i
 
-    if (node.nodeName === 'LI')
-      node = node.parentNode
+    for (i = 0; i < this.sections.length; i += 1) {
+      if (this.sections[i].start === delta.index)
+        break
+    }
 
-    section = node.parentNode
+    if (i === this.sections.length)
+      throw new Error('No section begins at index ' + delta.index + '.')
+    else if (i === 0)
+      throw new Error('The first section cannot be deleted.')
+
+    this.section.splice(i, 1)
+
+    while (section.nodeName !== 'SECTION') {
+      node = section
+      section = node.parentNode
+    }
+
     sectionBefore = section.previousSibling
-    last = sectionBefore.lastChild
+    end = sectionBefore.lastChild
 
     while (node.nextSibling)
       sectionBefore.appendChild(dom.remove(node.nextSibling))
 
-    if (/^[OU]L$/.test(last.nodeName) && last.nodeName === node.nodeName) {
-      // Merge lists of the same type.
+    while (Converter.canMerge(node, end)) {
+      last = end.lastChild
+      first = node.firstChild
 
       while (node.firstChild)
-        last.appendChild(dom.remove(node.firstChild))
-    } else {
-      dom.after(last, dom.remove(node))
+        end.appendChild(dom.remove(node.firstChild))
+
+      node = first
+      end = last
     }
 
+    dom.after(end, dom.remove(node))
     dom.remove(section)
-    for (i = 0; i < this.sections.length; i += 1) {
-      if (this.sections[i].start === delta.index) {
-        this.sections.splice(i, 1)
-        break
-      }
-    }
   }
 
   Compose.provide(SectionOperations.provided, {
