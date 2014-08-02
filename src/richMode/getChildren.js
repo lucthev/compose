@@ -49,14 +49,14 @@ function ChildPlugin (Compose) {
       child = node.firstChild
       while (child) {
 
-        // TODO: maybe also check that the block element is “allowed?”
-        if (!dom.isBlock(child))
-          throw new Error('Editor has escaped paragraph mode.')
-
         if (Ignoring[child.nodeName]) {
           child = child.nextSibling
           continue
         }
+
+        // TODO: maybe also check that the block element is “allowed?”
+        if (!dom.isBlock(child))
+          throw new Error('Editor has escaped paragraph mode.')
 
         // Lists are replaced with <li>s.
         if (/^[OU]L$/.test(child.nodeName)) {
