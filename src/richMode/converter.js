@@ -45,7 +45,7 @@ function Converter (Compose) {
   function toParagraph (elem) {
     var result = new Serialize(elem)
 
-    if (elem.nodeName === 'LI')
+    if (elem.nodeName === 'LI' && elem.parentNode)
       result.type = elem.parentNode.nodeName.toLowerCase()
     else if (elem.classList.contains('pullquote'))
       result.type = 'pullquote'
