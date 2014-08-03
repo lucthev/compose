@@ -63,7 +63,6 @@ function Selection (Compose) {
 
   checkChanged = setImmediate.bind(null, ifChanged)
 
-  // TODO: be more specific with keydown event?
   Compose.on('keydown', checkChanged)
   Compose.on('mouseup', checkChanged)
   Compose.on('focus', checkChanged)

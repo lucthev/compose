@@ -1,10 +1,48 @@
 'use strict';
 
 /**
+ * getParents(elem, arr) gets parents of elem, up until the first
+ * <section>, and adds them to the array 'arr' in reverse order.
+ *
+ * @param {Element} elem
+ * @param {Array} arr
+ */
+function getParents (elem, arr) {
+  var parent = elem.parentNode
+
+  while (parent && parent.nodeName !== 'SECTION') {
+    arr.unshift(parent)
+    elem = parent
+    parent = elem.parentNode
+  }
+}
+
+/**
+ * parentBeforeSection(elem) gets the parent of the deepest parent
+ * of the given element that is an immediate child of a <section>.
+ * If elem is falsy, returns null.
+ *
+ * @param {Element} elem
+ * @return {Element}
+ */
+function parentBeforeSection (elem) {
+  var parent
+
+  if (!elem) return null
+
+  parent = elem.parentNode
+  while (parent.nodeName !== 'SECTION') {
+    elem = parent
+    parent = elem.parentNode
+  }
+
+  return elem
+}
+
+/**
  * This module implements the various operations that can be preformed
  * on paragraphs.
  *
- * TODO: there’s a lot of repetition. Keep it DRY.
  * TODO: paragraph-(first|last) classes.
  *
  * NOTE: don’t worry about the use of 'this'; these functions are meant
@@ -42,17 +80,11 @@ function ParagraphOperations (Compose) {
     before = children[index - 1]
     after = !this.isSectionStart(index) ? children[index] : null
 
-    elemParents.unshift(elem)
-    while (elem.parentNode) {
-      elemParents.unshift(elem.parentNode)
-      elem = elem.parentNode
-    }
+    elemParents.push(elem)
+    getParents(elem, elemParents)
 
-    otherParents.unshift(before)
-    while (before.parentNode.nodeName !== 'SECTION') {
-      otherParents.unshift(before.parentNode)
-      before = before.parentNode
-    }
+    otherParents.push(before)
+    getParents(before, otherParents)
 
     len = Math.min(elemParents.length, otherParents.length)
     for (i = 0; i < len; i += 1) {
@@ -76,15 +108,10 @@ function ParagraphOperations (Compose) {
     elemParents = elemParents.slice(elemParents.indexOf(elem))
     otherParents = []
 
-    while (elem.parentNode.nodeName !== 'SECTION') {
-      elemParents.unshift(elem.parentNode)
-      elem = elem.parentNode
-    }
-
-    if (after) otherParents.push(after)
-    while (after && after.parentNode.nodeName !== 'SECTION') {
-      otherParents.unshift(after.parentNode)
-      after = after.parentNode
+    getParents(elem, elemParents)
+    if (after) {
+      otherParents.push(after)
+      getParents(after, otherParents)
     }
 
     len = Math.min(elemParents.length, otherParents.length)
@@ -134,16 +161,10 @@ function ParagraphOperations (Compose) {
       children[index + 1] : null
 
     elemParents.unshift(elem)
-    while (elem.parentNode) {
-      elemParents.unshift(elem.parentNode)
-      elem = elem.parentNode
-    }
+    getParents(elem, elemParents)
 
     otherParents.unshift(oldElem)
-    while (oldElem.parentNode.nodeName !== 'SECTION') {
-      otherParents.unshift(oldElem.parentNode)
-      oldElem = oldElem.parentNode
-    }
+    getParents(oldElem, otherParents)
 
     len = Math.min(elemParents.length, otherParents.length)
     for (i = 0; i < len; i += 1) {
@@ -166,17 +187,12 @@ function ParagraphOperations (Compose) {
     dom.replace(oldElem, dom.remove(elem))
 
     elemParents = elemParents.slice(elemParents.indexOf(elem))
+    getParents(elem, elemParents)
+
     otherParents = []
-
-    while (elem.parentNode.nodeName !== 'SECTION') {
-      elemParents.unshift(elem.parentNode)
-      elem = elem.parentNode
-    }
-
-    if (before) otherParents.push(before)
-    while (before && before.parentNode.nodeName !== 'SECTION') {
-      otherParents.unshift(before.parentNode)
-      before = before.parentNode
+    if (before) {
+      otherParents.push(before)
+      getParents(before, otherParents)
     }
 
     len = Math.min(elemParents.length, otherParents.length)
@@ -192,18 +208,13 @@ function ParagraphOperations (Compose) {
     }
 
     elem = elemParents[i]
-    elemParents = elemParents.slice(elemParents.indexOf(elem))
+    elemParents = elemParents.slice(i)
+    getParents(elem, elemParents)
+
     otherParents = []
-
-    while (elem.parentNode.nodeName !== 'SECTION') {
-      elemParents.unshift(elem.parentNode)
-      elem = elem.parentNode
-    }
-
-    if (after) otherParents.push(after)
-    while (after && after.parentNode.nodeName !== 'SECTION') {
-      otherParents.unshift(after.parentNode)
-      after = after.parentNode
+    if (after) {
+      otherParents.push(after)
+      getParents(after, otherParents)
     }
 
     len = Math.min(elemParents.length, otherParents.length)
@@ -249,13 +260,10 @@ function ParagraphOperations (Compose) {
       throw new Error('Cannot remove the only paragraph in a section.')
     }
 
-    before = !isStart ? children[index - 1] : null
-    while (before && before.parentNode.nodeName !== 'SECTION')
-      before = before.parentNode
-
-    after = !isNextStart ? children[index + 1] : null
-    while (after && after.parentNode.nodeName !== 'SECTION')
-      after = after.parentNode
+    if (!isStart)
+      before = parentBeforeSection(children[index - 1])
+    if (!isNextStart)
+      after = parentBeforeSection(children[index + 1])
 
     child = children[index]
     parent = child.parentNode
