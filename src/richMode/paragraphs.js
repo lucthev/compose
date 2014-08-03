@@ -223,7 +223,7 @@ function ParagraphOperations (Compose) {
 
   /**
    * remove(delta) removes a paragraph from the View and the DOM.
-   * Assumes it is impossible to remove the last element of a section,
+   * Assumes it is impossible to remove the only element in a section,
    * so don’t do that.
    *
    * @param {Delta} delta
@@ -231,12 +231,31 @@ function ParagraphOperations (Compose) {
   function remove (delta) {
     var children = getChildren(),
         index = delta.index,
+        isStart = this.isSectionStart(index),
+        isNextStart = this.isSectionStart(index + 1) ||
+          index === children.length - 1,
+        before,
+        after,
+        last,
+        first,
         parent,
         child,
         i
 
     if (index < 0 || index >= children.length)
       throw new RangeError('Cannot remove paragraph at index ' + index)
+
+    if (isStart && isNextStart) {
+      throw new Error('Cannot remove the only paragraph in a section.')
+    }
+
+    before = !isStart ? children[index - 1] : null
+    while (before && before.parentNode.nodeName !== 'SECTION')
+      before = before.parentNode
+
+    after = !isNextStart ? children[index + 1] : null
+    while (after && after.parentNode.nodeName !== 'SECTION')
+      after = after.parentNode
 
     child = children[index]
     parent = child.parentNode
@@ -245,6 +264,21 @@ function ParagraphOperations (Compose) {
       parent = child.parentNode
       dom.remove(child)
       child = !parent.firstChild ? parent : null
+    }
+
+    while (before && after) {
+      if (!Converter.canMerge(before, after)) break
+
+      last = before.lastChild
+      first = after.firstChild
+
+      while (after.firstChild)
+        before.appendChild(dom.remove(after.firstChild))
+
+      dom.remove(after)
+
+      before = last
+      after = first
     }
 
     this.paragraphs.splice(index, 1)
