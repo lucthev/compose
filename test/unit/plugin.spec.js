@@ -6,7 +6,7 @@ describe('Compose\'s plugin system', function () {
 
   beforeEach(function () {
     this.elem = document.createElement('article')
-    this.elem.innerHTML = '<section><p><br></p></section>'
+    this.elem.innerHTML = '<section><hr><p><br></p></section>'
     document.body.appendChild(this.elem)
 
     compose = new Compose(this.elem)

@@ -28,38 +28,36 @@
  */
 'use strict';
 
-// Block elements to ignore.
-var Ignoring = {
-  HR: true
-}
-
 function ChildPlugin (Compose) {
+  var Converter = Compose.require('converter'),
+      listRegex = /^[OU]L$/
 
-  Compose.provide('getChildren', function () {
-    var node = Compose.elem.firstChild,
+  function getChildren () {
+    var section = Compose.elem.firstChild,
         dom = Compose.require('dom'),
         children = [],
         child,
+        name,
         li
 
-    while (node) {
-      if (!dom.isElem(node) || node.nodeName !== 'SECTION')
+    while (section) {
+      if (!dom.isElem(section) || section.nodeName !== 'SECTION')
         throw new Error('Immediate children of the editor should be sections.')
 
-      child = node.firstChild
-      while (child) {
+      child = section.firstChild
+      if (child.nodeName !== 'HR')
+        throw new Error('Sections should begin with an <hr>.')
+      child = child.nextSibling
 
-        if (Ignoring[child.nodeName]) {
-          child = child.nextSibling
-          continue
+      while (child) {
+        name = child.nodeName
+        if (!Converter.allows(name) && !listRegex.test(name)) {
+          throw new Error('Sections should only have block elements ' +
+            'as children.')
         }
 
-        // TODO: maybe also check that the block element is “allowed?”
-        if (!dom.isBlock(child))
-          throw new Error('Editor has escaped paragraph mode.')
-
         // Lists are replaced with <li>s.
-        if (/^[OU]L$/.test(child.nodeName)) {
+        if (listRegex.test(child.nodeName)) {
           li = child.firstChild
 
           while (li) {
@@ -76,11 +74,13 @@ function ChildPlugin (Compose) {
         child = child.nextSibling
       }
 
-      node = node.nextSibling
+      section = section.nextSibling
     }
 
     return children
-  })
+  }
+
+  Compose.provide('getChildren', getChildren)
 }
 
 module.exports = ChildPlugin
