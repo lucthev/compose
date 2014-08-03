@@ -26,6 +26,7 @@ function ParagraphOperations (Compose) {
   function insert (delta) {
     var elem = Converter.toElement(delta.paragraph),
         children = getChildren(),
+        index = delta.index,
         otherParents = [],
         elemParents = [],
         before,
@@ -33,10 +34,13 @@ function ParagraphOperations (Compose) {
         len,
         i
 
+    if (index === 0 || index > children.length)
+      throw new RangeError('Cannot insert a paragraph at index ' + index)
+
     // Working under the assumption that it is impossible to insert
     // a paragraph at the beginning of a section.
-    before = children[delta.index - 1]
-    after = !this.isSectionStart(delta.index) ? children[delta.index] : null
+    before = children[index - 1]
+    after = !this.isSectionStart(index) ? children[index] : null
 
     elemParents.unshift(elem)
     while (elem.parentNode) {
@@ -95,7 +99,7 @@ function ParagraphOperations (Compose) {
       dom.remove(after)
     }
 
-    this.paragraphs.splice(delta.index, 0, delta.paragraph)
+    this.paragraphs.splice(index, 0, delta.paragraph)
     for (i = 0; i < this.sections.length; i += 1) {
       if (this.sections[i].start >= delta.index)
         this.sections[i].start += 1
@@ -111,6 +115,7 @@ function ParagraphOperations (Compose) {
   function update (delta) {
     var elem = Converter.toElement(delta.paragraph),
         children = getChildren(),
+        index = delta.index,
         otherParents = [],
         elemParents = [],
         oldElem,
@@ -119,11 +124,14 @@ function ParagraphOperations (Compose) {
         len,
         i
 
-    oldElem = children[delta.index]
-    before = !this.isSectionStart(delta.index) ?
-      children[delta.index - 1] : null
-    after = !this.isSectionStart(delta.index + 1) ?
-      children[delta.index + 1] : null
+    if (index < 0 || index >= children.length)
+      throw new RangeError('Cannot update a paragraph at index ' + index)
+
+    oldElem = children[index]
+    before = !this.isSectionStart(index) ?
+      children[index - 1] : null
+    after = !this.isSectionStart(index + 1) ?
+      children[index + 1] : null
 
     elemParents.unshift(elem)
     while (elem.parentNode) {
@@ -210,7 +218,7 @@ function ParagraphOperations (Compose) {
       dom.remove(after)
     }
 
-    this.paragraphs[delta.index] = delta.paragraph
+    this.paragraphs[index] = delta.paragraph
   }
 
   /**
@@ -222,9 +230,16 @@ function ParagraphOperations (Compose) {
    */
   function remove (delta) {
     var children = getChildren(),
-        child = children[delta.index],
-        parent = children.parentNode,
+        index = delta.index,
+        parent,
+        child,
         i
+
+    if (index < 0 || index >= children.length)
+      throw new RangeError('Cannot remove paragraph at index ' + index)
+
+    child = children[index]
+    parent = child.parentNode
 
     while (child && child.nodeName !== 'SECTION') {
       parent = child.parentNode
@@ -232,9 +247,9 @@ function ParagraphOperations (Compose) {
       child = !parent.firstChild ? parent : null
     }
 
-    this.paragraphs.splice(delta.index, 1)
+    this.paragraphs.splice(index, 1)
     for (i = 0; i < this.sections.length; i += 1) {
-      if (this.sections[i].start > delta.index)
+      if (this.sections[i].start > index)
         this.sections[i].start -= 1
     }
   }
