@@ -5,7 +5,6 @@ chai.use(TreeMatcher)
 chai.use(ChildMatcher)
 
 describe('Paragraph operation', function () {
-
   var clearImmediate,
       View,
       Converter,
