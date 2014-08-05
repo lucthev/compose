@@ -62,7 +62,7 @@ describe('Paragraph operation', function () {
           }, {
             name: 'h2',
             classes: ['!paragraph-first', 'paragraph-last'],
-            html: 'two'
+            html: 'Two'
           }]
         }])
 
@@ -244,7 +244,7 @@ describe('Paragraph operation', function () {
           }, {
             name: 'p',
             classes: ['!paragraph-first', 'paragraph-last'],
-            html: 'four'
+            html: 'Four'
           }]
         }])
 
@@ -647,7 +647,7 @@ describe('Paragraph operation', function () {
           }, {
             name: 'p',
             classes: ['paragraph-first', '!paragraph-last'],
-            html: 'Once'
+            html: 'One'
           }, {
             name: 'ul',
             classes: ['!paragraph-first', '!paragraph-last'],

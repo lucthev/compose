@@ -40,10 +40,8 @@ function parentBeforeSection (elem) {
 }
 
 /**
- * This module implements the various operations that can be preformed
+ * This module implements the various operations that can be performed
  * on paragraphs.
- *
- * TODO: paragraph-(first|last) classes.
  *
  * NOTE: don’t worry about the use of 'this'; these functions are meant
  * to be used in the context of the View.
@@ -51,6 +49,7 @@ function parentBeforeSection (elem) {
 function ParagraphOperations (Compose) {
   var getChildren = Compose.require('getChildren'),
       Converter = Compose.require('converter'),
+      classes = Compose.require('classes'),
       dom = Compose.require('dom')
 
   /**
@@ -72,13 +71,16 @@ function ParagraphOperations (Compose) {
         len,
         i
 
-    if (index === 0 || index > children.length)
+    if (index <= 0 || index > children.length)
       throw new RangeError('Cannot insert a paragraph at index ' + index)
 
-    // Working under the assumption that it is impossible to insert
-    // a paragraph at the beginning of a section.
     before = children[index - 1]
     after = !this.isSectionStart(index) ? children[index] : null
+
+    if (!after) {
+      before.classList.remove(classes.lastParagraph)
+      elem.classList.add(classes.lastParagraph)
+    }
 
     elemParents.push(elem)
     getParents(elem, elemParents)
@@ -159,6 +161,9 @@ function ParagraphOperations (Compose) {
       children[index - 1] : null
     after = !this.isSectionStart(index + 1) ?
       children[index + 1] : null
+
+    if (!before) elem.classList.add(classes.firstParagraph)
+    if (!after) elem.classList.add(classes.lastParagraph)
 
     elemParents.unshift(elem)
     getParents(elem, elemParents)
@@ -264,6 +269,9 @@ function ParagraphOperations (Compose) {
       before = parentBeforeSection(children[index - 1])
     if (!isNextStart)
       after = parentBeforeSection(children[index + 1])
+
+    if (!before) after.classList.add(classes.firstParagraph)
+    if (!after) before.classList.add(classes.lastParagraph)
 
     child = children[index]
     parent = child.parentNode

@@ -12,6 +12,7 @@ function setup (Compose) {
   var View = Compose.require('view'),
       getChildren = Compose.require('getChildren'),
       Converter = Compose.require('converter'),
+      classes = Compose.require('classes'),
       numHrs = 0,
       paragraphs,
       children,
@@ -42,6 +43,14 @@ function setup (Compose) {
   children = getChildren()
   if (children.length !== paragraphs.length - numHrs)
     throw new Error('Failed to properly initialize Compose.')
+
+  children[0].classList.add(classes.firstParagraph)
+  children[children.length - 1].classList.add(classes.lastParagraph)
+
+  for (i = 1; i < View.sections.length; i += 1) {
+    children[section.start - 1].classList.add(classes.lastParagraph)
+    children[section.start].classList.add(classes.firstParagraph)
+  }
 }
 
 module.exports = setup

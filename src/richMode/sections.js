@@ -11,14 +11,22 @@
 function SectionOperations (Compose) {
   var Converter = Compose.require('converter'),
       getChildren = Compose.require('getChildren'),
+      classes = Compose.require('classes'),
       dom = Compose.require('dom')
 
   function insert (delta) {
     var section = Converter.toSectionElem(delta.section),
         children = getChildren(),
-        start = children[delta.index],
+        index = delta.index,
+        start = children[index],
         parent,
         i
+
+    if (index <= 0 || index > children.length - 1)
+      throw new RangeError('Cannot create section starting at index ' + index)
+
+    children[index - 1].classList.add(classes.lastParagraph)
+    children[index].classList.add(classes.firstParagraph)
 
     parent = start.parentNode
     while (parent.nodeName !== 'SECTION') {
@@ -50,7 +58,8 @@ function SectionOperations (Compose) {
 
   function remove (delta) {
     var children = getChildren(),
-        node = children[delta.index],
+        index = delta.index,
+        node = children[index],
         section = node.parentNode,
         sectionBefore,
         first,
@@ -64,9 +73,12 @@ function SectionOperations (Compose) {
     }
 
     if (i === this.sections.length)
-      throw new Error('No section begins at index ' + delta.index + '.')
+      throw new Error('No section begins at index ' + delta.index)
     else if (i === 0)
       throw new Error('The first section cannot be deleted.')
+
+    children[index - 1].classList.remove(classes.lastParagraph)
+    node.classList.add(classes.firstParagraph)
 
     this.section.splice(i, 1)
 

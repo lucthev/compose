@@ -7,6 +7,11 @@ var getChildren = require('./getChildren'),
     Setup = require('./setup')
 
 function RichMode (Compose) {
+  Compose.provide('classes', {
+    firstParagraph: 'paragraph-first',
+    lastParagraph: 'paragraph-last'
+  })
+
   Compose.use(Converter)
   Compose.use(getChildren)
   Compose.use(Selection)
