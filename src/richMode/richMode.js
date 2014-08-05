@@ -9,7 +9,9 @@ var getChildren = require('./getChildren'),
 function RichMode (Compose) {
   Compose.provide('classes', {
     firstParagraph: 'paragraph-first',
-    lastParagraph: 'paragraph-last'
+    lastParagraph: 'paragraph-last',
+    firstSection: 'section-first',
+    lastSection: 'section-last'
   })
 
   Compose.use(Converter)

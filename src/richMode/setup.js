@@ -46,6 +46,8 @@ function setup (Compose) {
 
   children[0].classList.add(classes.firstParagraph)
   children[children.length - 1].classList.add(classes.lastParagraph)
+  Compose.elem.firstChild.classList.add(classes.firstSection)
+  Compose.elem.lastChild.classList.add(classes.lastSection)
 
   for (i = 1; i < View.sections.length; i += 1) {
     children[section.start - 1].classList.add(classes.lastParagraph)

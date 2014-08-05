@@ -3,8 +3,6 @@
 /**
  * This module defines operations that can be performed on sections.
  *
- * TODO: section-(first|last) classes.
- *
  * NOTE: do not worry about the use of 'this'; it is only meant to
  * be used in the context of the View.
  */
@@ -17,27 +15,37 @@ function SectionOperations (Compose) {
   function insert (delta) {
     var section = Converter.toSectionElem(delta.section),
         children = getChildren(),
-        index = delta.index,
+        index = delta.section.start,
         start = children[index],
         parent,
         i
 
-    if (index <= 0 || index > children.length - 1)
+    if (index < 0 || index > children.length - 1)
       throw new RangeError('Cannot create section starting at index ' + index)
+    if (this.isSectionStart(index))
+      return update(delta)
 
     children[index - 1].classList.add(classes.lastParagraph)
     children[index].classList.add(classes.firstParagraph)
 
     parent = start.parentNode
     while (parent.nodeName !== 'SECTION') {
-      dom.split(start)
-      start = parent
+      if (start.previousSibling)
+        dom.split(start.previousSibling)
+
+      start = start.parentNode
       parent = start.parentNode
     }
 
     while (start.nextSibling)
       section.appendChild(dom.remove(start.nextSibling))
 
+    dom.after(section.firstChild, dom.remove(start))
+
+    if (!parent.nextSibling) {
+      parent.classList.remove(classes.lastSection)
+      section.classList.add(classes.lastSection)
+    }
     dom.after(parent, section)
 
     for (i = 0; i < this.sections.length; i += 1) {
@@ -72,15 +80,18 @@ function SectionOperations (Compose) {
         break
     }
 
-    if (i === this.sections.length)
-      throw new Error('No section begins at index ' + delta.index)
-    else if (i === 0)
+    if (i === this.sections.length) {
+      throw new Error('Cannot remove non-existant section beginning ' +
+        'at index ' + delta.index)
+    } else if (i === 0) {
       throw new Error('The first section cannot be deleted.')
+    }
+
+    // Remove section from the View.
+    this.sections.splice(i, 1)
 
     children[index - 1].classList.remove(classes.lastParagraph)
-    node.classList.add(classes.firstParagraph)
-
-    this.section.splice(i, 1)
+    node.classList.remove(classes.firstParagraph)
 
     while (section.nodeName !== 'SECTION') {
       node = section
@@ -105,6 +116,10 @@ function SectionOperations (Compose) {
     }
 
     dom.after(end, dom.remove(node))
+
+    if (!section.nextSibling)
+      sectionBefore.classList.add(classes.lastSection)
+
     dom.remove(section)
   }
 
