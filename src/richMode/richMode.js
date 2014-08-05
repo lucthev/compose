@@ -1,6 +1,6 @@
 'use strict';
 
-var GetChildren = require('./getChildren'),
+var getChildren = require('./getChildren'),
     Converter = require('./converter'),
     Selection = require('../selection'),
     View = require('./view'),
@@ -8,7 +8,7 @@ var GetChildren = require('./getChildren'),
 
 function RichMode (Compose) {
   Compose.use(Converter)
-  Compose.use(GetChildren)
+  Compose.use(getChildren)
   Compose.use(Selection)
   Compose.use(View)
   Compose.use(Setup)

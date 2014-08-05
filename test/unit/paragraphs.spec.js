@@ -1,5 +1,8 @@
-/* global describe, it, Compose, expect */
+/* global describe, it, Compose, expect, chai, TreeMatcher, ChildMatcher */
 'use strict';
+
+chai.use(TreeMatcher)
+chai.use(ChildMatcher)
 
 describe('Paragraph operation', function () {
 
@@ -39,17 +42,30 @@ describe('Paragraph operation', function () {
     var operation = 'paragraphInsert'
 
     it('can insert paragraphs at the end of a section.', function (done) {
-      var editor = init('<section><hr><p><br></p></section>'),
+      var editor = init('<section><hr><p>One</p></section>'),
           h2 = document.createElement('h2')
 
-      h2.textContent = 'Mombasa'
+      h2.textContent = 'Two'
 
       View.render(new Delta(operation, 1, Converter.toParagraph(h2)))
 
       // Rendering is async, but should occur with setImmediate speeds.
       setTimeout(function () {
-        expect(editor.elem.innerHTML)
-          .to.equal('<section><hr><p><br></p><h2>Mombasa</h2></section>')
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'One',
+          }, {
+            name: 'h2',
+            classes: ['!paragraph-first', 'paragraph-last'],
+            html: 'two'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(2)
         expect(View.paragraphs[0].type).to.equal('p')
         expect(View.paragraphs[1].type).to.equal('h2')
@@ -73,13 +89,25 @@ describe('Paragraph operation', function () {
       ])
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<p>One</p>' +
-            '<p>Two</p>' +
-            '<p>Three</p>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'One'
+          }, {
+            name: 'p',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            html: 'Two'
+          }, {
+            name: 'p',
+            classes: ['!paragraph-first', 'paragraph-last'],
+            html: 'Three'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(3)
 
         teardown(editor)
@@ -136,19 +164,39 @@ describe('Paragraph operation', function () {
       var pre = document.createElement('pre'),
           editor
 
-      pre.innerHTML = 'Some code.'
+      pre.innerHTML = '<code>Two</code>'
       editor = init(
         '<section><hr><p>One</p></section>' +
-        '<section><hr><p>Two</p></section>'
+        '<section><hr><p>Three</p></section>'
       )
 
       View.render(new Delta(operation, 1, Converter.toParagraph(pre)))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr><p>One</p><pre>Some code.</pre></section>' +
-          '<section><hr><p>Two</p></section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'One'
+          }, {
+            name: 'pre',
+            classes: ['!paragraph-first', 'paragraph-last'],
+            html: '<code>Two</code>'
+          }]
+        }, {
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: 'Three'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(3)
         expect(View.paragraphs[0].type).to.equal('p')
         expect(View.paragraphs[1].type).to.equal('pre')
@@ -164,29 +212,42 @@ describe('Paragraph operation', function () {
           editor
 
       pullquote.className = 'pullquote'
-      pullquote.innerHTML = '<em>Important</em> things.'
+      pullquote.innerHTML = '<em>Three</em>'
       pullquote = Converter.toParagraph(pullquote)
       editor = init(
         '<section><hr>' +
-        '<p>Stuff</p>' +
-        '<h2>Things</h2>' +
-        '<p>Words.</p>' +
+          '<p>One</p>' +
+          '<h2>Two</h2>' +
+          '<p>Four</p>' +
         '</section>'
       )
 
       View.render(new Delta(operation, 2, pullquote))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-          '<p>Stuff</p>' +
-          '<h2>Things</h2>' +
-          '<blockquote class="pullquote">' +
-            '<em>Important</em> things.' +
-          '</blockquote>' +
-          '<p>Words.</p>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'One'
+          }, {
+            name: 'h2',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            html: 'Two'
+          }, {
+            name: 'blockquote',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            html: '<em>Three</em>'
+          }, {
+            name: 'p',
+            classes: ['!paragraph-first', 'paragraph-last'],
+            html: 'four'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(4)
         expect(View.paragraphs[0].type).to.equal('p')
         expect(View.paragraphs[1].type).to.equal('h2')
@@ -210,12 +271,25 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-          '<p><br></p>' +
-          '<ol><li>Poisson</li></ol>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: '<br>'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Poisson'
+            }]
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(2)
         expect(View.paragraphs[0].type).to.equal('p')
         expect(View.paragraphs[1].type).to.equal('ol')
@@ -237,12 +311,25 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr><ol>' +
-            '<li>Binomial</li>' +
-            '<li>Poisson</li>' +
-          '</ol></section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'Binomial'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Poisson'
+            }]
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(2)
         expect(View.paragraphs[0].type).to.equal('ol')
         expect(View.paragraphs[1].type).to.equal('ol')
@@ -269,13 +356,29 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr><ol>' +
-            '<li>Binomial</li>' +
-            '<li>Poisson</li>' +
-            '<li>Multinomial</li>' +
-          '</ol></section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'Binomial'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Poisson'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Multinomial'
+            }]
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(3)
         expect(View.paragraphs[0].type).to.equal('ol')
         expect(View.paragraphs[1].type).to.equal('ol')
@@ -304,13 +407,37 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<ol><li>Binomial</li></ol>' +
-              '<ul><li>Poisson</li></ul>' +
-              '<ol><li>Multinomial</li></ol>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['paragraph-first', '!paragraph-last'],
+                html: 'Binomial'
+              }]
+            }, {
+              name: 'ul',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Poisson'
+              }]
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Multinomial'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(3)
           expect(View.paragraphs[0].type).to.equal('ol')
           expect(View.paragraphs[1].type).to.equal('ul')
@@ -339,12 +466,33 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 2, li))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<ol><li>Binomial</li><li>Multinomial</li></ol>' +
-              '<ul><li>Poisson</li></ul>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['paragraph-first', '!paragraph-last'],
+                html: 'Binomial'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Multinomial'
+              }]
+            }, {
+              name: 'ul',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Poisson'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(3)
           expect(View.paragraphs[0].type).to.equal('ol')
           expect(View.paragraphs[1].type).to.equal('ol')
@@ -375,15 +523,37 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-            '<p>First</p>' +
-            '<ul><li>Poisson</li></ul>' +
-            '<ol>' +
-              '<li>Binomial</li>' +
-              '<li>Multinomial</li>' +
-            '</ol></section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'First'
+            }, {
+              name: 'ul',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Poisson'
+              }]
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Binomial'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Multinomial'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(4)
           expect(View.paragraphs[0].type).to.equal('p')
           expect(View.paragraphs[1].type).to.equal('ul')
@@ -411,15 +581,38 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<p>Stuff</p>' +
-              '<ul><li>Poisson</li></ul>' +
-            '</section>' +
-            '<section><hr>' +
-              '<ul><li>A list.</li></ul>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'Stuff'
+            }, {
+              name: 'ul',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Poisson'
+              }]
+            }]
+          }, {
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'ul',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['paragraph-first', 'paragraph-last'],
+                html: 'A list.'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(3)
           expect(View.paragraphs[0].type).to.equal('p')
           expect(View.paragraphs[1].type).to.equal('ul')
@@ -447,12 +640,33 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<p>One</p>' +
-            '<ul><li>Two</li><li>Three</li><li>Four</li></ul>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'Once'
+          }, {
+            name: 'ul',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Two'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Three'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Four'
+            }]
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(4)
         expect(View.paragraphs[0].type).to.equal('p')
         expect(View.paragraphs[1].type).to.equal('ul')
@@ -479,8 +693,16 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, p))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML)
-          .to.equal('<section><hr><p>Things</p></section>')
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+          name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: 'Things'
+          }]
+        }])
         expect(View.paragraphs.length).to.equal(1)
 
         teardown(editor)
@@ -498,11 +720,17 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, Converter.toParagraph(p)))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<p><strong>Once</strong> upon <em>a time</em></p>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: '<strong>Once</strong> upon <em>a time</em>'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(1)
 
         teardown(editor)
@@ -520,8 +748,17 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, h2))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML)
-          .to.equal('<section><hr><h2>Stuff</h2></section>')
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'h2',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: 'Stuff'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(1)
         expect(View.paragraphs[0].type).to.equal('h2')
 
@@ -547,13 +784,25 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, p))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<p>Stuff</p>' +
-            '<p>Things</p>' +
-            '<h2>More things</h2>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'Stuff'
+          }, {
+            name: 'p',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            html: 'Things'
+          }, {
+            name: 'h2',
+            classes: ['!paragraph-first', 'paragraph-last'],
+            html: 'More things'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(3)
         expect(View.paragraphs[1].type).to.equal('p')
 
@@ -580,13 +829,28 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<p>Ave Cesaria</p>' +
-            '<ol><li>Merci</li></ol>' +
-            '<p>Formidable</p>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'Ave Cesaria'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Merci'
+            }]
+          }, {
+            name: 'p',
+            classes: ['!paragraph-first', 'paragraph-last'],
+            html: 'Formidable'
+          }]
+        }])
 
         teardown(editor)
         done()
@@ -612,13 +876,33 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 2, li))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<ol><li>One</li><li>Two</li>' +
-              '<li>Three</li></ol>' +
-              '<p>Four</p>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['paragraph-first', '!paragraph-last'],
+                html: 'One'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Two'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Three'
+              }]
+            }, {
+              name: 'p',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Four'
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(4)
           expect(View.paragraphs[2].type).to.equal('ol')
 
@@ -646,13 +930,33 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<p>One</p>' +
-              '<ol><li>Two</li>' +
-              '<li>Three</li><li>Four</li></ol>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'One'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Two'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Three'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Four'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(4)
           expect(View.paragraphs[1].type).to.equal('ol')
 
@@ -680,13 +984,37 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 2, li))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<ol><li>One</li><li>Two</li>' +
-              '<li>Three</li>' +
-              '<li>Four</li><li>Five</li></ol>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['paragraph-first', '!paragraph-last'],
+                html: 'One'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Two'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Three'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', '!paragraph-last'],
+                html: 'Four'
+              }, {
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Five'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(5)
           expect(View.paragraphs[2].type).to.equal('ol')
 
@@ -706,8 +1034,17 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, p))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML)
-          .to.equal('<section><hr><p>Stuff</p></section>')
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: 'Stuff'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(1)
         expect(View.paragraphs[0].type).to.equal('p')
 
@@ -732,12 +1069,25 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 0, p))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<p>Stuff</p>' +
-              '<ol><li>Claudio</li></ol>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'Stuff'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Claudio'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(2)
           expect(View.paragraphs[0].type).to.equal('p')
 
@@ -762,12 +1112,25 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, p))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<ol><li>Stuff</li></ol>' +
-              '<p>Claudio</p>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['paragraph-first', '!paragraph-last'],
+                html: 'Stuff'
+              }]
+            }, {
+              name: 'p',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Claudio'
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(2)
           expect(View.paragraphs[1].type).to.equal('p')
 
@@ -793,13 +1156,33 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, p))
 
         setTimeout(function () {
-          expect(editor.elem.innerHTML).to.equal(
-            '<section><hr>' +
-              '<ol><li>Stuff</li></ol>' +
-              '<p>Claudio</p>' +
-              '<ol><li>Bravo</li></ol>' +
-            '</section>'
-          )
+          expect(editor.elem).to.have.children([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['paragraph-first', '!paragraph-last'],
+                html: 'Stuff'
+              }]
+            }, {
+              name: 'p',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Claudio'
+            }, {
+              name: 'ol',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              children: [{
+                name: 'li',
+                classes: ['!paragraph-first', 'paragraph-last'],
+                html: 'Bravo'
+              }]
+            }]
+          }])
+
           expect(View.paragraphs.length).to.equal(3)
           expect(View.paragraphs[1].type).to.equal('p')
 
@@ -820,8 +1203,17 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML)
-          .to.equal('<section><hr><h2>Words</h2></section>')
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'h2',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: 'Words'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(1)
         expect(View.paragraphs[0].type).to.equal('h2')
 
@@ -838,8 +1230,17 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML)
-          .to.equal('<section><hr><p>Things</p></section>')
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: 'Things'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(1)
         expect(View.paragraphs[0].type).to.equal('p')
 
@@ -862,12 +1263,21 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<p>One</p>' +
-            '<p>Three</p>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'One'
+          }, {
+            name: 'p',
+            classes: ['!paragraph-first', 'paragraph-last'],
+            html: 'Three'
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(2)
 
         teardown(editor)
@@ -909,19 +1319,39 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<ol><li>One</li><li>Two</li>' +
-            '<li>Four</li><li>Five</li></ol>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'One'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Two'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Four'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Five'
+            }]
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(4)
 
         teardown(editor)
         done()
       }, 0)
     })
-
 
     it('merges elements the removal brought together (2).', function (done) {
       var editor
@@ -937,12 +1367,33 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr>' +
-            '<ol><li>One</li><li>Two</li>' +
-            '<li>Four</li><li>Five</li></ol>' +
-          '</section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'One'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Two'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Four'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Five'
+            }]
+          }]
+        }])
+
         expect(View.paragraphs.length).to.equal(4)
 
         teardown(editor)
@@ -950,7 +1401,7 @@ describe('Paragraph operation', function () {
       }, 0)
     })
 
-    it('cna remove list items.', function () {
+    it('can remove list items.', function (done) {
       var editor
 
       editor = init(
@@ -964,12 +1415,27 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1))
 
       setTimeout(function () {
-        expect(editor.elem.innerHTML).to.equal(
-          '<section><hr><ol>' +
-            '<li>One</li>' +
-            '<li>Three</li>' +
-          '</ol></section>'
-        )
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'One'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Three'
+            }]
+          }]
+        }])
+
+        teardown(editor)
+        done()
       }, 0)
     })
   })
