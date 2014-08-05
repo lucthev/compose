@@ -416,6 +416,64 @@ describe('Section operation', function () {
         done()
       }, 0)
     })
+
+    it('can insert section breaks after lists.', function (done) {
+      var editor = init(
+        '<section><hr>' +
+          '<p>One</p>' +
+          '<ol>' +
+            '<li>Two</li>' +
+            '<li>Three</li>' +
+          '</ol>' +
+          '<h2>Four</h2>' +
+        '</section>'
+      )
+
+      View.render(new Delta(operation, 3, { start: 3 }))
+
+      setTimeout(function () {
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          classes: ['section-first', '!section-last'],
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            classes: ['paragraph-first', '!paragraph-last'],
+            html: 'One'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['!paragraph-first', '!paragraph-last'],
+              html: 'Two'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Three'
+            }]
+          }]
+        }, {
+          name: 'section',
+          classes: ['!section-first', 'section-last'],
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'h2',
+            classes: ['paragraph-first', 'paragraph-last'],
+            html: 'Four'
+          }]
+        }])
+
+        expect(View.sections.length).to.equal(2)
+        expect(View.sections[0].start).to.equal(0)
+        expect(View.sections[1].start).to.equal(3)
+
+        teardown(editor)
+        done()
+      }, 0)
+    })
   })
 
   describe('“remove”', function () {
