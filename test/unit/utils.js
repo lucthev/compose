@@ -35,7 +35,13 @@ function TreeMatcher (_chai, utils) {
     }
 
     if (tree.children) {
-      new Assertion(elem.childNodes.length).to.equal(tree.children.length)
+      this.assert(
+        elem.childNodes.length === tree.children.length,
+        'expected #{this} to have #{exp} children but it had #{act}',
+        'expected #{this} not to have #{exp} children',
+        tree.children.length,
+        elem.childNodes.length
+      )
 
       tree.children.forEach(function (child, i) {
         new Assertion(elem.childNodes[i]).to.have.tree(tree.children[i])
