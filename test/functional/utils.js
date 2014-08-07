@@ -1,7 +1,8 @@
 /* jshint node:true */
 'use strict';
 
-var http = require('http'),
+var wd = require('wd'),
+    http = require('http'),
     st = require('st')
 
 exports.url = function (server) {
@@ -29,47 +30,46 @@ exports.server = function () {
   return server
 }
 
-exports.opts = function () {
-  var browser = process.env.BROWSER,
-      user = process.env.SAUCE_USERNAME,
+exports.browser = function () {
+  var user = process.env.SAUCE_USERNAME,
       key = process.env.SAUCE_ACCESS_KEY,
+      browser
+
+  if (process.env.TRAVIS)
+    browser = wd.promiseChainRemote('localhost', 4445, user, key)
+  else
+    browser = wd.promiseChainRemote()
+
+  return browser
+}
+
+exports.desired = function () {
+  var browser = process.env.BROWSER,
       opts
 
   if (process.env.TRAVIS) {
     if (!browser) {
-      console.log('BROWSER environment variable must be set when using Travis.')
-      process.exit(1)
-    }
-
-    if (!user || !key) {
-      console.log('Sauce Labs user and key required when using Travis.')
+      console.log('BROWSER env variable must be set when using Travis.')
       process.exit(1)
     }
 
     opts = {
-      desiredCapabilities: {
-        browserName: browser.toLowerCase(),
-        tags: ['Compose', 'CI'],
-        name: 'Compose functional tests.',
-        build: 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')',
-        'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
-      },
-      host: 'ondemand.saucelabs.com',
-      port: 80,
-      user: user,
-      key: key
+      browserName: browser.toLowerCase(),
+      tags: ['Compose', 'CI'],
+      name: 'Compose functional tests.',
+      build: 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' +
+        process.env.TRAVIS_BUILD_ID + ')',
+      'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
     }
 
     if (process.env.VERSION)
-      opts.desiredCapabilities.version = process.env.VERSION
+      opts.version = process.env.VERSION
     if (process.env.PLATFORM)
-      opts.desiredCapabilities.platform = process.env.PLATFORM
+      opts.platform = process.env.PLATFORM
 
   } else {
     opts = {
-      desiredCapabilities: {
-        browserName: 'chrome'
-      }
+      browserName: 'chrome'
     }
   }
 

@@ -1,38 +1,46 @@
-/* jshint ignore:start */
+/* global describe, before, beforeEach, after, it */
+'use strict';
 
-var webdriver = require('webdriverjs'),
+var wd = require('wd'),
     utils = require('./utils'),
-    expect = require('chai').expect
+    chai = require('chai'),
+    chaiAsPromised = require('chai-as-promised')
 
-describe('This is a sample', function () {
-  var server,
-      client
+chai.use(chaiAsPromised)
+chai.should()
+chaiAsPromised.transferPromiseness = wd.transferPromiseness
+
+describe('Sample', function () {
+  var browser,
+      server
 
   // We have to use a ridiculous timeout, unfortunately.
   this.timeout(1200000)
 
   before(function (done) {
-    client = webdriver.remote(utils.opts())
+    browser = utils.browser()
     server = utils.server()
 
     server.listen(0, function () {
-      client.init(done)
+      browser
+        .init(utils.desired())
+        .nodeify(done)
     })
   })
 
-  it('test.', function (done) {
-    client
-      .url(utils.url(server))
-      .getTitle(function (err, title) {
-        expect(err).to.be.null;
-        expect(title).to.equal('Compose Tests')
-      })
-      .call(done)
+  beforeEach(function () {
+    return browser.get(utils.url(server))
   })
 
   after(function (done) {
-    client.end(function () {
-      server.close(done)
-    })
+    browser
+      .quit()
+      .fin(done)
+      .done()
+  })
+
+  it('test', function () {
+    return browser
+      .title().should.become('Compose Tests')
   })
 })
