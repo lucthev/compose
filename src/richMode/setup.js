@@ -2,57 +2,128 @@
 
 /**
  * This module sets up the editor when in rich mode. Adds the paragraphs
- * to the view, etc. Assumes a valid layout (i.e. something getChildren)
- * won’t complain about.
+ * to the view, etc.
  *
- * TODO: more leniency. Basic: putting in a paragraph if the editor is empty.
- * Advanced: coercing lousy markup into something Compose can consume.
+ * @require {getChildren, converter, classes, view, dom}
  */
 function setup (Compose) {
-  var View = Compose.require('view'),
-      getChildren = Compose.require('getChildren'),
+  var getChildren = Compose.require('getChildren'),
       Converter = Compose.require('converter'),
       classes = Compose.require('classes'),
-      numHrs = 0,
-      paragraphs,
-      children,
+      View = Compose.require('view'),
+      dom = Compose.require('dom'),
+      listRegex = /^[OU]L$/,
+      numChildren = 0,
+      sectionObj,
+      paragraph,
       section,
-      i
+      next,
+      li,
+      hr
 
-  paragraphs = Object.keys(Converter.allows)
-  paragraphs.push('hr')
-  paragraphs = paragraphs.join(',')
-  paragraphs = Compose.elem.querySelectorAll(paragraphs)
-
-  if (!paragraphs.length)
-    throw new Error('The editor must have at least one paragraph.')
-
-  for (i = 0; i < paragraphs.length; i += 1) {
-    if (paragraphs[i].nodeName === 'HR') {
-      section = Converter.toSectionObj(paragraphs[i].parentNode)
-      section.start = i - numHrs
-      View.sections.push(section)
-
-      numHrs += 1
+  section = Compose.elem.firstChild
+  while (section) {
+    if (section.nodeName !== 'SECTION') {
+      next = section.nextSibling
+      dom.remove(section)
+      section = next
       continue
     }
 
-    View.paragraphs.push(Converter.toParagraph(paragraphs[i]))
+    hr = section.firstChild
+    if (!hr || hr.nodeName !== 'HR')
+      hr = section.insertBefore(document.createElement('hr'), hr)
+
+    paragraph = hr.nextSibling
+    while (paragraph) {
+      if (!Converter.allows(paragraph.nodeName) &&
+          !listRegex.test(paragraph.nodeName)) {
+        next = paragraph.nextSibling
+        dom.remove(paragraph)
+        paragraph = next
+        continue
+      }
+
+      if (listRegex.test(paragraph.nodeName)) {
+        li = paragraph.firstChild
+
+        while (li) {
+          if (li.nodeName !== 'LI') {
+            next = li.nextSibling
+            dom.remove(li)
+            li = next
+            continue
+          }
+
+          View.paragraphs.push(Converter.toParagraph(li))
+
+          li = li.nextSibling
+        }
+
+        if (!paragraph.firstChild) {
+          next = paragraph.nextSibling
+          dom.remove(paragraph)
+          paragraph = next
+          continue
+        }
+      } else {
+        View.paragraphs.push(Converter.toParagraph(paragraph))
+      }
+
+      paragraph = paragraph.nextSibling
+    }
+
+    if (section.childNodes.length === 1) {
+      // We’ve removed all paragraphs.
+
+      next = section.nextSibling
+      dom.remove(section)
+      section = next
+      continue
+    }
+
+    paragraph = section.childNodes[1]
+    if (listRegex.test(paragraph.nodeName))
+      paragraph = paragraph.firstChild
+
+    paragraph.classList.add(classes.firstParagraph)
+
+    paragraph = section.lastChild
+    if (listRegex.test(paragraph.nodeName))
+      paragraph = paragraph.lastChild
+
+    paragraph.classList.add(classes.lastParagraph)
+
+    sectionObj = Converter.toSectionObj(section)
+    sectionObj.start = numChildren
+    View.sections.push(sectionObj)
+    numChildren += section.childNodes.length - 1
+
+    section = section.nextSibling
   }
 
-  children = getChildren()
-  if (children.length !== paragraphs.length - numHrs)
-    throw new Error('Failed to properly initialize Compose.')
+  if (!Compose.elem.firstChild) {
+    section = Converter.toSectionElem()
+    paragraph = document.createElement('p')
+    paragraph.appendChild(document.createElement('br'))
+    section.appendChild(paragraph)
+    Compose.elem.appendChild(section)
 
-  children[0].classList.add(classes.firstParagraph)
-  children[children.length - 1].classList.add(classes.lastParagraph)
+    paragraph.classList.add(classes.firstParagraph)
+    paragraph.classList.add(classes.lastParagraph)
+
+    sectionObj = Converter.toSectionObj(section)
+    sectionObj.start = 0
+    View.sections.push(sectionObj)
+    View.paragraphs.push(Converter.toParagraph(paragraph))
+  }
+
   Compose.elem.firstChild.classList.add(classes.firstSection)
   Compose.elem.lastChild.classList.add(classes.lastSection)
 
-  for (i = 1; i < View.sections.length; i += 1) {
-    children[section.start - 1].classList.add(classes.lastParagraph)
-    children[section.start].classList.add(classes.firstParagraph)
-  }
+  if (Compose.elem.childNodes.length !== View.sections.length ||
+      getChildren().length !== View.paragraphs.length)
+    throw new Error('Failed to properly initialize Compose.')
 }
 
 module.exports = setup
