@@ -1,11 +1,11 @@
 /* jshint node:true */
 'use strict';
 
-var wd = require('wd'),
-    http = require('http'),
+var http = require('http'),
+    path = require('path'),
     st = require('st')
 
-exports.url = function (server) {
+exports.url = function (server, html) {
   var address = server.address(),
       url = 'http://'
 
@@ -19,18 +19,38 @@ exports.url = function (server) {
   else
     url += address.address
 
-  url += (':' + address.port + '/test.html')
+  url += (':' + address.port + '/test/functional/test.html')
+
+  if (html)
+    url += ('?html=' + html)
 
   return url
 }
 
 exports.server = function () {
-  var server = http.createServer(st(__dirname))
+  var server = http.createServer(st(path.join(__dirname, '../..')))
 
   return server
 }
 
-exports.browser = function () {
+exports.addMethods = function (wd) {
+  wd.addPromiseChainMethod(
+    'execFn',
+    function (fn) {
+      var name = fn.name;
+
+      fn += '';
+      fn = fn
+        .replace(new RegExp('^function ' + name + ' ?\\(\\) ?{'), '')
+        .replace(/\}$/, '');
+
+      return this
+        .execute(fn)
+    }
+  )
+}
+
+exports.browser = function (wd) {
   var user = process.env.SAUCE_USERNAME,
       key = process.env.SAUCE_ACCESS_KEY,
       browser
