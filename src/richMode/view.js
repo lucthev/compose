@@ -104,6 +104,8 @@ function viewPlugin (Compose) {
     }
 
     this._queue = []
+
+    Compose.emit('render')
   }
 
   View.prototype._paragraphInsert = ParagraphOperations.insert
