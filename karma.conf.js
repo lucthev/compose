@@ -46,6 +46,6 @@ module.exports = function (config) {
 
     config.browsers = Object.keys(config.customLaunchers)
   } else {
-    config.browsers = ['Chrome']
+    config.browsers = ['Chrome', 'Firefox']
   }
 }

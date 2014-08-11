@@ -44,12 +44,14 @@ describe('Pressing the enter key should', function () {
   it('insert a <p> after a <p>.', function (done) {
     var editor = init('<section><p>One</p></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    // Firefox has a really annoying bug (?) where input fields don’t
+    // actually get a cursor in them unless the window is focussed —
+    // making automated testing impossible. This is a workaround.
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    // Selectionchange is async, wait for it to catch up.
-    setTimeout(function () {
-      emit(editor.elem, false)
-    }, 0)
+    emit(editor.elem, false)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -73,11 +75,11 @@ describe('Pressing the enter key should', function () {
   it('insert a <p> after a heading.', function (done) {
     var editor = init('<section><h2>One</h2></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, false)
-    }, 0)
+    emit(editor.elem, false)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -101,11 +103,11 @@ describe('Pressing the enter key should', function () {
   it('insert a <p> after a <pre>', function (done) {
     var editor = init('<section><pre>One</pre></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, false)
-    }, 0)
+    emit(editor.elem, false)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -129,11 +131,11 @@ describe('Pressing the enter key should', function () {
   it('insert a <p> after a <blockquote>', function (done) {
     var editor = init('<section><blockquote>One</blockquote></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, false)
-    }, 0)
+    emit(editor.elem, false)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -157,11 +159,11 @@ describe('Pressing the enter key should', function () {
   it('insert a <li> after a <li>', function (done) {
     var editor = init('<section><ol><li>One</li></ol></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, false)
-    }, 0)
+    emit(editor.elem, false)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -188,11 +190,11 @@ describe('Pressing the enter key should', function () {
   it('do nothing with an empty first paragraph (1).', function (done) {
     var editor = init('<section><p><br></p></section>')
 
-    Selection.restore(new Selection([0, 0]))
+    Selection.get = function () {
+      return new Selection([0, 0])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, false)
-    }, 0)
+    emit(editor.elem, false)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -216,11 +218,11 @@ describe('Pressing the enter key should', function () {
           '<section><h2><br></h2></section>'
         )
 
-    Selection.restore(new Selection([1, 0]))
+    Selection.get = function () {
+      return new Selection([1, 0])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, false)
-    }, 0)
+    emit(editor.elem, false)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -249,11 +251,11 @@ describe('Pressing the enter key should', function () {
   it('make a section when the not-first paragraph is empty', function (done) {
     var editor = init('<section><p>One</p><p><br></p></section>')
 
-    Selection.restore(new Selection([1, 0]))
+    Selection.get = function () {
+      return new Selection([1, 0])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -282,11 +284,11 @@ describe('Pressing the enter key should', function () {
   it('convert a <li> to a <p> when the <li> is empty (1).', function (done) {
     var editor = init('<section><ol><li><br></li></ol></section>')
 
-    Selection.restore(new Selection([0, 0]))
+    Selection.get = function () {
+      return new Selection([0, 0])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -313,11 +315,11 @@ describe('Pressing the enter key should', function () {
           '</ol></section>'
         )
 
-    Selection.restore(new Selection([1, 0]))
+    Selection.get = function () {
+      return new Selection([1, 0])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -350,11 +352,11 @@ describe('Pressing the enter key should', function () {
   it('delete highlighted text across paragraphs.', function (done) {
     var editor = init('<section><p>One</p><p>Two</p></section>')
 
-    Selection.restore(new Selection([1, 1], [0, 1]))
+    Selection.get = function () {
+      return new Selection([1, 1], [0, 1])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -378,11 +380,11 @@ describe('Pressing the enter key should', function () {
   it('delete highlighted text within a paragraph.', function (done) {
     var editor = init('<section><h2>Once upon a time</h2></section>')
 
-    Selection.restore(new Selection([0, 4], [0, 12]))
+    Selection.get = function () {
+      return new Selection([0, 4], [0, 12])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -406,11 +408,11 @@ describe('Pressing the enter key should', function () {
   it('split a paragraph when the cursor is in the middle.', function (done) {
     var editor = init('<section><pre>OneTwo</pre></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -434,11 +436,11 @@ describe('Pressing the enter key should', function () {
   it('insert a <br> when the shift key is down.', function (done) {
     var editor = init('<section><p>One</p></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, true)
-    }, 0)
+    emit(editor.elem, true)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -459,11 +461,11 @@ describe('Pressing the enter key should', function () {
   it('insert a <br> in the middle of a paragraph.', function (done) {
     var editor = init('<section><blockquote>OneTwo</blockquote></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, true)
-    }, 0)
+    emit(editor.elem, true)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -484,13 +486,17 @@ describe('Pressing the enter key should', function () {
   it('create a new paragraph when shift-enter is pressed twice.', function (done) {
     var editor = init('<section><p>OneTwo</p></section>')
 
-    Selection.restore(new Selection([0, 3]))
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
+
+    emit(editor.elem, true)
 
     setTimeout(function () {
-      emit(editor.elem, true)
-    }, 0)
+      Selection.get = function () {
+        return new Selection([0, 4])
+      }
 
-    setTimeout(function () {
       emit(editor.elem, true)
     }, 10)
 
@@ -510,17 +516,17 @@ describe('Pressing the enter key should', function () {
 
       teardown(editor)
       done()
-    }, 30)
+    }, 20)
   })
 
   it('create a new paragraph when there are two adjacent <br>s.', function (done) {
     var editor = init('<section><h2>One<br>Two</h2></section>')
 
-    Selection.restore(new Selection([0, 4]))
+    Selection.get = function () {
+      return new Selection([0, 4])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem, true)
-    }, 0)
+    emit(editor.elem, true)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -547,11 +553,11 @@ describe('Pressing the enter key should', function () {
       '<section><p>Two</p></section>'
     )
 
-    Selection.restore(new Selection([0, 1], [1, 1]))
+    Selection.get = function () {
+      return new Selection([0, 1], [1, 1])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -572,7 +578,7 @@ describe('Pressing the enter key should', function () {
     }, 20)
   })
 
-  it('turn a <p> into a <li> when selected text includes both', function (done) {
+  it('turn a <p> into a <li> when both are selected.', function (done) {
     var editor = init(
       '<section>' +
       '<ol>' +
@@ -583,11 +589,11 @@ describe('Pressing the enter key should', function () {
       '</section>'
     )
 
-    Selection.restore(new Selection([1, 1], [2, 1]))
+    Selection.get = function () {
+      return new Selection([1, 1], [2, 1])
+    }
 
-    setTimeout(function () {
-      emit(editor.elem)
-    }, 0)
+    emit(editor.elem)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
