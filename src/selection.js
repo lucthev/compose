@@ -41,10 +41,11 @@ function areSame (older, newer) {
   )
 }
 
-function Selection (Compose) {
+function SelectionPlugin (Compose) {
   var setImmediate = Compose.require('setImmediate'),
       getChildren = Compose.require('getChildren'),
       choice = new Choice(Compose.elem, getChildren),
+      Selection = Choice.Selection,
       oldSelection = false,
       checkChanged
 
@@ -77,6 +78,9 @@ function Selection (Compose) {
   Compose.on('blur', function () {
     oldSelection = false
   })
+
+  Selection.restore = choice.restore.bind(choice)
+  Compose.provide('selection', Selection)
 }
 
-module.exports = Selection
+module.exports = SelectionPlugin
