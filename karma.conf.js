@@ -9,8 +9,8 @@ module.exports = function (config) {
     reporters: ['dots'],
     files: [
       'dist/compose.min.js',
-      'test/unit/utils.js',
-      'test/unit/*.spec.js'
+      'test/utils.js',
+      'test/**/*.spec.js'
     ],
     singleRun: true
   })
