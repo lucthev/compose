@@ -7,6 +7,9 @@ var getChildren = require('./getChildren'),
     Setup = require('./setup')
 
 function RichMode (Compose) {
+  var selection,
+      view
+
   Compose.provide('classes', {
     firstParagraph: 'paragraph-first',
     lastParagraph: 'paragraph-last',
@@ -19,6 +22,15 @@ function RichMode (Compose) {
   Compose.use(Selection)
   Compose.use(View)
   Compose.use(Setup)
+
+  view = Compose.require('view')
+  selection = Compose.require('selection')
+
+  Compose.on('keydown', function () {
+    var sel = selection.get()
+
+    view.markModified(sel.isBackwards() ? sel.end[0] : sel.start[0])
+  })
 }
 
 module.exports = RichMode
