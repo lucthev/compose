@@ -67,7 +67,7 @@ function viewPlugin (Compose) {
 
       if (!state.equals(this.paragraphs[index]))
         this.paragraphs[index] = state
-    })
+    }, this)
 
     this._modified = {}
   }
