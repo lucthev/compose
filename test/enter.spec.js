@@ -519,7 +519,7 @@ describe('Pressing the enter key should', function () {
     }, 20)
   })
 
-  it('create a new paragraph when there are two adjacent <br>s.', function (done) {
+  it('make a new paragraph when two <br>s are adjacent (1).', function (done) {
     var editor = init('<section><h2>One<br>Two</h2></section>')
 
     Selection.get = function () {
@@ -539,6 +539,59 @@ describe('Pressing the enter key should', function () {
         }, {
           name: 'h2',
           html: 'Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('make a new paragraph when two <br>s are adjacent (2).', function (done) {
+    var editor = init('<section><pre>One<br>Two</pre></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
+
+    emit(editor.elem, true)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'pre',
+          html: 'One'
+        }, {
+          name: 'pre',
+          html: 'Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('should act normally when a <br> after the caret is at the end.', function (done) {
+    var editor = init('<section><p>One<br></p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
+
+    emit(editor.elem, true)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br><br>'
         }]
       }])
 

@@ -34,6 +34,10 @@ function Enter (Compose) {
     if (e.shiftKey && start.text[startPair[1] - 1] === '\n') {
       startPair = startPair.slice()
       startPair[1] -= 1
+    } else if (e.shiftKey && end.text[endPair[1]] === '\n' &&
+               endPair[1] !== end.length - 1) {
+      endPair = endPair.slice()
+      endPair[1] += 1
     } else if (e.shiftKey && startPair[1] !== 0) {
       start = start.substr(0, startPair[1])
       end = end.substr(endPair[1])
