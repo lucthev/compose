@@ -80,6 +80,10 @@ function SelectionPlugin (Compose) {
   })
 
   Selection.restore = choice.restore.bind(choice)
+  Selection.get = function () {
+    return oldSelection
+  }
+
   Compose.provide('selection', Selection)
 }
 
