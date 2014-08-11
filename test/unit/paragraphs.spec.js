@@ -1221,6 +1221,44 @@ describe('Paragraph operation', function () {
       }, 0)
     })
 
+    it('should change classes correctly.', function (done) {
+      var editor = init(
+        '<section>' +
+          '<ol><li>One</li>' +
+          '<li>Two</li></ol>' +
+          '<p>Three</p>' +
+        '</section>'
+      )
+
+      View.render(new Delta(operation, 2))
+
+      setTimeout(function () {
+        expect(editor.elem).to.have.children([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'ol',
+            classes: ['!paragraph-first', '!paragraph-last'],
+            children: [{
+              name: 'li',
+              classes: ['paragraph-first', '!paragraph-last'],
+              html: 'One'
+            }, {
+              name: 'li',
+              classes: ['!paragraph-first', 'paragraph-last'],
+              html: 'Two'
+            }]
+          }]
+        }])
+
+        expect(View.paragraphs.length).to.equal(2)
+
+        teardown(editor)
+        done()
+      }, 0)
+    })
+
     it('can remove the last paragraph in a section.', function (done) {
       var editor
 

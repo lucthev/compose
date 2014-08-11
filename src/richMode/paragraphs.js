@@ -18,9 +18,9 @@ function getParents (elem, arr) {
 }
 
 /**
- * parentBeforeSection(elem) gets the parent of the deepest parent
- * of the given element that is an immediate child of a <section>.
- * If elem is falsy, returns null.
+ * parentBeforeSection(elem) gets the ancestor of the given element
+ * that is an immediate child of a <section>. If elem is falsy, returns
+ * null.
  *
  * @param {Element} elem
  * @return {Element}
@@ -266,12 +266,15 @@ function ParagraphOperations (Compose) {
     }
 
     if (!isStart)
-      before = parentBeforeSection(children[index - 1])
+      before = children[index - 1]
     if (!isNextStart)
-      after = parentBeforeSection(children[index + 1])
+      after = children[index + 1]
 
     if (!before) after.classList.add(classes.firstParagraph)
     if (!after) before.classList.add(classes.lastParagraph)
+
+    before = parentBeforeSection(before)
+    after = parentBeforeSection(after)
 
     child = children[index]
     parent = child.parentNode
