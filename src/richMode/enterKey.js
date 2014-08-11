@@ -1,0 +1,124 @@
+'use strict';
+
+function Enter (Compose) {
+  var View = Compose.require('view'),
+      Delta = Compose.require('delta'),
+      events = Compose.require('events'),
+      Selection = Compose.require('selection'),
+      listRegex = /^[OU]L$/i
+
+  Compose.on('keydown', function (e) {
+    var sel = Selection.get(),
+        startIndex,
+        startPair,
+        endPair,
+        markup,
+        type,
+        start,
+        end,
+        i
+
+    if (!events.enterKey(e)) return
+
+    e.preventDefault()
+    View.sync()
+
+    startPair = sel.isBackwards() ? sel.end : sel.start
+    endPair = sel.isBackwards() ? sel.start : sel.end
+    start = View.paragraphs[startPair[0]]
+    end = View.paragraphs[endPair[0]]
+
+    startIndex = startPair[0]
+    type = start.type
+
+    if (e.shiftKey && start.text[startPair[1] - 1] === '\n') {
+      startPair = startPair.slice()
+      startPair[1] -= 1
+    } else if (e.shiftKey && startPair[1] !== 0) {
+      start = start.substr(0, startPair[1])
+      end = end.substr(endPair[1])
+
+      if (!end.text) {
+        end.length = 1
+        end.text = '\n'
+      }
+
+      start.text += '\n'
+      start.length += 1
+
+      for (i = 0; i < start.markups.length; i += 1) {
+        markup = start.markups[i]
+
+        if (markup.start >= startPair[1])
+          markup.start += 1
+        if (markup.end >= startPair[1])
+          markup.end += 1
+      }
+
+      start = start.append(end)
+
+      for (i = startIndex + 1; i <= endPair[0]; i += 1) {
+        if (View.isSectionStart(i))
+          View.render(new Delta('sectionDelete', i))
+
+        View.render(new Delta('paragraphDelete', i))
+      }
+
+      View.render(new Delta('paragraphUpdate', startIndex, start))
+      Compose.once('render', function () {
+        Selection.restore(new Selection([startIndex, startPair[1] + 1]))
+      })
+
+      return
+    }
+
+    if (sel.isCollapsed() && (!start.text || start.text === '\n')) {
+      start = start.substr(0)
+
+      if (listRegex.test(type)) {
+        start.type = 'p'
+        View.render(new Delta('paragraphUpdate', startIndex, start))
+      } else if (startIndex > 0 && !View.isSectionStart(startIndex)) {
+        View.render(
+          new Delta('sectionInsert', startIndex, { start: startIndex })
+        )
+      } else return
+
+      Compose.once('render', function () {
+        Selection.restore(new Selection([startIndex, 0]))
+      })
+
+      return
+    }
+
+    for (i = startIndex + 1; i <= endPair[0]; i += 1) {
+      if (View.isSectionStart(i))
+        View.render(new Delta('sectionDelete', i))
+
+      View.render(new Delta('paragraphDelete', i))
+    }
+
+    start = start.substr(0, startPair[1])
+    if (!start.text) {
+      start.length = 1
+      start.text = '\n'
+    }
+
+    end = end.substr(endPair[1])
+    if (listRegex.test(type)) end.type = type
+    if (!end.text || end.text === '\n') {
+      end.type = listRegex.test(type) ? type : 'p'
+      end.length = 1
+      end.text = '\n'
+    }
+
+    View.render(new Delta('paragraphUpdate', startIndex, start))
+    View.render(new Delta('paragraphInsert', startIndex + 1, end))
+
+    Compose.once('render', function () {
+      Selection.restore(new Selection([startIndex + 1, 0]))
+    })
+  })
+}
+
+module.exports = Enter

@@ -4,7 +4,8 @@ var getChildren = require('./getChildren'),
     Converter = require('./converter'),
     Selection = require('../selection'),
     View = require('./view'),
-    Setup = require('./setup')
+    Setup = require('./setup'),
+    Enter = require('./enterKey')
 
 function RichMode (Compose) {
   var selection,
@@ -22,6 +23,8 @@ function RichMode (Compose) {
   Compose.use(Selection)
   Compose.use(View)
   Compose.use(Setup)
+
+  Compose.use(Enter)
 
   view = Compose.require('view')
   selection = Compose.require('selection')
