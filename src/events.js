@@ -7,7 +7,7 @@
  * @param {Event} e
  * @return {Boolean}
  */
-exports.modKey = function (e) {
+var modKey = exports.modKey = function (e) {
   if (/Mac/.test(navigator.platform))
     return e.metaKey
 
@@ -32,4 +32,8 @@ exports.backspace = function (e) {
 
 exports.forwardDelete = function (e) {
   return e.keyCode === 46
+}
+
+exports.selectall = function (e) {
+  return e.keyCode === 65 && modKey(e)
 }

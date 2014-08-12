@@ -46,20 +46,20 @@ function SelectionPlugin (Compose) {
       getChildren = Compose.require('getChildren'),
       choice = new Choice(Compose.elem, getChildren),
       Selection = Choice.Selection,
-      oldSelection = false,
+      current = false,
       checkChanged
 
   function ifChanged () {
     var newSelection = choice.getSelection()
 
-    if (areSame(oldSelection, newSelection))
+    if (areSame(current, newSelection))
       return
 
     // Normalize the selection.
     choice.restore(newSelection)
 
-    Compose.emit('selectionchange', newSelection, oldSelection)
-    oldSelection = newSelection
+    Compose.emit('selectionchange', newSelection, current)
+    current = newSelection
   }
 
   checkChanged = setImmediate.bind(null, ifChanged)
@@ -68,20 +68,14 @@ function SelectionPlugin (Compose) {
   Compose.on('mouseup', checkChanged)
   Compose.on('focus', checkChanged)
 
-  /*
-   * On blur, the selectionchange event is not fired; however, we
-   * want to make sure a selectionchange event is fired when the
-   * editor is focussed again. If we don’t set oldSelection to
-   * false, the selectionchange event will not be fired when the
-   * editor is repeatedly focussed and blurred in the same location.
-   */
+  // NOTE: the selectionchange event is not fired on blur.
   Compose.on('blur', function () {
-    oldSelection = false
+    current = false
   })
 
   Selection.restore = choice.restore.bind(choice)
   Selection.get = function () {
-    return oldSelection
+    return current
   }
 
   Compose.provide('selection', Selection)

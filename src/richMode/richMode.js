@@ -2,14 +2,15 @@
 
 var getChildren = require('./getChildren'),
     Converter = require('./converter'),
-    Selection = require('../selection'),
-    View = require('./view'),
+    SelectionPlugin = require('../selection'),
+    ViewPlugin = require('./view'),
     Setup = require('./setup'),
     Enter = require('./enterKey')
 
 function RichMode (Compose) {
-  var selection,
-      view
+  var events = Compose.require('events'),
+      Selection,
+      View
 
   Compose.provide('classes', {
     firstParagraph: 'paragraph-first',
@@ -20,19 +21,37 @@ function RichMode (Compose) {
 
   Compose.use(Converter)
   Compose.use(getChildren)
-  Compose.use(Selection)
-  Compose.use(View)
+  Compose.use(SelectionPlugin)
+  Compose.use(ViewPlugin)
   Compose.use(Setup)
 
   Compose.use(Enter)
 
-  view = Compose.require('view')
-  selection = Compose.require('selection')
+  View = Compose.require('view')
+  Selection = Compose.require('selection')
 
-  Compose.on('keydown', function () {
-    var sel = selection.get()
+  Compose.on('keydown', function (e) {
+    var sel = Selection.get(),
+        end,
+        len
 
-    view.markModified(sel.isBackwards() ? sel.end[0] : sel.start[0])
+    if (!events.selectall(e)) {
+      View.markModified(sel.isBackwards() ? sel.end[0] : sel.start[0])
+      return
+    }
+
+    e.preventDefault()
+    View.sync()
+
+    len = View.paragraphs.length - 1
+    end = View.paragraphs[len]
+
+    if (/\n$/.test(end.text))
+      sel = new Selection([0, 0], [len, end.length - 1])
+    else
+      sel = new Selection([0, 0], [len, end.length])
+
+    Selection.restore(sel)
   })
 }
 
