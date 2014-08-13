@@ -1,6 +1,7 @@
 /* jshint strict:false, node:true */
 
 var gulp = require('gulp'),
+    sourcemaps = require('gulp-sourcemaps'),
     browserify = require('gulp-browserify'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
@@ -15,11 +16,13 @@ gulp.task('js', function () {
     .pipe(browserify({
       standalone: 'Compose'
     }))
-    .pipe(uglify({
-      preserveComments: 'some'
-    }))
-    .pipe(rename('compose.min.js'))
-    .pipe(gulp.dest('./dist/'))
+    .pipe(sourcemaps.init())
+      .pipe(uglify({
+        preserveComments: 'some'
+      }))
+      .pipe(rename('compose.min.js'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('dist'))
 })
 
 gulp.task('lint', function () {
