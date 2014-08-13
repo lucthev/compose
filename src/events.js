@@ -34,6 +34,10 @@ exports.forwardDelete = function (e) {
   return e.keyCode === 46
 }
 
+exports.spacebar = function (e) {
+  return e.keyCode === 32
+}
+
 exports.selectall = function (e) {
   return e.keyCode === 65 && modKey(e)
 }
