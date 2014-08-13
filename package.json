@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "choice": "^0.1.2",
-    "serialize-elem": "^0.4.0",
-    "wolfy87-eventemitter": "^4.2.6"
+    "component-emitter": "^1.1.3",
+    "serialize-elem": "^0.4.0"
   }
 }

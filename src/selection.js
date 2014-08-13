@@ -64,9 +64,11 @@ function SelectionPlugin (Compose) {
 
   checkChanged = setImmediate.bind(null, ifChanged)
 
-  Compose.on('keydown', checkChanged)
-  Compose.on('mouseup', checkChanged)
-  Compose.on('focus', checkChanged)
+  Compose.once('ready', function () {
+    Compose.on('keydown', checkChanged)
+    Compose.on('mouseup', checkChanged)
+    Compose.on('focus', checkChanged)
+  })
 
   // NOTE: the selectionchange event is not fired on blur.
   Compose.on('blur', function () {

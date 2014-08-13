@@ -1,6 +1,6 @@
 'use strict';
 
-var EventEmitter = require('wolfy87-eventemitter'),
+var eventEmitter = require('component-emitter'),
     EventDispatcher = require('./event-dispatcher'),
     RichMode = require('./richMode/richMode'),
     UndoManager = require('./undo-manager'),
@@ -51,9 +51,11 @@ function Compose (elem, mode) {
   //   this.use(InlineMode)
   else
     this.use(RichMode)
+
+  this.emit('ready')
 }
 
-utils.inherits(Compose, EventEmitter)
+eventEmitter(Compose.prototype)
 
 /**
  * require(module) 'loads' the module with the given name, if it exists.
