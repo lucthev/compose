@@ -3,6 +3,7 @@
 var getChildren = require('./getChildren'),
     Converter = require('./converter'),
     SelectionPlugin = require('../selection'),
+    Backspace = require('./backspace'),
     ViewPlugin = require('./view'),
     Setup = require('./setup'),
     Enter = require('./enterKey')
@@ -26,6 +27,7 @@ function RichMode (Compose) {
   Compose.use(Setup)
 
   Compose.use(Enter)
+  Compose.use(Backspace)
 
   View = Compose.require('view')
   Selection = Compose.require('selection')
