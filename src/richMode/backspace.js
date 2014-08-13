@@ -54,7 +54,7 @@ function Backspace (Compose) {
 
       View.render(new Delta('paragraphUpdate', startIndex, start))
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex, textIndex]))
+        Selection.set(new Selection([startIndex, textIndex]))
       })
 
       return
@@ -66,7 +66,7 @@ function Backspace (Compose) {
 
       View.render(new Delta('paragraphUpdate', startIndex, start))
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex, 0]))
+        Selection.set(new Selection([startIndex, 0]))
       })
 
     } else if (backspace && textIndex === 0) {
@@ -75,7 +75,7 @@ function Backspace (Compose) {
       if (View.isSectionStart(startIndex)) {
         View.render(new Delta('sectionDelete', startIndex))
         Compose.once('render', function () {
-          Selection.restore(new Selection([startIndex, 0]))
+          Selection.set(new Selection([startIndex, 0]))
         })
 
         return
@@ -88,7 +88,7 @@ function Backspace (Compose) {
       View.render(new Delta('paragraphDelete', startIndex))
       View.render(new Delta('paragraphUpdate', startIndex - 1, next))
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex - 1, textIndex]))
+        Selection.set(new Selection([startIndex - 1, textIndex]))
       })
 
     } else if (!backspace && textIndex === start.length) {
@@ -97,7 +97,7 @@ function Backspace (Compose) {
       if (View.isSectionStart(startIndex + 1)) {
         View.render(new Delta('sectionDelete', startIndex + 1))
         Compose.once('render', function () {
-          Selection.restore(new Selection([startIndex, textIndex]))
+          Selection.set(new Selection([startIndex, textIndex]))
         })
 
         return
@@ -111,7 +111,7 @@ function Backspace (Compose) {
       View.render(new Delta('paragraphUpdate', startIndex, start))
 
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex, textIndex]))
+        Selection.set(new Selection([startIndex, textIndex]))
       })
 
     } else {
@@ -128,7 +128,7 @@ function Backspace (Compose) {
 
       View.render(new Delta('paragraphUpdate', startIndex, start))
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex, textIndex]))
+        Selection.set(new Selection([startIndex, textIndex]))
       })
     }
   })

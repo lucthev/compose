@@ -55,7 +55,7 @@ function RichMode (Compose) {
     else
       sel = new Selection([0, 0], [len, end.length])
 
-    Selection.restore(sel)
+    Selection.set(sel)
   })
 }
 

@@ -75,7 +75,7 @@ function SelectionPlugin (Compose) {
     current = false
   })
 
-  Selection.restore = choice.restore.bind(choice)
+  Selection.set = choice.restore.bind(choice)
   Selection.get = function () {
     return current
   }

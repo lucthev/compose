@@ -70,7 +70,7 @@ function Enter (Compose) {
 
       View.render(new Delta('paragraphUpdate', startIndex, start))
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex, startPair[1] + 1]))
+        Selection.set(new Selection([startIndex, startPair[1] + 1]))
       })
 
       return
@@ -89,7 +89,7 @@ function Enter (Compose) {
       } else return
 
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex, 0]))
+        Selection.set(new Selection([startIndex, 0]))
       })
 
       return
@@ -120,7 +120,7 @@ function Enter (Compose) {
     View.render(new Delta('paragraphInsert', startIndex + 1, end))
 
     Compose.once('render', function () {
-      Selection.restore(new Selection([startIndex + 1, 0]))
+      Selection.set(new Selection([startIndex + 1, 0]))
     })
   })
 }

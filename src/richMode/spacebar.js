@@ -47,7 +47,7 @@ function Spacebar (Compose) {
 
       View.render(new Delta('paragraphUpdate', startIndex, end))
       Compose.once('render', function () {
-        Selection.restore(new Selection([startIndex, 0]))
+        Selection.set(new Selection([startIndex, 0]))
       })
 
       return
@@ -98,7 +98,7 @@ function Spacebar (Compose) {
     start = start.append(end)
     View.render(new Delta('paragraphUpdate', startIndex, start))
     Compose.once('render', function () {
-      Selection.restore(new Selection([startIndex, textIndex + 1]))
+      Selection.set(new Selection([startIndex, textIndex + 1]))
     })
   })
 }
