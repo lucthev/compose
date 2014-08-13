@@ -63,9 +63,9 @@ function Enter (Compose) {
 
       for (i = startIndex + 1; i <= endPair[0]; i += 1) {
         if (View.isSectionStart(i))
-          View.render(new Delta('sectionDelete', i))
+          View.render(new Delta('sectionDelete', startIndex + 1))
 
-        View.render(new Delta('paragraphDelete', i))
+        View.render(new Delta('paragraphDelete', startIndex + 1))
       }
 
       View.render(new Delta('paragraphUpdate', startIndex, start))
@@ -97,9 +97,9 @@ function Enter (Compose) {
 
     for (i = startIndex + 1; i <= endPair[0]; i += 1) {
       if (View.isSectionStart(i))
-        View.render(new Delta('sectionDelete', i))
+        View.render(new Delta('sectionDelete', startIndex + 1))
 
-      View.render(new Delta('paragraphDelete', i))
+      View.render(new Delta('paragraphDelete', startIndex + 1))
     }
 
     start = start.substr(0, startPair[1])

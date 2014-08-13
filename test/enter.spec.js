@@ -600,7 +600,7 @@ describe('Pressing the enter key should', function () {
     }, 20)
   })
 
-  it('remove sections when selected text includes an <hr>.', function (done) {
+  it('remove sections when selected text includes an <hr> (1).', function (done) {
     var editor = init(
       '<section><p>One</p></section>' +
       '<section><p>Two</p></section>'
@@ -623,6 +623,38 @@ describe('Pressing the enter key should', function () {
         }, {
           name: 'p',
           html: 'wo'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove sections when selected text includes an <hr> (2).', function (done) {
+    var editor = init(
+      '<section><p>One</p></section>' +
+      '<section><p>Two</p></section>' +
+      '<section><h2>Three</h2></section>'
+    )
+
+    Selection.get = function () {
+      return new Selection([2, 1], [0, 1])
+    }
+
+    emit(editor.elem)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'O'
+        }, {
+          name: 'h2',
+          html: 'hree'
         }]
       }])
 
