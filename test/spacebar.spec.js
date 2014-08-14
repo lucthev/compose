@@ -507,6 +507,56 @@ describe('Pressing the spacebar should', function () {
     }, 20)
   })
 
+  it('replace a regular space with an &nbsp; if necessary (2).', function (done) {
+    var editor = init('<section><p>One two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3], [0, 0])
+    }
+
+    emit(editor.elem)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '&nbsp;two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('replace a regular space with an &nbsp; if necessary (3).', function (done) {
+    var editor = init('<section><p>One two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4], [0, 7])
+    }
+
+    emit(editor.elem)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One&nbsp;'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
   it('remove sections if the selection spans <hr>s.', function (done) {
     var editor = init(
       '<section><p>One</p></section>' +

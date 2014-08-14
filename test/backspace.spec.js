@@ -568,4 +568,707 @@ describe('Deleting text should', function () {
       done()
     }, 20)
   })
+
+  it('convert spaces to &nbsp;s where appropriate (1).', function (done) {
+    var editor = init('<section><p>One t</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 5])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One&nbsp;'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert spaces to &nbsp;s where appropriate (2).', function (done) {
+    var editor = init('<section><p>A cat</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 0])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '&nbsp;cat'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert spaces to &nbsp;s where appropriate (3).', function (done) {
+    var editor = init('<section><p>A cat</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 2], [0, 5])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'A&nbsp;'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert spaces to &nbsp;s where appropriate (2).', function (done) {
+    var editor = init('<section><p>One cat</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3], [0, 0])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '&nbsp;cat'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (1).', function (done) {
+    var editor = init('<section><p>One two&nbsp;</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4], [0, 7])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One&nbsp;'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (2).', function (done) {
+    var editor = init(
+      '<section><p>One two</p></section>' +
+      '<section><h2>Three four</h2></section>'
+    )
+
+    Selection.get = function () {
+      return new Selection([1, 5], [0, 4])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One four'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (3).', function (done) {
+    var editor = init('<section><p>&nbsp;One&nbsp;</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 1], [0, 4])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '&nbsp;'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (4).', function (done) {
+    var editor = init('<section><p>One&nbsp;<br>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 5])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (5).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (6).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (7).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0], [0, 4])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('remove spaces where appropriate (8).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0], [0, 4])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (1).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (2).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (3).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0], [0, 4])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (4).', function (done) {
+    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0], [0, 4])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (5).', function (done) {
+    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (6).', function (done) {
+    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (7).', function (done) {
+    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3], [1, 0])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (8).', function (done) {
+    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3], [1, 0])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (9).', function (done) {
+    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (10).', function (done) {
+    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (11).', function (done) {
+    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (12).', function (done) {
+    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 5])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (13).', function (done) {
+    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3], [0, 4])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (14).', function (done) {
+    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4], [0, 3])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (15).', function (done) {
+    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4], [0, 5])
+    }
+
+    emit(editor.elem, fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('convert &nbsp;s to regular spaces where appropriate (16).', function (done) {
+    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 5], [0, 4])
+    }
+
+    emit(editor.elem, backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
 })

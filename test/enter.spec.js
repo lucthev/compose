@@ -704,4 +704,138 @@ describe('Pressing the enter key should', function () {
       done()
     }, 20)
   })
+
+  it('should turn spaces into &nbsp;s when necessary (1).', function (done) {
+    var editor = init('<section><p>One two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4])
+    }
+
+    emit(editor.elem)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One&nbsp;'
+        }, {
+          name: 'p',
+          html: 'two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('should turn spaces into &nbsp;s when necessary (2).', function (done) {
+    var editor = init('<section><p>One two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 4])
+    }
+
+    emit(editor.elem, true)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One&nbsp;<br>two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('should turn spaces into &nbsp;s when necessary (3).', function (done) {
+    var editor = init('<section><p>One two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
+
+    emit(editor.elem)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One'
+        }, {
+          name: 'p',
+          html: '&nbsp;two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('should turn spaces into &nbsp;s when necessary (4).', function (done) {
+    var editor = init('<section><p>One two</p></section>')
+
+    Selection.get = function () {
+      return new Selection([0, 3])
+    }
+
+    emit(editor.elem, true)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br>&nbsp;two'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
+
+  it('should not create a new section when shift-entering.', function (done) {
+    var editor = init('<section><p>One</p><p><br></p></section>')
+
+    Selection.get = function () {
+      return new Selection([1, 0])
+    }
+
+    emit(editor.elem, true)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children: [{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One'
+        }, {
+          name: 'p',
+          html: '<br>'
+        }]
+      }])
+
+      teardown(editor)
+      done()
+    }, 20)
+  })
 })

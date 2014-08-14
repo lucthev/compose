@@ -5,7 +5,10 @@ function Enter (Compose) {
       Delta = Compose.require('delta'),
       events = Compose.require('events'),
       Selection = Compose.require('selection'),
-      listRegex = /^[OU]L$/i
+      startSpace = /^[\u00A0 \u200A]/,
+      endSpace = /[\u00A0 \u200A]$/,
+      listRegex = /^[OU]L$/i,
+      nbsp = '\u00A0'
 
   Compose.on('keydown', function (e) {
     var sel = Selection.get(),
@@ -38,9 +41,16 @@ function Enter (Compose) {
                endPair[1] !== end.length - 1) {
       endPair = endPair.slice()
       endPair[1] += 1
-    } else if (e.shiftKey && startPair[1] !== 0) {
-      start = start.substr(0, startPair[1])
-      end = end.substr(endPair[1])
+    } else if (e.shiftKey) {
+      if (startPair[1] === 0) return
+
+      start = start
+        .substr(0, startPair[1])
+        .replace(endSpace, nbsp)
+
+      end = end
+        .substr(endPair[1])
+        .replace(startSpace, nbsp)
 
       if (!end.text) {
         end.length = 1
@@ -50,6 +60,7 @@ function Enter (Compose) {
       start.text += '\n'
       start.length += 1
 
+      // TODO: is this necessary/desired?
       for (i = 0; i < start.markups.length; i += 1) {
         markup = start.markups[i]
 
@@ -102,13 +113,19 @@ function Enter (Compose) {
       View.render(new Delta('paragraphDelete', startIndex + 1))
     }
 
-    start = start.substr(0, startPair[1])
+    start = start
+      .substr(0, startPair[1])
+      .replace(endSpace, nbsp)
+
     if (!start.text) {
       start.length = 1
       start.text = '\n'
     }
 
-    end = end.substr(endPair[1])
+    end = end
+      .substr(endPair[1])
+      .replace(startSpace, nbsp)
+
     if (listRegex.test(type)) end.type = type
     if (!end.text || end.text === '\n') {
       end.type = listRegex.test(type) ? type : 'p'

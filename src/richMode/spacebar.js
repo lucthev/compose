@@ -74,15 +74,19 @@ function Spacebar (Compose) {
     }
 
     if (!end.text && spaceRegex.test(last)) {
-      start.text[start.length - 1] = nbsp
+      start.text = start.text.substr(0, start.length - 1) + nbsp
       textIndex -= 1
     } else if (!start.text && spaceRegex.test(end.text[0])) {
-      end.text[0] = nbsp
+      end.text = nbsp + end.text.substr(1)
       textIndex -= 1
     } else if (spaceRegex.test(last)) {
       textIndex -= 1
     } else if (!spaceRegex.test(end.text[0])) {
-      start.text += (!end.text || !start.text ? nbsp : ' ')
+      if (!end.text || !start.text || start.text[start.length - 1] === '\n')
+        start.text +=  nbsp
+      else
+        start.text += ' '
+
       start.length += 1
 
       for (i = 0; i < start.markups.length; i += 1) {
