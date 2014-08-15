@@ -28,30 +28,31 @@ function SelectionPlugin (Compose) {
       Selection = Choice.Selection,
       current = false
 
-  function compare (sel) {
-    sel = sel || choice.getSelection()
-
-    if (!sel || sel.equals(current)) return
-
-    Compose.emit('selectionchange', sel, current)
-    current = sel
-  }
-
   function setup () {
     Compose.on('keydown', function (e) {
       setImmediate(function () {
         var sel = choice.getSelection()
 
         // “Normalize” the selection, if necessary.
-        if (sel && events.selectKey(e))
+        if (sel && events.selectKey(e)) {
           Selection.set(sel)
-
-        compare(sel)
+        } else if (sel && !sel.equals(current)) {
+          Compose.emit('selectionchange', sel, current)
+          current = sel
+        } else {
+          current = sel
+        }
       })
     })
 
     Compose.on('mouseup', function () {
-      setImmediate(compare)
+      setImmediate(function () {
+        var sel = choice.getSelection()
+
+        if (sel)
+          Selection.set(sel)
+        else current = sel
+      })
     })
 
     Compose.on('focus', function () {
@@ -59,7 +60,6 @@ function SelectionPlugin (Compose) {
         var sel = choice.getSelection()
 
         Selection.set(sel)
-        compare(sel)
       })
     })
 
@@ -69,7 +69,15 @@ function SelectionPlugin (Compose) {
     })
   }
 
-  Selection.set = choice.restore.bind(choice)
+  Selection.set = function (sel) {
+    if (sel && !sel.equals(current)) {
+      Compose.emit('selectionchange', sel, current)
+      current = sel
+    }
+
+    choice.restore(sel)
+  }
+
   Selection.get = function () {
     return current
   }
