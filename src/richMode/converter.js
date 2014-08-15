@@ -151,9 +151,11 @@ function Converter (Compose) {
    * @return {Element}
    */
   function toSectionElem (section) {
-    var elem = document.createElement('section')
+    var elem = document.createElement('section'),
+        hr = document.createElement('hr')
 
-    elem.appendChild(document.createElement('hr'))
+    hr.setAttribute('contenteditable', false)
+    elem.appendChild(hr)
 
     if (!section) return elem
 

@@ -33,6 +33,7 @@ function setup (Compose) {
     hr = section.firstChild
     if (!hr || hr.nodeName !== 'HR')
       hr = section.insertBefore(document.createElement('hr'), hr)
+    hr.setAttribute('contenteditable', false)
 
     paragraph = hr.nextSibling
     while (paragraph) {

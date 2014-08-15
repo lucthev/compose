@@ -1,3 +1,7 @@
+'use strict';
+
+var Choice = require('choice')
+
 /**
  * A module that fires a 'selectionchange' event on Compose. The event
  * this module fires is NOT the same as the native selectionchange event
@@ -16,70 +20,61 @@
  * @listen {mouseup, focus, blur, keydown}
  * @emit {selectionchange}
  */
-'use strict';
-
-var Choice = require('choice')
-
-/**
- * areSame(old, new) compares two selections and determines if they
- * are the same.
- *
- * @param {Choice.Selection} older
- * @param {Choice.Selection} newer
- * @return {Boolean}
- */
-function areSame (older, newer) {
-
-  if (!older || !newer)
-    return !older && !newer
-
-  return (
-    older.start[0] === newer.start[0] &&
-    older.start[1] === newer.start[1] &&
-    older.end[0] === newer.end[0] &&
-    older.end[1] === newer.end[1]
-  )
-}
-
 function SelectionPlugin (Compose) {
   var setImmediate = Compose.require('setImmediate'),
       getChildren = Compose.require('getChildren'),
       choice = new Choice(Compose.elem, getChildren),
+      events = Compose.require('events'),
       Selection = Choice.Selection,
-      current = false,
-      checkChanged
+      current = false
 
-  function ifChanged () {
-    var newSelection = choice.getSelection()
+  function compare (sel) {
+    sel = sel || choice.getSelection()
 
-    if (areSame(current, newSelection))
-      return
+    if (!sel || sel.equals(current)) return
 
-    // Normalize the selection.
-    choice.restore(newSelection)
-
-    Compose.emit('selectionchange', newSelection, current)
-    current = newSelection
+    Compose.emit('selectionchange', sel, current)
+    current = sel
   }
 
-  checkChanged = setImmediate.bind(null, ifChanged)
+  function setup () {
+    Compose.on('keydown', function (e) {
+      setImmediate(function () {
+        var sel = choice.getSelection()
 
-  Compose.once('ready', function () {
-    Compose.on('keydown', checkChanged)
-    Compose.on('mouseup', checkChanged)
-    Compose.on('focus', checkChanged)
-  })
+        // “Normalize” the selection, if necessary.
+        if (sel && events.selectKey(e))
+          Selection.set(sel)
 
-  // NOTE: the selectionchange event is not fired on blur.
-  Compose.on('blur', function () {
-    current = false
-  })
+        compare(sel)
+      })
+    })
+
+    Compose.on('mouseup', function () {
+      setImmediate(compare)
+    })
+
+    Compose.on('focus', function () {
+      setImmediate(function () {
+        var sel = choice.getSelection()
+
+        Selection.set(sel)
+        compare(sel)
+      })
+    })
+
+    // NOTE: the selectionchange event is not fired on blur.
+    Compose.on('blur', function () {
+      current = false
+    })
+  }
 
   Selection.set = choice.restore.bind(choice)
   Selection.get = function () {
     return current
   }
 
+  Compose.once('ready', setup)
   Compose.provide('selection', Selection)
 }
 

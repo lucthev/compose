@@ -18,6 +18,7 @@ describe('Deleting text should', function () {
     editor = new Compose(elem)
     editor.use(function (Compose) {
       Selection = Compose.require('selection')
+      Selection.set = function () {}
     })
 
     return editor
