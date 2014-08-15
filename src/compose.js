@@ -4,8 +4,11 @@ var eventEmitter = require('component-emitter'),
     EventDispatcher = require('./event-dispatcher'),
     RichMode = require('./richMode/richMode'),
     UndoManager = require('./undo-manager'),
-    utils = require('./utils'),
     timers = require('./timers')
+
+function hasOwnProp (obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop)
+}
 
 /**
  * Compose(elem [, mode]) is the constructor for Compose. Takes an
@@ -38,8 +41,7 @@ function Compose (elem, mode) {
     serialize: require('serialize-elem'),
     setImmediate: timers.setImmediate,
     clearImmediate: timers.clearImmediate,
-    dom: require('./dom'),
-    utils: utils
+    dom: require('./dom')
   }
 
   this.use(EventDispatcher)
@@ -65,7 +67,7 @@ eventEmitter(Compose.prototype)
  * @return {*}
  */
 Compose.prototype.require = function (module) {
-  if (!utils.hasOwnProp(this.plugins, module))
+  if (!hasOwnProp(this.plugins, module))
     throw new Error('Could not find module: ' + module)
 
   return this.plugins[module]
@@ -80,8 +82,8 @@ Compose.prototype.require = function (module) {
  * @param {*} exports
  */
 Compose.prototype.provide = function (name, exports) {
-  if (utils.hasOwnProp(this.plugins, name))
-    throw new Error('The module ' + name + 'already exists.')
+  if (hasOwnProp(this.plugins, name))
+    throw new Error('The module "' + name + '" already exists.')
 
   this.plugins[name] = exports
 }
@@ -94,7 +96,7 @@ Compose.prototype.provide = function (name, exports) {
  */
 Compose.prototype.use = function (plugin) {
   if (typeof plugin !== 'function')
-    throw new Error('Plugins must be functions.')
+    throw new TypeError('Plugins must be functions.')
 
   plugin({
     elem: this.elem,
@@ -119,8 +121,8 @@ Compose.prototype.use = function (plugin) {
 Compose.prototype.disable = function (module) {
   var plugin
 
-  if (!utils.hasOwnProp(this.plugins, module))
-    throw new Error('Cannot disable non-existant module: ' + module)
+  if (!hasOwnProp(this.plugins, module))
+    throw new Error('Cannot disable non-existant module "' + module + '"')
 
   plugin = this.plugins[module]
   if (plugin && typeof plugin.disable === 'function')
