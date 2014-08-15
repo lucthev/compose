@@ -64,6 +64,9 @@ function viewPlugin (Compose) {
       if (!child) return
 
       state = Converter.toParagraph(child)
+      state = state.replace(/([^^\n])\n$/, function (match, $0) {
+        return $0
+      })
 
       if (!state.equals(this.paragraphs[index]))
         this.paragraphs[index] = state
