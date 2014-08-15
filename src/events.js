@@ -35,7 +35,8 @@ exports.forwardDelete = function (e) {
 }
 
 exports.spacebar = function (e) {
-  return e.keyCode === 32
+  return /[\u0020\u00A0\u180E\u2000-\u200B\u202F\u205F\u3000\uFEFF]/
+    .test(String.fromCharCode(e.keyCode))
 }
 
 exports.selectall = function (e) {

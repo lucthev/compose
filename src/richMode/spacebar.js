@@ -10,7 +10,7 @@ function Spacebar (Compose) {
       spaceRegex = /[\u00A0 \u200A]/,
       nbsp = '\u00A0'
 
-  Compose.on('keydown', function (e) {
+  Compose.on('keypress', function (e) {
     var sel = Selection.get(),
         startIndex,
         textIndex,

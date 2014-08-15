@@ -16,6 +16,7 @@ describe('Pressing the spacebar should', function () {
     editor = new Compose(elem)
     editor.use(function (Compose) {
       Selection = Compose.require('selection')
+      Selection.restore = function () {}
     })
 
     return editor
@@ -34,7 +35,7 @@ describe('Pressing the spacebar should', function () {
   function emit (elem) {
     var evt = document.createEvent('HTMLEvents')
 
-    evt.initEvent('keydown', true, true)
+    evt.initEvent('keypress', true, true)
     evt.keyCode = 32
 
     elem.dispatchEvent(evt)
