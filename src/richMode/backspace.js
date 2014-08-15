@@ -159,6 +159,12 @@ function Backspace (Compose) {
       if (endSpace.test(start.text) && startSpace.test(next.text))
         next = next.substr(1)
 
+      // Edge cases: Text<br>x|, backspace; Text<br>|x, delete.
+      if (start.text[start.length - 1] === '\n' && !end.text) {
+        start.text += '\n'
+        start.length += 1
+      }
+
       start = start
         .append(next)
         .replace(startSpace, nbsp)
