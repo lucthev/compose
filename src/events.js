@@ -35,8 +35,13 @@ exports.forwardDelete = function (e) {
 }
 
 exports.spacebar = function (e) {
-  return /[\u0020\u00A0\u180E\u2000-\u200B\u202F\u205F\u3000\uFEFF]/
-    .test(String.fromCharCode(e.keyCode))
+
+  if (e.type === 'keypress') {
+    return /[\u0020\u00A0\u180E\u2000-\u200B\u202F\u205F\u3000\uFEFF]/
+      .test(String.fromCharCode(e.which))
+  }
+
+  return e.keyCode === 32
 }
 
 exports.selectall = function (e) {

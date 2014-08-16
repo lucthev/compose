@@ -15,7 +15,7 @@ function Converter (Compose) {
       allowed
 
   // The allowed paragraph types.
-  allowed = ['p', 'h1', 'h2', 'h3', 'pre', 'blockquote', 'li']
+  allowed = ['p', 'h2', 'h3', 'pre', 'blockquote', 'li']
 
   /**
    * allows(name) determines if an element with the given name is allowed

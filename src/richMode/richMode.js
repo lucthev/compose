@@ -3,23 +3,30 @@
 var getChildren = require('./getChildren'),
     Converter = require('./converter'),
     SelectionPlugin = require('../selection'),
+    Shortcuts = require('./shortcuts'),
     Backspace = require('./backspace'),
+    formatInline = require('./formatInline'),
+    formatBlock = require('./formatBlock'),
+    SmartText = require('./smartText'),
     Spacebar = require('./spacebar'),
     ViewPlugin = require('./view'),
     Setup = require('./setup'),
     Enter = require('./enterKey')
 
 function RichMode (Compose) {
-  var events = Compose.require('events'),
-      Selection,
-      View
-
   Compose.provide('classes', {
     firstParagraph: 'paragraph-first',
     lastParagraph: 'paragraph-last',
     firstSection: 'section-first',
     lastSection: 'section-last'
   })
+
+  /**
+   * This is a kind of advance declaration of the 'formatter' module;
+   * it is not used by any plugins until user events occer, but must
+   * be present when they are initialized.
+   */
+  Compose.provide('formatter', {})
 
   Compose.use(Converter)
   Compose.use(getChildren)
@@ -30,29 +37,13 @@ function RichMode (Compose) {
   Compose.use(Enter)
   Compose.use(Backspace)
   Compose.use(Spacebar)
+  Compose.use(SmartText)
 
-  View = Compose.require('view')
-  Selection = Compose.require('selection')
+  // Populate formatter exports.
+  formatInline(Compose)
+  formatBlock(Compose)
 
-  Compose.on('keydown', function (e) {
-    var sel = Selection.get(),
-        end,
-        len
-
-    if (!events.selectall(e)) return
-
-    e.preventDefault()
-
-    len = View.paragraphs.length - 1
-    end = View.paragraphs[len]
-
-    if (/\n$/.test(end.text))
-      sel = new Selection([0, 0], [len, end.length - 1])
-    else
-      sel = new Selection([0, 0], [len, end.length])
-
-    Selection.set(sel)
-  })
+  Compose.use(Shortcuts)
 }
 
 module.exports = RichMode
