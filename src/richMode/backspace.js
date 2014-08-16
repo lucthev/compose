@@ -12,13 +12,13 @@ function Backspace (Compose) {
   Compose.on('keydown', function (e) {
     var backspace = events.backspace(e),
         sel = Selection.get(),
+        collapsed = sel.isCollapsed(),
         startIndex,
         textIndex,
         startPair,
         endPair,
         start,
         end,
-        next,
         i
 
     if (!backspace && !events.forwardDelete(e))
@@ -35,58 +35,12 @@ function Backspace (Compose) {
     startIndex = startPair[0]
     textIndex = startPair[1]
 
-    if (!sel.isCollapsed()) {
-      for (i = startIndex + 1; i <= endPair[0]; i += 1) {
-        if (View.isSectionStart(i))
-          View.render(new Delta('sectionDelete', startIndex + 1))
+    if (collapsed) {
+      if (backspace && textIndex === 0 && /^[ou]l$/.test(start.type)) {
+        start = start.substr(0)
+        start.type = 'p'
 
-        View.render(new Delta('paragraphDelete', startIndex + 1))
-      }
-
-      start = start
-        .substr(0, textIndex)
-        .replace(endSpace, ' ')
-      end = end
-        .substr(endPair[1])
-        .replace(startSpace, ' ')
-
-      if (endSpace.test(start.text) && startSpace.test(end.text))
-        end = end.substr(1)
-      else if (end.text[0] === '\n')
-        end = end.substr(1)
-
-      start = start
-        .append(end)
-        .replace(startSpace, nbsp)
-        .replace(endSpace, nbsp)
-
-      if (!start.text) {
-        start.text = '\n'
-        start.length = 1
-      }
-
-      View.render(new Delta('paragraphUpdate', startIndex, start))
-      Compose.once('render', function () {
-        Selection.set(new Selection([startIndex, textIndex]))
-      })
-
-      return
-    }
-
-    if (backspace && textIndex === 0 && /^[ou]l$/.test(start.type)) {
-      start = start.substr(0)
-      start.type = 'p'
-
-      View.render(new Delta('paragraphUpdate', startIndex, start))
-      Compose.once('render', function () {
-        Selection.set(new Selection([startIndex, 0]))
-      })
-
-    } else if (backspace && textIndex === 0) {
-      if (startIndex === 0) return
-
-      if (View.isSectionStart(startIndex)) {
-        View.render(new Delta('sectionDelete', startIndex))
+        View.render(new Delta('paragraphUpdate', startIndex, start))
         Compose.once('render', function () {
           Selection.set(new Selection([startIndex, 0]))
         })
@@ -94,94 +48,85 @@ function Backspace (Compose) {
         return
       }
 
-      start = start.replace(startSpace, ' ')
-      next = View.paragraphs[startIndex - 1]
-        .substr(0)
-        .replace(endSpace, ' ')
+      if (backspace && textIndex === 0) {
+        if (startIndex === 0) return
 
-      textIndex = next.length
+        if (View.isSectionStart(startIndex)) {
+          View.render(new Delta('sectionDelete', startIndex))
+          Compose.once('render', function () {
+            Selection.set(new Selection([startIndex, 0]))
+          })
 
-      if (endSpace.test(next.text) && startSpace.test(start.text))
-        start = start.substr(1)
+          return
+        }
 
-      next = next
-        .append(start)
-        .replace(endSpace, nbsp)
+        startPair = startPair.slice()
+        startPair[0] -= 1
+        startPair[1] = View.paragraphs[startPair[0]].length
+      } else if (backspace) {
+        startPair = startPair.slice()
+        startPair[1] -= 1
+      } else if (textIndex === start.length) {
+        if (startIndex === View.paragraphs.length - 1) return
 
-      View.render(new Delta('paragraphDelete', startIndex))
-      View.render(new Delta('paragraphUpdate', startIndex - 1, next))
-      Compose.once('render', function () {
-        Selection.set(new Selection([startIndex - 1, textIndex]))
-      })
+        if (View.isSectionStart(startIndex + 1)) {
+          View.render(new Delta('sectionDelete', startIndex + 1))
+          Compose.once('render', function () {
+            Selection.set(new Selection([startIndex, textIndex]))
+          })
 
-    } else if (!backspace && textIndex === start.length) {
-      if (startIndex === View.paragraphs.length - 1) return
+          return
+        }
 
-      if (View.isSectionStart(startIndex + 1)) {
-        View.render(new Delta('sectionDelete', startIndex + 1))
-        Compose.once('render', function () {
-          Selection.set(new Selection([startIndex, textIndex]))
-        })
-
-        return
+        endPair = endPair.slice()
+        endPair[0] += 1
+        endPair[1] = 0
+      } else {
+        endPair = endPair.slice()
+        endPair[1] += 1
       }
+    }
 
-      textIndex = start.length
-      start = start
-        .replace(endSpace, ' ')
-      next = View.paragraphs[startIndex + 1]
-        .substr(0)
-        .replace(startSpace, ' ')
+    // Indices may have changed.
+    start = View.paragraphs[startPair[0]]
+    end = View.paragraphs[endPair[0]]
+    startIndex = startPair[0]
+    textIndex = startPair[1]
 
-      if (endSpace.test(start.text) && startSpace.test(next.text))
-        next = next.substr(1)
-
-      start = start
-        .append(next)
-        .replace(endSpace, nbsp)
+    for (i = startIndex + 1; i <= endPair[0]; i += 1) {
+      if (View.isSectionStart(i))
+        View.render(new Delta('sectionDelete', startIndex + 1))
 
       View.render(new Delta('paragraphDelete', startIndex + 1))
-      View.render(new Delta('paragraphUpdate', startIndex, start))
-
-      Compose.once('render', function () {
-        Selection.set(new Selection([startIndex, textIndex]))
-      })
-
-    } else {
-      next = start
-        .substr(textIndex + (backspace ? 0 : 1))
-        .replace(startSpace, ' ')
-
-      start = start
-        .substr(0 , textIndex - (backspace ? 1 : 0))
-        .replace(endSpace, ' ')
-
-      if (endSpace.test(start.text) && startSpace.test(next.text))
-        next = next.substr(1)
-
-      // Edge cases: Text<br>x|, backspace; Text<br>|x, delete.
-      if (start.text[start.length - 1] === '\n' && !end.text) {
-        start.text += '\n'
-        start.length += 1
-      }
-
-      start = start
-        .append(next)
-        .replace(startSpace, nbsp)
-        .replace(endSpace, nbsp)
-
-      if (!start.text) {
-        start.text = '\n'
-        start.length = 1
-      }
-
-      textIndex -= (backspace ? 1 : 0)
-
-      View.render(new Delta('paragraphUpdate', startIndex, start))
-      Compose.once('render', function () {
-        Selection.set(new Selection([startIndex, textIndex]))
-      })
     }
+
+    start = start.substr(0, textIndex)
+    end = end.substr(endPair[1])
+
+    if ((endSpace.test(start.text) && startSpace.test(end.text)) ||
+      end.text === '\n') {
+      end = end.substr(1)
+    }
+
+    if (startSpace.test(end.text))
+      end = end.replace(startSpace, /[^^\n]$/.test(start.text) ? ' ' : nbsp)
+    else if (endSpace.test(start.text))
+      start = start.replace(endSpace, /^[^\n$]/.test(end.text) ? ' ' : nbsp)
+    else if (/\n$/.test(start.text) && !end.text) {
+      end.text = '\n'
+      end.length = 1
+    }
+
+    start = start.append(end)
+    if (!start.text) {
+      start.text = '\n'
+      start.length = 1
+    }
+
+    View.render(new Delta('paragraphUpdate', startIndex, start))
+    Compose.once('render', function () {
+      Selection.set(new Selection([startIndex, textIndex]))
+    })
   })
 }
 
