@@ -78,11 +78,11 @@ function Spacebar (Compose) {
       textIndex -= 1
     } else if (!start.text && spaceRegex.test(end.text[0])) {
       end.text = nbsp + end.text.substr(1)
-      textIndex -= 1
     } else if (spaceRegex.test(last)) {
       textIndex -= 1
     } else if (!spaceRegex.test(end.text[0])) {
-      if (!end.text || !start.text || start.text[start.length - 1] === '\n')
+      if (!end.text || !start.text || start.text[start.length - 1] === '\n' ||
+          end.text[0] === '\n')
         start.text +=  nbsp
       else
         start.text += ' '
