@@ -1,4 +1,4 @@
-/* global describe, it, Compose, expect, chai, TreeMatcher, ChildMatcher */
+/* global describe, it, Compose, expect, chai, TreeMatcher, ChildMatcher, afterEach */
 'use strict';
 
 chai.use(TreeMatcher)
@@ -7,7 +7,8 @@ chai.use(ChildMatcher)
 describe('Deleting text should', function () {
   var backspace = 8,
       fwdDel = 46,
-      Selection
+      Selection,
+      editor
 
   function init (html) {
     var elem = document.createElement('div'),
@@ -18,23 +19,12 @@ describe('Deleting text should', function () {
     editor = new Compose(elem)
     editor.use(function (Compose) {
       Selection = Compose.require('selection')
-      Selection.set = function () {}
     })
 
     return editor
   }
 
-  function teardown (editor) {
-    var elem = editor.elem
-
-    try {
-      editor.destroy()
-    } catch (e) {}
-
-    elem.parentNode.removeChild(elem)
-  }
-
-  function emit (elem, key, meta) {
+  function emit (key, meta) {
     var evt = document.createEvent('HTMLEvents')
 
     evt.initEvent('keydown', true, true)
@@ -43,17 +33,25 @@ describe('Deleting text should', function () {
     if (meta)
       evt[/Mac/.test(navigator.platform) ? 'metaKey' : 'ctrlKey'] = true
 
-    elem.dispatchEvent(evt)
+    editor.elem.dispatchEvent(evt)
   }
 
-  it('do nothing at the start of the first paragraph (backspace)', function (done) {
-    var editor = init('<section><p><br></p></section>')
+  afterEach(function () {
+    var elem = editor.elem
 
-    Selection.get = function () {
-      return new Selection([0, 0])
-    }
+    try {
+      editor.destroy()
+    } catch (e) {}
 
-    emit(editor.elem, backspace)
+    elem.parentNode.removeChild(elem)
+  })
+
+  it('do nothing when backspacing in an empty first section.', function (done) {
+    editor = init('<section><p><br></p></section>')
+
+    Selection.set(new Selection([0, 0]))
+
+    emit(backspace)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
@@ -65,350 +63,480 @@ describe('Deleting text should', function () {
           html: '<br>'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 0]))
 
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('do nothing at the end of the last paragraph (delete)', function (done) {
-    var editor = init('<section><p><br></p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 0])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<br>'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('merge when backspacing at the start of a paragraph.', function (done) {
-    var editor = init('<section><h2>One</h2><p>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'h2',
-          html: 'OneTwo'
-        }]
-      }])
-
-      teardown(editor)
       done()
     }, 0)
   })
 
-  it('merge when deleting at the end of a paragraph.', function (done) {
-    var editor = init('<section><h2>One</h2><p>Two</p></section>')
+  it('do nothing when deleting in an empty first section.', function (done) {
+    editor = init('<section><p><br></p></section>')
 
-    Selection.get = function () {
-      return new Selection([0, 3])
-    }
+    Selection.set(new Selection([0, 0]))
 
-    emit(editor.elem, fwdDel)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '<br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 0]))
+
+      done()
+    }, 0)
+  })
+
+  it('insert a <br> when backspacing the only character.', function (done) {
+    editor = init('<section><p>1</p></section>')
+
+    Selection.set(new Selection([0, 1]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '<br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 0]))
+
+      done()
+    }, 0)
+  })
+
+  it('insert a <br> when deleting the only character', function (done) {
+    editor = init('<section><p>1</p></section>')
+
+    Selection.set(new Selection([0, 0]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '<br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 0]))
+
+      done()
+    }, 0)
+  })
+
+  it('it convert a trailing space to an &nbsp;', function (done) {
+    editor = init('<section><p>One 1</p></section>')
+
+    Selection.set(new Selection([0, 5]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One&nbsp;'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('convert a leading space to an &nbsp;', function (done) {
+    editor = init('<section><p>1 One</p></section>')
+
+    Selection.set(new Selection([0, 0]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: '&nbsp;One'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 0]))
+
+      done()
+    }, 0)
+  })
+
+  it('remove adjacent spaces when backspacing.', function (done) {
+    editor = init('<section><p>One 1 Two</p></section>')
+
+    Selection.set(new Selection([0, 5]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('remove adjacent spaces when deleting.', function (done) {
+    editor = init('<section><p>One 1 Two</p></section>')
+
+    Selection.set(new Selection([0, 4]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One Two'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('remove selected text when backspacing.', function (done) {
+    editor = init('<section><p>One two three</p></section>')
+
+    Selection.set(new Selection([0, 12], [0, 2]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 2]))
+
+      done()
+    }, 0)
+  })
+
+  it('remove selected text when deleting.', function (done) {
+    editor = init('<section><p>One two three</p></section>')
+
+    Selection.set(new Selection([0, 12], [0, 2]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 2]))
+
+      done()
+    }, 0)
+  })
+
+  it('remove paragraphs when backspacing over multiple.', function (done) {
+    editor = init('<section><h2>One</h2><p>Two</p><p>Three</p></section>')
+
+    Selection.set(new Selection([0, 1], [2, 2]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
           name: 'hr'
         }, {
           name: 'h2',
-          html: 'OneTwo'
+          html: 'Oree'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 1]))
 
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('remove a character before when backspacing, collapsed (1).', function (done) {
-    var editor = init('<section><p>Stuff</p></section>')
+  it('remove paragraphs when deleting over multiple.', function (done) {
+    editor = init('<section><h2>One</h2><p>Two</p><p>Three</p></section>')
 
-    Selection.get = function () {
-      return new Selection([0, 3])
-    }
+    Selection.set(new Selection([0, 1], [2, 2]))
 
-    emit(editor.elem, backspace)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Stff'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove a character before when backspacing, collapsed (2).', function (done) {
-    var editor = init('<section><p>Stuff</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 5])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Stuf'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove a character after when deleting, collapsed (1)', function (done) {
-    var editor = init('<section><p>Stuff</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 2])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Stff'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove a character after when deleting, collapsed (2)', function (done) {
-    var editor = init('<section><p>Stuff</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 0])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'tuff'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove selected text (backspace).', function (done) {
-    var editor = init('<section><p>Stuff</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4], [0, 1])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Sf'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove selected text (delete).', function (done) {
-    var editor = init('<section><p>Stuff</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4], [0, 1])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Sf'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove text across paragraphs (backspace).', function (done) {
-    var editor = init('<section><h2>One</h2><pre>Two</pre></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 2], [0, 1])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
           name: 'h2',
-          html: 'Oo'
+          html: 'Oree'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 1]))
 
-      expect(editor.plugins.view.paragraphs.length).to.equal(1)
-
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('remove text across paragraphs (delete).', function (done) {
-    var editor = init('<section><ol><li>One</li></ol><p>Two</p></section>')
+  it('remove sections when backspacing over multiple.', function (done) {
+    editor = init(
+      '<section><p>One</p></section>' +
+      '<section><p>Two</p></section>' +
+      '<section><h2>Three</h2><pre>Four</pre></section>'
+    )
 
-    Selection.get = function () {
-      return new Selection([0, 1], [1, 2])
-    }
+    Selection.set(new Selection([3, 2], [0, 1]))
 
-    emit(editor.elem, fwdDel)
+    emit(backspace)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'Our'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 1]))
+
+      done()
+    }, 0)
+  })
+
+  it('remove sections when deleting over multiple.', function (done) {
+    editor = init(
+      '<section><p>One</p></section>' +
+      '<section><p>Two</p></section>' +
+      '<section><h2>Three</h2><pre>Four</pre></section>'
+    )
+
+    Selection.set(new Selection([3, 2], [0, 1]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'Our'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 1]))
+
+      done()
+    }, 0)
+  })
+
+  it('insert a <br> when backspacing after the only character on a line.', function (done) {
+    editor = init('<section><p>One<br>2</p></section>')
+
+    Selection.set(new Selection([0, 5]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br><br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('insert a <br> when deleting the only character on a line.', function (done) {
+    editor = init('<section><p>One<br>2</p></section>')
+
+    Selection.set(new Selection([0, 4]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br><br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('insert a <br> when backspacing over all text on a line.', function (done) {
+    editor = init('<section><p>One<br>Two</p></section>')
+
+    Selection.set(new Selection([0, 4], [0, 7]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br><br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('insert a <br> when deleting all text on a line.', function (done) {
+    editor = init('<section><p>One<br>Two</p></section>')
+
+    Selection.set(new Selection([0, 4], [0, 7]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br><br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('convert a <li> to a <p> when backspacing at the start.', function (done) {
+    editor = init('<section><ol><li>One</li></ol></section>')
+
+    Selection.set(new Selection([0, 0]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 0]))
+
+      done()
+    }, 0)
+  })
+
+  it('split lists if necessary.', function (done) {
+    editor = init('<section><ol><li>1</li><li>2</li><li>3</li></ol></section>')
+
+    Selection.set(new Selection([1, 0]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
           name: 'hr'
         }, {
           name: 'ol',
           children: [{
             name: 'li',
-            html: 'Oo'
-          }]
-        }]
-      }])
-
-      expect(editor.plugins.view.paragraphs.length).to.equal(1)
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('turn a <li> into a <p> when backspacing at the start.', function (done) {
-    var editor = init(
-      '<section><ul>' +
-        '<li>One</li>' +
-        '<li>Two</li>' +
-        '<li>Three</li>' +
-      '</ul></section>'
-    )
-
-    Selection.get = function () {
-      return new Selection([1, 0])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'ul',
-          children: [{
-            name: 'li',
-            html: 'One'
+            html: '1'
           }]
         }, {
           name: 'p',
-          html: 'Two'
+          html: '2'
         }, {
-          name: 'ul',
+          name: 'ol',
           children: [{
             name: 'li',
-            html: 'Three'
+            html: '3'
           }]
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([1, 0]))
 
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('merge <li>s when deleting at the end of one.', function (done) {
-    var editor = init('<section><ol><li>One</li><li>Two</li></ol></section>')
+  it('merge lists when deleting at the end of one.', function (done) {
+    editor = init('<section><ol><li>One</li><li>Two</li></ol></section>')
 
-    Selection.get = function () {
-      return new Selection([0, 3])
-    }
+    Selection.set(new Selection([0, 3]))
 
-    emit(editor.elem, fwdDel)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
           name: 'ol',
@@ -418,858 +546,309 @@ describe('Deleting text should', function () {
           }]
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 3]))
 
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('remove sections when the selections spans <hr>s (backspace)', function (done) {
-    var editor = init(
-      '<section><h2>One</h2><p>Two</p></section>' +
-      '<section><pre>Three</pre><p>Four</p></section>' +
-      '<section><p>Five</p></section>'
-    )
+  it('merge paragraphs when backspacing at the start of one.', function (done) {
+    editor = init('<section><p>One</p><h2>Two</h2></section>')
 
-    Selection.get = function () {
-      return new Selection([4, 2], [1, 1])
-    }
+    Selection.set(new Selection([1, 0]))
 
-    emit(editor.elem, backspace)
+    emit(backspace)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
-          name: 'h2',
-          html: 'One'
-        }, {
           name: 'p',
-          html: 'Tve'
+          html: 'OneTwo'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 3]))
 
-      expect(editor.plugins.view.sections.length).to.equal(1)
-      expect(editor.plugins.view.paragraphs.length).to.equal(2)
-
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('remove sections when the selection spans <hr>s (delete).', function (done) {
-    var editor = init(
-      '<section><h2>One</h2><p>Two</p></section>' +
-      '<section><pre>Three</pre><p>Four</p></section>' +
-      '<section><p>Five</p></section>'
-    )
+  it('merge paragraphs when deleting at the end of one.', function (done) {
+    editor = init('<section><pre>One</pre><p>Two</p></section>')
 
-    Selection.get = function () {
-      return new Selection([0, 3], [2, 5])
-    }
+    Selection.set(new Selection([0, 3]))
 
-    emit(editor.elem, fwdDel)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
-          name: 'h2',
-          html: 'One'
-        }, {
-          name: 'p',
-          html: 'Four'
-        }]
-      }, {
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Five'
+          name: 'pre',
+          html: 'OneTwo'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 3]))
 
-      expect(editor.plugins.view.sections.length).to.equal(2)
-      expect(editor.plugins.view.paragraphs.length).to.equal(3)
-
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('remove sections when backspacing collapsed after one.', function (done) {
-    var editor = init(
-      '<section><h2>One</h2></section>' +
-      '<section><blockquote>Two</blockquote></section>'
-    )
+  it('ignore trailing <br>s when deleting at the end of a paragraph.', function (done) {
+    editor = init('<section><p>One<br></p><p>Two</p></section>')
 
-    Selection.get = function () {
-      return new Selection([1, 0])
-    }
+    Selection.set(new Selection([0, 3]))
 
-    emit(editor.elem, backspace)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
-          name: 'h2',
+          name: 'p',
+          html: 'OneTwo'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 3]))
+
+      done()
+    }, 0)
+  })
+
+  it('ignore trailing <br>s when backspacing at the start of a paragraph.', function (done) {
+    editor = init('<section><p>One<br></p><p>Two</p></section>')
+
+    Selection.set(new Selection([1, 0]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'OneTwo'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 3]))
+
+      done()
+    }, 0)
+  })
+
+  it('respect newlines when backspacing at the start of a paragraph.', function (done) {
+    editor = init('<section><p>One<br><br></p><p>Two</p></section>')
+
+    Selection.set(new Selection([1, 0]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br>Two'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('preserve <br>s if necessary when backspacing.', function (done) {
+    editor = init('<section><p>One<br><br></p><p><br></p></section>')
+
+    Selection.set(new Selection([1, 0]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br><br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('respect newlines when deleting at the end of a paragraph.', function (done) {
+    editor = init('<section><p>One<br><br></p><p>Two</p></section>')
+
+    Selection.set(new Selection([0, 4]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br>Two'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('preserve <br>s if necessary when deleting.', function (done) {
+    editor = init('<section><p>One<br><br></p><p><br></p></section>')
+
+    Selection.set(new Selection([0, 4]))
+
+    emit(fwdDel)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
+          html: 'One<br><br>'
+        }]
+      }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
+
+      done()
+    }, 0)
+  })
+
+  it('remove sections when backspacing collapsed at the start of one.', function (done) {
+    editor = init(
+      '<section><p>One</p></section>' +
+      '<section><p>Two</p></section>'
+    )
+
+    Selection.set(new Selection([1, 0]))
+
+    emit(backspace)
+
+    setTimeout(function () {
+      expect(editor.elem).to.have.children([{
+        name: 'section',
+        children:[{
+          name: 'hr'
+        }, {
+          name: 'p',
           html: 'One'
         }, {
-          name: 'blockquote',
+          name: 'p',
           html: 'Two'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([1, 0]))
 
-      expect(editor.plugins.view.sections.length).to.equal(1)
-      expect(editor.plugins.view.paragraphs.length).to.equal(2)
-
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('remove sections when deleting collapsed before one.', function (done) {
-    var editor = init(
-      '<section><h2>One</h2></section>' +
-      '<section><blockquote>Two</blockquote></section>'
+  it('remove sections when deleting collapsed at the end of one.', function (done) {
+    editor = init(
+      '<section><p>One</p></section>' +
+      '<section><p>Two</p></section>'
     )
 
-    Selection.get = function () {
-      return new Selection([0, 3])
-    }
+    Selection.set(new Selection([0, 3]))
 
-    emit(editor.elem, fwdDel)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
-          name: 'h2',
+          name: 'p',
           html: 'One'
         }, {
-          name: 'blockquote',
+          name: 'p',
           html: 'Two'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 3]))
 
-      expect(editor.plugins.view.sections.length).to.equal(1)
-      expect(editor.plugins.view.paragraphs.length).to.equal(2)
-
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('convert spaces to &nbsp;s where appropriate (1).', function (done) {
-    var editor = init('<section><p>One t</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 5])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One&nbsp;'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert spaces to &nbsp;s where appropriate (2).', function (done) {
-    var editor = init('<section><p>A cat</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 0])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '&nbsp;cat'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert spaces to &nbsp;s where appropriate (3).', function (done) {
-    var editor = init('<section><p>A cat</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 2], [0, 5])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'A&nbsp;'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert spaces to &nbsp;s where appropriate (2).', function (done) {
-    var editor = init('<section><p>One cat</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 3], [0, 0])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '&nbsp;cat'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove spaces where appropriate (1).', function (done) {
-    var editor = init('<section><p>One two&nbsp;</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4], [0, 7])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One&nbsp;'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove spaces where appropriate (2).', function (done) {
-    var editor = init(
-      '<section><p>One two</p></section>' +
-      '<section><h2>Three four</h2></section>'
+  it('ignore trailing <br>s when deleting collapsed at the end of a section.', function (done) {
+    editor = init(
+      '<section><p>One<br></p></section>' +
+      '<section><p>Two</p></section>'
     )
 
-    Selection.get = function () {
-      return new Selection([1, 5], [0, 4])
-    }
+    Selection.set(new Selection([0, 3]))
 
-    emit(editor.elem, fwdDel)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
           name: 'p',
-          html: 'One four'
+          html: 'One<br>' // FIXME: should the <br> be removed?
+        }, {
+          name: 'p',
+          html: 'Two'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 3]))
 
-      teardown(editor)
       done()
-    }, 20)
+    }, 0)
   })
 
-  it('remove spaces where appropriate (3).', function (done) {
-    var editor = init('<section><p>&nbsp;One&nbsp;</p></section>')
+  it('be able to delete sections after newlines.', function (done) {
+    editor = init(
+      '<section><p>One<br><br></p></section>' +
+      '<section><p>Two</p></section>'
+    )
 
-    Selection.get = function () {
-      return new Selection([0, 1], [0, 4])
-    }
+    Selection.set(new Selection([0, 4]))
 
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '&nbsp;'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove spaces where appropriate (4).', function (done) {
-    var editor = init('<section><p>One&nbsp;<br>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 5])
-    }
-
-    emit(editor.elem, backspace)
+    emit(fwdDel)
 
     setTimeout(function () {
       expect(editor.elem).to.have.children([{
         name: 'section',
-        children: [{
+        children:[{
           name: 'hr'
         }, {
           name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove spaces where appropriate (5).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
+          html: 'One<br><br>'
         }, {
           name: 'p',
-          html: 'One Two'
+          html: 'Two'
         }]
       }])
+      expect(Selection.get()).to.deep.equal(new Selection([0, 4]))
 
-      teardown(editor)
       done()
-    }, 20)
-  })
-
-  it('remove spaces where appropriate (6).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove spaces where appropriate (7).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0], [0, 4])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('remove spaces where appropriate (8).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0], [0, 4])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (1).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (2).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (3).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0], [0, 4])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (4).', function (done) {
-    var editor = init('<section><p>One&nbsp;</p><p>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0], [0, 4])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (5).', function (done) {
-    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([1, 0])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (6).', function (done) {
-    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 3])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (7).', function (done) {
-    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 3], [1, 0])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (8).', function (done) {
-    var editor = init('<section><p>One</p><p>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 3], [1, 0])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (9).', function (done) {
-    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 3])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (10).', function (done) {
-    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (11).', function (done) {
-    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (12).', function (done) {
-    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 5])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (13).', function (done) {
-    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 3], [0, 4])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (14).', function (done) {
-    var editor = init('<section><p>One<br>&nbsp;Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4], [0, 3])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (15).', function (done) {
-    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 4], [0, 5])
-    }
-
-    emit(editor.elem, fwdDel)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
-  })
-
-  it('convert &nbsp;s to regular spaces where appropriate (16).', function (done) {
-    var editor = init('<section><p>One&nbsp;<br>Two</p></section>')
-
-    Selection.get = function () {
-      return new Selection([0, 5], [0, 4])
-    }
-
-    emit(editor.elem, backspace)
-
-    setTimeout(function () {
-      expect(editor.elem).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
-
-      teardown(editor)
-      done()
-    }, 20)
+    }, 0)
   })
 })

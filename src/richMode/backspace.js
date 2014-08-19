@@ -62,11 +62,17 @@ function Backspace (Compose) {
 
         startPair = startPair.slice()
         startPair[0] -= 1
-        startPair[1] = View.paragraphs[startPair[0]].length
+        start = View.paragraphs[startPair[0]]
+
+        if (start.text[start.length - 1] === '\n')
+          startPair[1] = start.length -1
+        else
+          startPair[1] = start.length
       } else if (backspace) {
         startPair = startPair.slice()
         startPair[1] -= 1
-      } else if (textIndex === start.length) {
+      } else if ((textIndex === start.length - 1 && /\n$/.test(start.text)) ||
+          textIndex === start.length) {
         if (startIndex === View.paragraphs.length - 1) return
 
         if (View.isSectionStart(startIndex + 1)) {
