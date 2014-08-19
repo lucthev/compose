@@ -12,6 +12,7 @@ function Enter (Compose) {
 
   Compose.on('keydown', function (e) {
     var sel = Selection.get(),
+        fallthrough = false,
         startIndex,
         startPair,
         endPair,
@@ -37,30 +38,33 @@ function Enter (Compose) {
     if (e.shiftKey && start.text[startPair[1] - 1] === '\n') {
       startPair = startPair.slice()
       startPair[1] -= 1
-    } else if (e.shiftKey && end.text[endPair[1]] === '\n' &&
-               endPair[1] !== end.length - 1) {
-      endPair = endPair.slice()
-      endPair[1] += 1
-    } else if (e.shiftKey) {
-      if (startPair[1] === 0) return
+      fallthrough = true
+    }
 
-      start = start
-        .substr(0, startPair[1])
-        .replace(endSpace, nbsp)
+    if (e.shiftKey && end.text[endPair[1]] === '\n' &&
+      endPair[1] < end.length - 1) {
+        endPair = endPair.slice()
+        endPair[1] += 1
+        fallthrough = true
+      }
 
-      end = end
-        .substr(endPair[1])
-        .replace(startSpace, nbsp)
+    if (e.shiftKey && !fallthrough) {
+      if (sel.isCollapsed() && startPair[1] === 0) return
+
+      start = start.substr(0, startPair[1])
+      end = end.substr(endPair[1])
+
+      start = start.replace(endSpace, nbsp)
+      end = end.replace(startSpace, nbsp)
 
       if (!end.text) {
-        end.length = 1
         end.text = '\n'
+        end.length = 1
       }
 
       start.text += '\n'
       start.length += 1
 
-      // TODO: is this necessary/desired?
       for (i = 0; i < start.markups.length; i += 1) {
         markup = start.markups[i]
 
@@ -87,13 +91,13 @@ function Enter (Compose) {
       return
     }
 
-    if (sel.isCollapsed() && (!start.text || start.text === '\n')) {
+    if (sel.isCollapsed() && start.text === '\n') {
       start = start.substr(0)
 
       if (listRegex.test(type)) {
         start.type = 'p'
         View.render(new Delta('paragraphUpdate', startIndex, start))
-      } else if (startIndex > 0 && !View.isSectionStart(startIndex)) {
+      } else if (!View.isSectionStart(startIndex)) {
         View.render(
           new Delta('sectionInsert', startIndex, { start: startIndex })
         )
@@ -113,29 +117,30 @@ function Enter (Compose) {
       View.render(new Delta('paragraphDelete', startIndex + 1))
     }
 
-    start = start
-      .substr(0, startPair[1])
-      .replace(endSpace, nbsp)
+    start = start.substr(0, startPair[1])
+    end = end.substr(endPair[1])
 
-    if (!start.text) {
-      start.length = 1
-      start.text = '\n'
+    start = start.replace(endSpace, nbsp)
+    end = end.replace(startSpace, nbsp)
+
+    if (end.text[0] === '\n')
+      end = end.substr(1)
+
+    if (!start.text || /[^\n]\n$/.test(start.text)) {
+      start.text += '\n'
+      start.length += 1
     }
 
-    end = end
-      .substr(endPair[1])
-      .replace(startSpace, nbsp)
-
-    if (listRegex.test(type)) end.type = type
-    if (!end.text || end.text === '\n') {
+    if (!end.text) {
       end.type = listRegex.test(type) ? type : 'p'
-      end.length = 1
       end.text = '\n'
+      end.length = 1
+    } else if (listRegex.test(type)) {
+      end.type = type
     }
 
     View.render(new Delta('paragraphUpdate', startIndex, start))
     View.render(new Delta('paragraphInsert', startIndex + 1, end))
-
     Compose.once('render', function () {
       Selection.set(new Selection([startIndex + 1, 0]))
     })
