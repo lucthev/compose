@@ -123,13 +123,11 @@ function SectionOperations (Compose) {
     dom.remove(section)
   }
 
-  Compose.provide(SectionOperations.provided, {
+  return {
     insert: insert,
     update: update,
     remove: remove
-  })
+  }
 }
-
-SectionOperations.provided = 'temp-sections'
 
 module.exports = SectionOperations

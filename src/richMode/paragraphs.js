@@ -307,13 +307,11 @@ function ParagraphOperations (Compose) {
     }
   }
 
-  Compose.provide(ParagraphOperations.provided, {
+  return {
     insert: insert,
     update: update,
     remove: remove
-  })
+  }
 }
-
-ParagraphOperations.provided = 'temp-paragraphs'
 
 module.exports = ParagraphOperations

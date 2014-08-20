@@ -11,15 +11,8 @@ function viewPlugin (Compose) {
       ParagraphOperations,
       SectionOperations
 
-  // Hackish. Get the paragraph and section operations without polluting
-  // the module system.
-  Compose.use(paragraphs)
-  ParagraphOperations = Compose.require(paragraphs.provided)
-  Compose.disable(paragraphs.provided)
-
-  Compose.use(sections)
-  SectionOperations = Compose.require(sections.provided)
-  Compose.disable(sections.provided)
+  ParagraphOperations = paragraphs(Compose)
+  SectionOperations = sections(Compose)
 
   function View () {
     this._modified = {}
