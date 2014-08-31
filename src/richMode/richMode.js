@@ -39,13 +39,9 @@ function RichMode (Compose) {
         end,
         len
 
-    if (!events.selectall(e)) {
-      View.markModified(sel.isBackwards() ? sel.end[0] : sel.start[0])
-      return
-    }
+    if (!events.selectall(e)) return
 
     e.preventDefault()
-    View.sync()
 
     len = View.paragraphs.length - 1
     end = View.paragraphs[len]

@@ -74,6 +74,8 @@ function ParagraphOperations (Compose) {
     if (index <= 0 || index > children.length)
       throw new RangeError('Cannot insert a paragraph at index ' + index)
 
+    Compose.emit('paragraphInsert', index, delta.paragraph)
+
     before = children[index - 1]
     after = !this.isSectionStart(index) ? children[index] : null
 
@@ -155,6 +157,8 @@ function ParagraphOperations (Compose) {
 
     if (index < 0 || index >= children.length)
       throw new RangeError('Cannot update a paragraph at index ' + index)
+
+    Compose.emit('paragraphUpdate', index, delta.paragraph)
 
     oldElem = children[index]
     before = !this.isSectionStart(index) ?
@@ -264,6 +268,8 @@ function ParagraphOperations (Compose) {
     if (isStart && isNextStart) {
       throw new Error('Cannot remove the only paragraph in a section.')
     }
+
+    Compose.emit('paragraphDelete', index, delta.paragraph)
 
     if (!isStart)
       before = children[index - 1]

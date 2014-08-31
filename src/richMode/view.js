@@ -6,6 +6,7 @@ var paragraphs = require('./paragraphs'),
 function viewPlugin (Compose) {
   var setImmediate = Compose.require('setImmediate'),
       getChildren = Compose.require('getChildren'),
+      Selection = Compose.require('selection'),
       Converter = Compose.require('converter'),
       Delta = Compose.require('delta'),
       ParagraphOperations,
@@ -15,16 +16,27 @@ function viewPlugin (Compose) {
   SectionOperations = sections(Compose)
 
   function View () {
-    this._modified = {}
+    this._modified = -1
     this._queue = []
     this._rendering = false
 
     this.paragraphs = []
     this.sections = []
+
+    Compose.on('keydown', function () {
+      var sel = Selection.get(),
+          start
+
+      start = sel.isBackwards() ? sel.end : sel.start
+      this._modified = start[0]
+
+      this._rendering = true
+      setImmediate(this._render.bind(this))
+    }.bind(this))
   }
 
   /**
-   * isSectionStart(index) determines if a sections starts at the given
+   * isSectionStart(index) determines if a section starts at the given
    * index.
    *
    * @param {Int >= 0} index
@@ -41,76 +53,81 @@ function viewPlugin (Compose) {
     return false
   }
 
-  View.prototype.markModified = function (index) {
-    this._modified[index] = 1
-  }
-
-  View.prototype.sync = function () {
-    var children = getChildren(),
-        child
-
-    Object.keys(this._modified).forEach(function (index) {
-      var state
-
-      child = children[index]
-
-      if (!child) return
-
-      state = Converter.toParagraph(child)
-      state = state.replace(/([^^\n])\n$/, function (match, $0) {
-        return $0
-      })
-
-      if (!state.equals(this.paragraphs[index]))
-        this.paragraphs[index] = state
-    }, this)
-
-    this._modified = {}
-  }
-
   View.prototype.render = function (deltas) {
     if (!Array.isArray(deltas))
       this._queue.push(deltas)
     else
       this._queue.push.apply(this._queue, deltas)
 
-    if (!this._rendering)
-      this._rendering = setImmediate(function () {
-        this._render()
-        this._rendering = false
-      }.bind(this))
+    if (!this._rendering) {
+      this._rendering = true
+      setImmediate(this._render.bind(this))
+    }
   }
 
   View.prototype._render = function () {
-    var action,
-        delta,
+    var children = getChildren(),
+        index = this._modified,
+        paragraph,
+        copy,
         i
 
+    if (index >= 0 && !this._queue.length) {
+      paragraph = Converter.toParagraph(children[index])
+
+      if (!paragraph.equals(this.paragraphs[index])) {
+        copy = paragraph.substr(0)
+        Compose.emit('paragraphUpdate', index, paragraph)
+
+        if (!copy.equals(paragraph)) {
+          // The paragraph has been modified by a plugin; we want
+          // these changes to be rendered in this render window.
+
+          // In the case that emitting the paragraphUpdate event caused
+          // the plugins to render some Deltas, we want ours to be at the
+          // front of the queue; otherwise, we may not end up updating
+          // the paragraph we think we are.
+          this._queue.unshift(new Delta('paragraphUpdate', index, paragraph))
+        } else {
+          this.paragraphs[index] = paragraph
+        }
+      }
+    }
+
+    // TODO: don’t update paragraphs when they are identical to the ones
+    // in the view.
     Delta.reduce(this._queue)
 
     // TODO: cache result of getChildren() somewhere?
-
     for (i = 0; i < this._queue.length; i += 1) {
-      delta = this._queue[i]
-
-      // Get the string form of the delta type.
-      action = Delta.types[delta.type]
-
-      this['_' + action](delta)
+      resolveDelta(this, this._queue[i])
     }
 
     this._queue = []
+    this._modified = -1
+    this._rendering = false
 
     Compose.emit('render')
   }
 
-  View.prototype._paragraphInsert = ParagraphOperations.insert
-  View.prototype._paragraphUpdate = ParagraphOperations.update
-  View.prototype._paragraphDelete = ParagraphOperations.remove
+  function resolveDelta (View, delta) {
+    var type = Delta.types[delta.type]
 
-  View.prototype._sectionInsert = SectionOperations.insert
-  View.prototype._sectionUpdate = SectionOperations.update
-  View.prototype._sectionDelete = SectionOperations.remove
+    if (type === 'paragraphInsert')
+      ParagraphOperations.insert.call(View, delta)
+    else if (type === 'paragraphUpdate')
+      ParagraphOperations.update.call(View, delta)
+    else if (type === 'paragraphDelete')
+      ParagraphOperations.remove.call(View, delta)
+    else if (type === 'sectionInsert')
+      SectionOperations.insert.call(View, delta)
+    else if (type === 'sectionUpdate')
+      SectionOperations.update.call(View, delta)
+    else if (type === 'sectionDelete')
+      SectionOperations.remove.call(View, delta)
+    else
+      throw new TypeError('Invalid Delta type.')
+  }
 
   Compose.provide('view', new View())
 }

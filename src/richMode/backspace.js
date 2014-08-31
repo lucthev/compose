@@ -25,7 +25,6 @@ function Backspace (Compose) {
       return
 
     e.preventDefault()
-    View.sync()
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end

@@ -25,6 +25,8 @@ function SectionOperations (Compose) {
     if (this.isSectionStart(index))
       return update(delta)
 
+    Compose.emit('sectionInsert', delta.section)
+
     children[index - 1].classList.add(classes.lastParagraph)
     children[index].classList.add(classes.firstParagraph)
 
@@ -57,11 +59,15 @@ function SectionOperations (Compose) {
 
     // We can avoid a bunch of duplicate code for styling sections
     // by simply calling the update operation.
+    // FIXME: we don’t want the update event being fired whenever
+    // a section is inserted.
     update(delta)
   }
 
   function update (delta) {
     // TODO: things with sections. Different backgrounds, for example?
+
+    Compose.emit('sectionUpdate', delta.section)
   }
 
   function remove (delta) {
@@ -86,6 +92,8 @@ function SectionOperations (Compose) {
     } else if (i === 0) {
       throw new Error('The first section cannot be deleted.')
     }
+
+    Compose.emit('sectionDelete', delta.section)
 
     // Remove section from the View.
     this.sections.splice(i, 1)
