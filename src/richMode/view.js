@@ -97,8 +97,6 @@ function viewPlugin (Compose) {
 
     // TODO: don’t update paragraphs when they are identical to the ones
     // in the view.
-    Delta.reduce(this._queue)
-
     // TODO: cache result of getChildren() somewhere?
     for (i = 0; i < this._queue.length; i += 1) {
       resolveDelta(this, this._queue[i])

@@ -34,20 +34,6 @@ function Delta (type, index, data) {
     this.section = data
 }
 
-/**
- * Delta.reduce(deltas) takes an array of Deltas and reduces it to
- * the minimum number of deltas necessary to represent the same changes
- * the original represented. For example, if there are two update
- * operations on the same paragraph, the first will get discarded.
- *
- * FIXME: actually do something.
- *
- * @param {[Deltas]}
- */
-Delta.reduce = function (deltas) {
-
-}
-
 // Expose types.
 Delta.types = Types
 
