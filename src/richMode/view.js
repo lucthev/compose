@@ -75,23 +75,24 @@ function viewPlugin (Compose) {
     if (index >= 0 && !this._queue.length) {
       paragraph = Converter.toParagraph(children[index])
 
-      if (!paragraph.equals(this.paragraphs[index])) {
-        copy = paragraph.substr(0)
-        Compose.emit('paragraphUpdate', index, paragraph)
+      if (paragraph.equals(this.paragraphs[index]))
+        return
 
-        if (!copy.equals(paragraph)) {
-          // The paragraph has been modified by a plugin; we want
-          // these changes to be rendered in this render window.
+      copy = paragraph.substr(0)
+      Compose.emit('paragraphUpdate', index, paragraph)
 
-          // In the case that emitting the paragraphUpdate event caused
-          // the plugins to render some Deltas, we want ours to be at the
-          // front of the queue; otherwise, we may not end up updating
-          // the paragraph we think we are.
-          this._queue.unshift(new Delta('paragraphUpdate', index, paragraph))
-        } else {
-          this.paragraphs[index] = paragraph
-        }
+      if (copy.equals(paragraph)) {
+        this.paragraphs[index] = paragraph
+        return
       }
+
+      // The paragraph has been modified by a plugin; we want
+      // these changes to be rendered in this render window.
+      // In the case that emitting the paragraphUpdate event caused
+      // the plugins to render some Deltas, we want ours to be at the
+      // front of the queue; otherwise, we may not end up updating
+      // the paragraph we think we are.
+      this._queue.unshift(new Delta('paragraphUpdate', index, paragraph))
     }
 
     // TODO: don’t update paragraphs when they are identical to the ones
