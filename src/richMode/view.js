@@ -9,11 +9,11 @@ function viewPlugin (Compose) {
       Selection = Compose.require('selection'),
       Converter = Compose.require('converter'),
       Delta = Compose.require('delta'),
-      ParagraphOperations,
-      SectionOperations
+      Paragraph,
+      Section
 
-  ParagraphOperations = paragraphs(Compose)
-  SectionOperations = sections(Compose)
+  Paragraph = paragraphs(Compose)
+  Section = sections(Compose)
 
   function View () {
     this._modified = -1
@@ -95,8 +95,6 @@ function viewPlugin (Compose) {
       this._queue.unshift(new Delta('paragraphUpdate', index, paragraph))
     }
 
-    // TODO: don’t update paragraphs when they are identical to the ones
-    // in the view.
     // TODO: cache result of getChildren() somewhere?
     for (i = 0; i < this._queue.length; i += 1) {
       resolveDelta(this, this._queue[i])
@@ -110,22 +108,35 @@ function viewPlugin (Compose) {
   }
 
   function resolveDelta (View, delta) {
-    var type = Delta.types[delta.type]
+    switch (Delta.types[delta.type]) {
+      case 'paragraphInsert':
+        Paragraph.insert.call(View, delta)
+        break
+      case 'paragraphUpdate':
 
-    if (type === 'paragraphInsert')
-      ParagraphOperations.insert.call(View, delta)
-    else if (type === 'paragraphUpdate')
-      ParagraphOperations.update.call(View, delta)
-    else if (type === 'paragraphDelete')
-      ParagraphOperations.remove.call(View, delta)
-    else if (type === 'sectionInsert')
-      SectionOperations.insert.call(View, delta)
-    else if (type === 'sectionUpdate')
-      SectionOperations.update.call(View, delta)
-    else if (type === 'sectionDelete')
-      SectionOperations.remove.call(View, delta)
-    else
-      throw new TypeError('Invalid Delta type.')
+        // When the update is identical to the current paragraph,
+        // take no action.
+        if (delta.paragraph.equals(View.paragraphs[delta.index]))
+          return
+
+        Paragraph.update.call(View, delta)
+        break
+      case 'paragraphDelete':
+        Paragraph.remove.call(View, delta)
+        break
+      case 'sectionInsert':
+        Section.insert.call(View, delta)
+        break
+      case 'sectionUpdate':
+        Section.update.call(View, delta)
+        break
+      case 'sectionDelete':
+        Section.remove.call(View, delta)
+        break
+
+      default:
+        throw new TypeError('Invalid Delta type.')
+    }
   }
 
   Compose.provide('view', new View())
