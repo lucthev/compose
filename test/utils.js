@@ -59,7 +59,13 @@ function ChildMatcher (_chai, utils) {
   Assertion.addMethod('children', function (arr) {
     var elem = this._obj
 
-    new Assertion(elem.childNodes.length).to.equal(arr.length)
+    this.assert(
+      elem.childNodes.length === arr.length,
+      'expected #{this} to have #{exp} children but it had #{act}',
+      'expected #{this} not to have #{exp} children',
+      arr.length,
+      elem.childNodes.length
+    )
 
     arr.forEach(function (child, i) {
       new Assertion(elem.childNodes[i]).to.have.tree(child)
