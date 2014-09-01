@@ -28,46 +28,44 @@ function SelectionPlugin (Compose) {
       Selection = Choice.Selection,
       current = false
 
-  function setup () {
-    Compose.on('keydown', function (e) {
-      setImmediate(function () {
-        var sel = choice.getSelection()
+  Compose.on('keydown', function (e) {
+    setImmediate(function () {
+      var sel = choice.getSelection()
 
-        // “Normalize” the selection, if necessary.
-        if (sel && events.selectKey(e)) {
-          Selection.set(sel)
-        } else if (sel && !sel.equals(current)) {
-          Compose.emit('selectionchange', sel, current)
-          current = sel
-        } else {
-          current = sel
-        }
-      })
-    })
-
-    Compose.on('mouseup', function () {
-      setImmediate(function () {
-        var sel = choice.getSelection()
-
-        if (sel)
-          Selection.set(sel)
-        else current = sel
-      })
-    })
-
-    Compose.on('focus', function () {
-      setImmediate(function () {
-        var sel = choice.getSelection()
-
+      // “Normalize” the selection, if necessary.
+      if (sel && events.selectKey(e)) {
         Selection.set(sel)
-      })
+      } else if (sel && !sel.equals(current)) {
+        Compose.emit('selectionchange', sel, current)
+        current = sel
+      } else {
+        current = sel
+      }
     })
+  })
 
-    // NOTE: the selectionchange event is not fired on blur.
-    Compose.on('blur', function () {
-      current = false
+  Compose.on('mouseup', function () {
+    setImmediate(function () {
+      var sel = choice.getSelection()
+
+      if (sel)
+        Selection.set(sel)
+      else current = sel
     })
-  }
+  })
+
+  Compose.on('focus', function () {
+    setImmediate(function () {
+      var sel = choice.getSelection()
+
+      Selection.set(sel)
+    })
+  })
+
+  // NOTE: the selectionchange event is not fired on blur.
+  Compose.on('blur', function () {
+    current = false
+  })
 
   Selection.set = function (sel) {
     if (sel && !sel.equals(current)) {
@@ -82,7 +80,6 @@ function SelectionPlugin (Compose) {
     return current
   }
 
-  Compose.once('ready', setup)
   Compose.provide('selection', Selection)
 }
 

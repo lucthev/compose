@@ -53,8 +53,6 @@ function Compose (elem, mode) {
   //   this.use(InlineMode)
   else
     this.use(RichMode)
-
-  this.emit('ready')
 }
 
 eventEmitter(Compose.prototype)
