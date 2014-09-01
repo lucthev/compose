@@ -26,7 +26,7 @@ describe('Pressing the spacebar should', function () {
     var evt = document.createEvent('HTMLEvents')
 
     evt.initEvent('keypress', true, true)
-    evt.keyCode = 32
+    evt.which = 32
 
     elem.dispatchEvent(evt)
   }
