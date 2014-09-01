@@ -11,7 +11,10 @@ var toDispatch = [
   'paste',
   'mousedown',
   'mouseup',
-  'click'
+  'click',
+  'compositionstart',
+  'compositionupdate',
+  'compositionend'
 ]
 
 function EventDispatcher (elem, emit) {
