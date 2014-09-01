@@ -13,10 +13,10 @@ function SectionOperations (Compose) {
       dom = Compose.require('dom')
 
   function insert (delta) {
-    var section = Converter.toSectionElem(delta.section),
-        children = getChildren(),
+    var children = getChildren(),
         index = delta.section.start,
         start = children[index],
+        section,
         parent,
         i
 
@@ -26,6 +26,7 @@ function SectionOperations (Compose) {
       return update(delta)
 
     Compose.emit('sectionInsert', delta.section)
+    section = Converter.toSectionElem(delta.section)
 
     children[index - 1].classList.add(classes.lastParagraph)
     children[index].classList.add(classes.firstParagraph)

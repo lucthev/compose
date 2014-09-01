@@ -61,13 +61,13 @@ function ParagraphOperations (Compose) {
    * @param {Delta} delta
    */
   function insert (delta) {
-    var elem = Converter.toElement(delta.paragraph),
-        children = getChildren(),
+    var children = getChildren(),
         index = delta.index,
         otherParents = [],
         elemParents = [],
         before,
         after,
+        elem,
         len,
         i
 
@@ -75,6 +75,7 @@ function ParagraphOperations (Compose) {
       throw new RangeError('Cannot insert a paragraph at index ' + index)
 
     Compose.emit('paragraphInsert', index, delta.paragraph)
+    elem = Converter.toElement(delta.paragraph)
 
     before = children[index - 1]
     after = !this.isSectionStart(index) ? children[index] : null
@@ -144,14 +145,14 @@ function ParagraphOperations (Compose) {
    * @param {Delta} delta
    */
   function update (delta) {
-    var elem = Converter.toElement(delta.paragraph),
-        children = getChildren(),
+    var children = getChildren(),
         index = delta.index,
         otherParents = [],
         elemParents = [],
         oldElem,
         before,
         after,
+        elem,
         len,
         i
 
@@ -159,6 +160,7 @@ function ParagraphOperations (Compose) {
       throw new RangeError('Cannot update a paragraph at index ' + index)
 
     Compose.emit('paragraphUpdate', index, delta.paragraph)
+    elem = Converter.toElement(delta.paragraph)
 
     oldElem = children[index]
     before = !this.isSectionStart(index) ?
