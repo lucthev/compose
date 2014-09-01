@@ -20,45 +20,6 @@ describe('Compose\'s plugin system', function () {
     } catch (e) {}
   })
 
-  it('should isolate plugins.', function () {
-    function plugin (Compose) {
-      Compose.some = 'thing'
-    }
-
-    compose.use(plugin)
-
-    expect(compose.some).to.be.undefined
-  })
-
-  it('should isolate plugins (2).', function () {
-    var checked = false
-
-    compose.some = 'thing'
-
-    function plugin (Compose) {
-      checked = true
-
-      expect(Compose.some).to.be.undefined
-    }
-
-    compose.use(plugin)
-
-    expect(checked).to.be.true
-  })
-
-  it('should isolate plugins (3).', function () {
-    var checked = false
-
-    compose.use(function (Compose) {
-      var x = Compose.use(function () { checked = true })
-
-      if (x) x.some = 'thing'
-    })
-
-    expect(checked).to.be.true
-    expect(compose.some).to.be.undefined
-  })
-
   it('should allow plugins to export functionality via a "provide" method.', function () {
     var checked = false
 

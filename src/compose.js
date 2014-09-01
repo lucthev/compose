@@ -86,6 +86,8 @@ Compose.prototype.provide = function (name, exports) {
     throw new Error('The module "' + name + '" already exists.')
 
   this.plugins[name] = exports
+
+  return this
 }
 
 /**
@@ -98,17 +100,9 @@ Compose.prototype.use = function (plugin) {
   if (typeof plugin !== 'function')
     throw new TypeError('Plugins must be functions.')
 
-  plugin({
-    elem: this.elem,
-    require: this.require.bind(this),
-    disable: this.disable.bind(this),
-    provide: this.provide.bind(this),
-    use: this.use.bind(this),
-    on: this.on.bind(this),
-    once: this.once.bind(this),
-    off: this.off.bind(this),
-    emit: this.emit.bind(this)
-  })
+  plugin(this)
+
+  return this
 }
 
 /**
@@ -129,6 +123,8 @@ Compose.prototype.disable = function (module) {
     plugin.disable()
 
   delete this.plugins[module]
+
+  return this
 }
 
 module.exports = Compose

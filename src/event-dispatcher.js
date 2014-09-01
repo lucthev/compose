@@ -63,7 +63,7 @@ EventDispatcher.prototype.disable = function () {
 function eventPlugin (Compose) {
   Compose.provide(
     'event-dispatcher',
-    new EventDispatcher(Compose.elem, Compose.emit)
+    new EventDispatcher(Compose.elem, Compose.emit.bind(Compose))
   )
 }
 
