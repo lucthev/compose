@@ -8,9 +8,9 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai'],
     reporters: ['dots'],
     files: [
-      'dist/compose.min.js',
-      'test/utils.js',
-      'test/**/*.spec.js'
+      '../../dist/compose.min.js',
+      './utils.js',
+      './**/*.spec.js'
     ],
     singleRun: true
   })
@@ -46,6 +46,6 @@ module.exports = function (config) {
 
     config.browsers = Object.keys(config.customLaunchers)
   } else {
-    config.browsers = ['Chrome', 'Firefox']
+    config.browsers = ['Firefox']
   }
 }

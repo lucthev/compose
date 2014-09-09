@@ -7,3 +7,4 @@ dist/
 temp.*
 TODO.txt
 _SpecRunner.html
+vendor/

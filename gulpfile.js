@@ -5,10 +5,19 @@ var gulp = require('gulp'),
     browserify = require('gulp-browserify'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
-    jshint = require('gulp-jshint')
+    jshint = require('gulp-jshint'),
+    Mocha = require('mocha'),
+    request = require('request'),
+    seleniumPath = './vendor/selenium-2.42.2.jar',
+    seleniumUrl = 'https://selenium-release.storage.googleapis.com/2.42/' +
+      'selenium-server-standalone-2.42.2.jar',
+    karma = require('karma').server,
+    path = require('path'),
+    fs = require('fs')
 
 var paths = {
-  js: ['src/**/*.js']
+  js: ['src/**/*.js'],
+  test: './test/functional'
 }
 
 gulp.task('js', function () {
@@ -49,5 +58,44 @@ gulp.task('watch', ['js'], function () {
   }
   process.nextTick(atStart)
 })
+
+gulp.task('test', ['js'], function (done) {
+  if (!fs.existsSync(seleniumPath)) {
+    console.log('Downloading selenium server…')
+
+    fs.mkdir('./vendor', function (err) {
+      if (err && err.code !== 'EEXIST') throw err
+
+      request(seleniumUrl)
+        .pipe(fs.createWriteStream(seleniumPath))
+        .on('finish', function () {
+          runTests(done)
+        })
+    })
+  } else {
+    runTests(done)
+  }
+})
+
+function runTests (done) {
+  karma.start({
+    configFile: path.join(__dirname, 'test/unit/karma.conf.js'),
+    singleRun: true
+  }, function () {
+    var mocha = new Mocha()
+    mocha.timeout(120000)
+    mocha.reporter('dot')
+
+    fs.readdirSync(paths.test)
+      .filter(function (filename) {
+        return /spec\.js$/.test(filename)
+      })
+      .forEach(function (file) {
+        mocha.addFile(path.join(paths.test, file))
+      })
+
+    mocha.run(done)
+  })
+}
 
 gulp.task('default', ['lint', 'js'])
