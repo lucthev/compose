@@ -39,10 +39,8 @@ function Spacebar (Compose) {
          (/^[\*\-\u2022]/.test(start.text) && textIndex === 1))) {
       end = end.substr(textIndex)
       end.type = start.text[0] === '1' ? 'ol' : 'ul'
-      if (!end.text) {
+      if (!end.text)
         end.text = '\n'
-        end.length = 1
-      }
 
       View.render(new Delta('paragraphUpdate', startIndex, end))
       Compose.once('render', function () {
@@ -69,7 +67,6 @@ function Spacebar (Compose) {
     if (end.text === '\n') {
       end.markups = []
       end.text = ''
-      end.length = 0
     }
 
     if (!end.text && spaceRegex.test(last)) {
@@ -85,8 +82,6 @@ function Spacebar (Compose) {
         start.text +=  nbsp
       else
         start.text += ' '
-
-      start.length += 1
 
       for (i = 0; i < start.markups.length; i += 1) {
         markup = start.markups[i]

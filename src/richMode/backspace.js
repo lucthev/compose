@@ -117,16 +117,12 @@ function Backspace (Compose) {
       end = end.replace(startSpace, /[^^\n]$/.test(start.text) ? ' ' : nbsp)
     else if (endSpace.test(start.text))
       start = start.replace(endSpace, /^[^\n$]/.test(end.text) ? ' ' : nbsp)
-    else if (/\n$/.test(start.text) && !end.text) {
+    else if (/\n$/.test(start.text) && !end.text)
       end.text = '\n'
-      end.length = 1
-    }
 
     start = start.append(end)
-    if (!start.text) {
+    if (!start.text)
       start.text = '\n'
-      start.length = 1
-    }
 
     View.render(new Delta('paragraphUpdate', startIndex, start))
     Compose.once('render', function () {

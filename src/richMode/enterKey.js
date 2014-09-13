@@ -56,13 +56,10 @@ function Enter (Compose) {
       start = start.replace(endSpace, nbsp)
       end = end.replace(startSpace, nbsp)
 
-      if (!end.text) {
+      if (!end.text)
         end.text = '\n'
-        end.length = 1
-      }
 
       start.text += '\n'
-      start.length += 1
 
       for (i = 0; i < start.markups.length; i += 1) {
         markup = start.markups[i]
@@ -125,15 +122,12 @@ function Enter (Compose) {
     if (end.text[0] === '\n')
       end = end.substr(1)
 
-    if (!start.text || /[^\n]\n$/.test(start.text)) {
+    if (!start.text || /[^\n]\n$/.test(start.text))
       start.text += '\n'
-      start.length += 1
-    }
 
     if (!end.text) {
       end.type = listRegex.test(type) ? type : 'p'
       end.text = '\n'
-      end.length = 1
     } else if (listRegex.test(type)) {
       end.type = type
     }

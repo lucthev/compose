@@ -56,7 +56,6 @@ function smartText (Compose) {
     end = end.substr(endPair[1])
 
     start.text += key
-    start.length += 1
     for (i = 0; i < start.markups.length; i += 1) {
       markup = start.markups[i]
 
