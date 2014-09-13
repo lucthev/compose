@@ -58,7 +58,9 @@ function SelectionPlugin (Compose) {
     setImmediate(function () {
       var sel = choice.getSelection()
 
-      Selection.set(sel)
+      if (sel)
+        Selection.set(sel)
+      else current = sel
     })
   })
 
