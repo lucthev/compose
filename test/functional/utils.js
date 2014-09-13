@@ -123,9 +123,39 @@ exports.chai = function (chai) {
         return
       }
 
+      if (Object.prototype.toString.call(obj) === '[object RegExp]') {
+        new Assertion(other).to.match(obj)
+        return
+      }
+
       new Assertion(other).to.equal(obj)
     })
   })
+}
+
+function meta (keys) {
+  var platform = process.env.PLATFORM,
+      key
+
+  if (platform) {
+    key = /OS X/.test(platform) ? keys.COMMAND : keys.CONTROL
+  } else {
+    key = process.platform === 'darwin' ? keys.COMMAND : keys.CONTROL
+  }
+
+  return key
+}
+
+exports.bold = function () {
+  var keys = webdriver.Key
+
+  return exports.keys(meta(keys), 'b', keys.NULL)
+}
+
+exports.italics = function () {
+  var keys = webdriver.Key
+
+  return exports.keys(meta(keys), 'i', keys.NULL)
 }
 
 exports.url = function () {

@@ -29,12 +29,19 @@
       outline: none;
       font-family: Georgia;
       font-size: 20px;
-      font-weight: 300;
     }
 
     #editor section {
       width: 720px;
       margin: 0 auto;
+    }
+
+    #editor strong {
+      font-weight: bold;
+    }
+
+    #editor em {
+      font-style: italic;
     }
 
     .section-first {
@@ -83,6 +90,22 @@
 
       return obj
     }
+
+    var initialized = false
+    window.addEventListener('keydown', function (e) {
+      /* global Compose */
+      var Selection
+
+      if (e.keyCode === 9 && !initialized) {
+        e.preventDefault()
+
+        editor = new Compose('#editor')
+        Selection = editor.plugins.selection
+        Selection.set(new Selection([0, 0]))
+
+        initialized = true
+      }
+    })
   </script>
 </body>
 </html>
