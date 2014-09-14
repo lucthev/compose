@@ -19,12 +19,12 @@
   },
   "homepage": "https://github.com/lucthev/compose",
   "devDependencies": {
+    "browserify": "^5.11.2",
+    "bundle-collapser": "^1.1.0",
     "chai": "^1.9.1",
     "gulp": "^3.6.1",
-    "gulp-browserify": "^0.5.0",
     "gulp-jshint": "^1.5.3",
-    "gulp-rename": "^1.2.0",
-    "gulp-sourcemaps": "^1.1.1",
+    "gulp-sourcemaps": "^1.1.5",
     "gulp-uglify": "^0.3.1",
     "jshint-stylish": "^0.4.0",
     "karma": "^0.12.17",
@@ -35,7 +35,8 @@
     "mocha": "^1.21.4",
     "request": "^2.42.0",
     "selenium-webdriver": "^2.42.1",
-    "st": "^0.5.1"
+    "st": "^0.5.1",
+    "vinyl-source-stream": "^1.0.0"
   },
   "dependencies": {
     "choice": "^1.0.0",

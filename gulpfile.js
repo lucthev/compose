@@ -2,15 +2,12 @@
 
 var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
-    browserify = require('gulp-browserify'),
+    browserify = require('browserify'),
+    vinyl = require('vinyl-source-stream'),
     uglify = require('gulp-uglify'),
-    rename = require('gulp-rename'),
     jshint = require('gulp-jshint'),
     Mocha = require('mocha'),
     request = require('request'),
-    seleniumPath = './vendor/selenium-2.42.2.jar',
-    seleniumUrl = 'https://selenium-release.storage.googleapis.com/2.42/' +
-      'selenium-server-standalone-2.42.2.jar',
     karma = require('karma').server,
     path = require('path'),
     fs = require('fs')
@@ -20,17 +17,25 @@ var paths = {
   test: './test/functional'
 }
 
-gulp.task('js', function () {
-  gulp.src('src/compose.js')
-    .pipe(browserify({
-      standalone: 'Compose'
-    }))
+gulp.task('browserify', function () {
+  return browserify('./src/compose.js', { standalone: 'Compose' })
+    .plugin('bundle-collapser/plugin')
+    .bundle()
+    .on('error', function (err) {
+      console.log(err.toString())
+      this.emit('end')
+    })
+    .pipe(vinyl('compose.min.js'))
+    .pipe(gulp.dest('dist'))
+})
+
+gulp.task('minify', ['browserify'], function () {
+  gulp.src('dist/compose.min.js')
     .pipe(sourcemaps.init())
-      .pipe(uglify({
-        preserveComments: 'some'
-      }))
-      .pipe(rename('compose.min.js'))
-    .pipe(sourcemaps.write('./'))
+    .pipe(uglify({
+      preserveComments: 'some'
+    }))
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist'))
 })
 
@@ -41,8 +46,8 @@ gulp.task('lint', function () {
 })
 
 // We trigger minimization at start.
-gulp.task('watch', ['js'], function () {
-  var watcher = gulp.watch(paths.js, ['lint', 'js'])
+gulp.task('watch', ['minify'], function () {
+  var watcher = gulp.watch(paths.js, ['minify'])
 
   function log (e) {
     var folder = new RegExp(__dirname + '/'),
@@ -59,7 +64,11 @@ gulp.task('watch', ['js'], function () {
   process.nextTick(atStart)
 })
 
-gulp.task('test', ['js'], function (done) {
+var seleniumPath = './vendor/selenium-2.42.2.jar',
+    seleniumUrl = 'https://selenium-release.storage.googleapis.com/2.42/' +
+      'selenium-server-standalone-2.42.2.jar'
+
+gulp.task('test', ['minify'], function (done) {
   if (!fs.existsSync(seleniumPath)) {
     console.log('Downloading selenium server…')
 
@@ -98,4 +107,4 @@ function runTests (done) {
   })
 }
 
-gulp.task('default', ['lint', 'js'])
+gulp.task('default', ['lint', 'minify'])
