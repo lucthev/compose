@@ -7,7 +7,7 @@ function Enter (Compose) {
       Selection = Compose.require('selection'),
       startSpace = /^[\u00A0 \u200A]/,
       endSpace = /[\u00A0 \u200A]$/,
-      listRegex = /^[OU]L$/i,
+      listRegex = /^[ou]l$/,
       nbsp = '\u00A0'
 
   Compose.on('keydown', function (e) {
@@ -122,7 +122,7 @@ function Enter (Compose) {
     if (end.text[0] === '\n')
       end = end.substr(1)
 
-    if (!start.text || /[^\n]\n$/.test(start.text))
+    if (!start.text || /.\n$/.test(start.text))
       start.text += '\n'
 
     if (!end.text) {
