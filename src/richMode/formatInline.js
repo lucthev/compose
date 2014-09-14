@@ -24,11 +24,11 @@ function formatInline (Compose) {
       events = Compose.require('events'),
       Delta = Compose.require('delta'),
       View = Compose.require('view'),
-      waiting = false,
+      waiting = null,
       change = {}
 
   function cancel () {
-    waiting = false
+    waiting = null
     change = {}
   }
 
@@ -129,7 +129,64 @@ function formatInline (Compose) {
       cancel()
   })
 
-  Compose.on('keypress', function (e) {
+  Compose.on('sync', function (index, paragraph) {
+    var types = Object.keys(change),
+        sel = Selection.get()
+
+    if (!sel || !waiting || !sel.isCollapsed() || types.length === 0 ||
+      sel.start[0] !== waiting.start[0] || sel.start[1] <= waiting.start[1])
+      return cancel()
+
+    paragraph = paragraph.substr(0)
+    sel = new Selection(sel.start.slice())
+
+    types.forEach(function (type) {
+      paragraph[change[type] ? 'addMarkups' : 'removeMarkup']({
+        type: parseInt(type),
+        start: waiting.start[1],
+        end: sel.start[1]
+      })
+
+      if (change[type])
+        paragraph.mergeAdjacent()
+
+      delete change[type]
+    })
+
+    View.render(new Delta('paragraphUpdate', index, paragraph))
+    Compose.once('render', function () {
+      Selection.set(sel)
+    })
+
+    cancel()
+  })
+
+  Compose.on('paragraphUpdate', function (index, paragraph) {
+    var types = Object.keys(change)
+
+    if (waiting && index !== waiting.start[0])
+      return
+
+    if (!waiting || types.length === 0 || paragraph.length <= waiting.start[1])
+      return cancel()
+
+    types.forEach(function (type) {
+      paragraph[change[type] ? 'addMarkups' : 'removeMarkup']({
+        type: parseInt(type),
+        start: waiting.start[1],
+        end: waiting.start[1] + 1
+      })
+
+      if (change[type])
+        paragraph.mergeAdjacent()
+
+      delete change[type]
+    })
+
+    cancel()
+  })
+
+  /*Compose.on('keypress', function (e) {
     applyChanges(e.defaultPrevented)
   })
   Compose.on('compositionend', function () {
@@ -171,7 +228,7 @@ function formatInline (Compose) {
 
       cancel()
     })
-  }
+  }*/
 
   Formatter.inline = {
     exec: exec,

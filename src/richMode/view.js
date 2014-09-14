@@ -69,30 +69,15 @@ function viewPlugin (Compose) {
     var children = getChildren(),
         index = this._modified,
         paragraph,
-        copy,
         i
 
-    if (index >= 0 && !this._queue.length) {
+    if (index >= 0) {
       paragraph = Converter.toParagraph(children[index])
 
-      if (paragraph.equals(this.paragraphs[index]))
-        return
-
-      copy = paragraph.substr(0)
-      Compose.emit('paragraphUpdate', index, paragraph)
-
-      if (copy.equals(paragraph)) {
+      if (!paragraph.equals(this.paragraphs[index])) {
+        Compose.emit('sync', index, paragraph)
         this.paragraphs[index] = paragraph
-        return
       }
-
-      // The paragraph has been modified by a plugin; we want
-      // these changes to be rendered in this render window.
-      // In the case that emitting the paragraphUpdate event caused
-      // the plugins to render some Deltas, we want ours to be at the
-      // front of the queue; otherwise, we may not end up updating
-      // the paragraph we think we are.
-      this._queue.unshift(new Delta('paragraphUpdate', index, paragraph))
     }
 
     // TODO: cache result of getChildren() somewhere?
