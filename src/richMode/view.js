@@ -15,6 +15,17 @@ function viewPlugin (Compose) {
   Paragraph = paragraphs(Compose)
   Section = sections(Compose)
 
+  function scheduleSync () {
+    var sel = Selection.get(),
+        start
+
+    start = sel.isBackwards() ? sel.end : sel.start
+    this._modified = start[0]
+
+    this._rendering = true
+    setImmediate(this._render.bind(this))
+  }
+
   function View () {
     this._modified = -1
     this._queue = []
@@ -23,16 +34,8 @@ function viewPlugin (Compose) {
     this.paragraphs = []
     this.sections = []
 
-    Compose.on('keydown', function () {
-      var sel = Selection.get(),
-          start
-
-      start = sel.isBackwards() ? sel.end : sel.start
-      this._modified = start[0]
-
-      this._rendering = true
-      setImmediate(this._render.bind(this))
-    }.bind(this))
+    Compose.on('keypress', scheduleSync.bind(this))
+    Compose.on('compositionend', scheduleSync.bind(this))
   }
 
   /**
