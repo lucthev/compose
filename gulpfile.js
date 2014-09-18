@@ -65,9 +65,9 @@ gulp.task('watch', ['minify'], function () {
   process.nextTick(atStart)
 })
 
-var seleniumPath = './vendor/selenium-2.42.2.jar',
-    seleniumUrl = 'https://selenium-release.storage.googleapis.com/2.42/' +
-      'selenium-server-standalone-2.42.2.jar'
+var seleniumPath = './vendor/selenium-2.43.1.jar',
+    seleniumUrl = 'http://selenium-release.storage.googleapis.com/2.43/' +
+      'selenium-server-standalone-2.43.1.jar'
 
 gulp.task('test', ['minify'], function (done) {
   if (!fs.existsSync(seleniumPath)) {

@@ -35,7 +35,7 @@
     "karma-sauce-launcher": "^0.2.9",
     "mocha": "^1.21.4",
     "request": "^2.42.0",
-    "selenium-webdriver": "^2.42.1",
+    "selenium-webdriver": "^2.43.5",
     "st": "^0.5.1",
     "vinyl-source-stream": "^1.0.0"
   },

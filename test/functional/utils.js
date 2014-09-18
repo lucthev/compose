@@ -202,7 +202,7 @@ before(function (done) {
 
 if (local) before(function () {
   server = new SeleniumServer(
-    path.join(__dirname, '../../vendor/selenium-2.42.2.jar'),
+    path.join(__dirname, '../../vendor/selenium-2.43.1.jar'),
     { port: 4444 }
   )
 

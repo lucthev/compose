@@ -14,12 +14,7 @@ before(function () {
   browser = utils.browser
 })
 
-if (!/chrome/.test(utils.browserName))
-  describe('Pressing the spacebar should', spacebarTests)
-else
-  describe.skip('Pressing the spacebar should', spacebarTests)
-
-function spacebarTests () {
+describe('Pressing the spacebar should', function () {
   beforeEach(function () {
     return browser.get(utils.url())
   })
@@ -651,4 +646,4 @@ function spacebarTests () {
         })
       })
   })
-}
+})
