@@ -147,15 +147,29 @@ function meta (keys) {
 }
 
 exports.bold = function () {
-  var keys = webdriver.Key
+  browser.executeScript(function () {
+    window.editor.use(function (Compose) {
+      var formatter = Compose.require('formatter'),
+          serialize = Compose.require('serialize')
 
-  return exports.keys(meta(keys), 'b', keys.NULL)
+      formatter.inline.exec(serialize.types.bold)
+    })
+  })
+
+  return exports
 }
 
 exports.italics = function () {
-  var keys = webdriver.Key
+  browser.executeScript(function () {
+    window.editor.use(function (Compose) {
+      var formatter = Compose.require('formatter'),
+          serialize = Compose.require('serialize')
 
-  return exports.keys(meta(keys), 'i', keys.NULL)
+      formatter.inline.exec(serialize.types.italic)
+    })
+  })
+
+  return exports
 }
 
 exports.url = function () {
@@ -179,6 +193,8 @@ exports.url = function () {
 
 local = !process.env.RUN_IN_SAUCE_LABS && !process.env.TRAVIS
 
+exports.browserName = (process.env.BROWSER || 'firefox').toLowerCase()
+
 before(function (done) {
   httpServer = http.createServer(st(path.join(__dirname, '../..')))
   httpServer.listen(0, done)
@@ -201,13 +217,13 @@ before(function () {
 
   if (local) {
     desired = {
-      browserName: 'firefox'
+      browserName: exports.browserName
     }
   } else {
     desired = {
       username: process.env.SAUCE_USERNAME,
       accessKey: process.env.SAUCE_ACCESS_KEY,
-      browserName: process.env.BROWSER.toLowerCase(),
+      browserName: exports.browserName,
       version: process.env.VERSION,
       platform: process.env.PLATFORM,
       tags: ['Compose', 'CI'],

@@ -46,6 +46,9 @@ module.exports = function (config) {
 
     config.browsers = Object.keys(config.customLaunchers)
   } else {
-    config.browsers = ['Firefox']
+    browser = process.env.BROWSER || 'firefox'
+    browser = browser[0].toUpperCase() + browser.substr(1).toLowerCase()
+
+    config.browsers = [browser]
   }
 }

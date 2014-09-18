@@ -22,6 +22,7 @@
     "browserify": "^5.11.2",
     "bundle-collapser": "^1.1.0",
     "chai": "^1.9.1",
+    "chalk": "^0.5.1",
     "gulp": "^3.6.1",
     "gulp-jshint": "^1.5.3",
     "gulp-sourcemaps": "^1.1.5",

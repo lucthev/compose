@@ -8,17 +8,18 @@ var chai = require('chai'),
     expect = chai.expect,
     browser
 
-// For whatever reason, it seems spacebar doesn’t work in Chrome.
-if (process.env.TRAVIS && process.env.BROWSER.toLowerCase() === 'chrome')
-  return
-
 utils.chai(chai)
 
 before(function () {
   browser = utils.browser
 })
 
-describe('Pressing the spacebar should', function () {
+if (!/chrome/.test(utils.browserName))
+  describe('Pressing the spacebar should', spacebarTests)
+else
+  describe.skip('Pressing the spacebar should', spacebarTests)
+
+function spacebarTests () {
   beforeEach(function () {
     return browser.get(utils.url())
   })
@@ -650,4 +651,4 @@ describe('Pressing the spacebar should', function () {
         })
       })
   })
-})
+}

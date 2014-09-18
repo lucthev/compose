@@ -9,6 +9,7 @@ var gulp = require('gulp'),
     Mocha = require('mocha'),
     request = require('request'),
     karma = require('karma').server,
+    chalk = require('chalk'),
     path = require('path'),
     fs = require('fs')
 
@@ -91,9 +92,14 @@ function runTests (done) {
     configFile: path.join(__dirname, 'test/unit/karma.conf.js'),
     singleRun: true
   }, function () {
+    process.stdout.write(
+      '\n  ' +
+      chalk.red('NOTE') +
+      ': pending tests should be checked manually.'
+    )
+
     var mocha = new Mocha()
     mocha.timeout(120000)
-    mocha.reporter('dot')
 
     fs.readdirSync(paths.test)
       .filter(function (filename) {
