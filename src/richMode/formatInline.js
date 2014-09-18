@@ -186,50 +186,6 @@ function formatInline (Compose) {
     cancel()
   })
 
-  /*Compose.on('keypress', function (e) {
-    applyChanges(e.defaultPrevented)
-  })
-  Compose.on('compositionend', function () {
-    applyChanges(false)
-  })
-
-  function applyChanges (modifySelection) {
-    if (!waiting)
-      return cancel()
-
-    Compose.once('paragraphUpdate', function (index, paragraph) {
-      var sel = Selection.get()
-
-      if (modifySelection && sel) {
-        sel = new Selection(sel.start.slice())
-        sel.start[1] = sel.end[1] = sel.start[1] + 1
-      }
-
-      if (!sel || !waiting || sel.start[0] !== waiting.start[0] ||
-          sel.start[1] <= waiting.start[1] || Object.keys(change).length === 0)
-        return cancel()
-
-      Object.keys(change).forEach(function (type) {
-        paragraph[change[type] ? 'addMarkups' : 'removeMarkup']({
-          type: parseInt(type),
-          start: waiting.start[1],
-          end: sel.start[1]
-        })
-
-        if (change[type])
-          paragraph.mergeAdjacent()
-
-        delete change[type]
-      })
-
-      Compose.once('render', function () {
-        Selection.set(sel)
-      })
-
-      cancel()
-    })
-  }*/
-
   Formatter.inline = {
     exec: exec,
     status: status,
