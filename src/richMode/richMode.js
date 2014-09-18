@@ -44,6 +44,15 @@ function RichMode (Compose) {
   formatBlock(Compose)
 
   Compose.use(Shortcuts)
+
+  // Trim trailing <br>s:
+  Compose.on('paragraphUpdate', function (index, paragraph) {
+
+    // FIXME: this only works because replace mutates serializations.
+    if (/.\n$/.test(paragraph.text)) {
+      paragraph.replace(/\n$/, '')
+    }
+  })
 }
 
 module.exports = RichMode
