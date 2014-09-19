@@ -114,9 +114,9 @@ function Backspace (Compose) {
     }
 
     if (startSpace.test(end.text))
-      end = end.replace(startSpace, /[^^\n]$/.test(start.text) ? ' ' : nbsp)
+      end = end.replace(startSpace, /.$/.test(start.text) ? ' ' : nbsp)
     else if (endSpace.test(start.text))
-      start = start.replace(endSpace, /^[^\n$]/.test(end.text) ? ' ' : nbsp)
+      start = start.replace(endSpace, /^./.test(end.text) ? ' ' : nbsp)
     else if (/\n$/.test(start.text) && !end.text)
       end.text = '\n'
 
