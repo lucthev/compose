@@ -41,7 +41,8 @@ function Compose (elem, mode) {
     serialize: require('serialize-elem'),
     setImmediate: timers.setImmediate,
     clearImmediate: timers.clearImmediate,
-    dom: require('./dom')
+    dom: require('./dom'),
+    debug: require('debug')
   }
 
   this.use(EventDispatcher)

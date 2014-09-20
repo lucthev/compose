@@ -1,6 +1,6 @@
 'use strict';
 
-var toDispatch = [
+var events = [
   'keydown',
   'keyup',
   'keypress',
@@ -17,57 +17,58 @@ var toDispatch = [
   'compositionend'
 ]
 
-function EventDispatcher (elem, emit) {
+function Dispatcher (Compose) {
+  var debug = Compose.require('debug'),
+      dispatcher,
+      _events
 
-  this.events = toDispatch.slice()
-  this.elem = elem
+  _events = events.map(function (name) {
+    var db = debug('compose:events:' + name)
 
-  this.events.forEach(function (evt, index, arr) {
-    arr[index] = {
-      name: evt,
-      listener: function (e) {
-        emit(evt, e)
+    return {
+      event: name,
+      fn: function (e) {
+        db(e)
+        Compose.emit(name, e)
       }
     }
   })
 
-  this.unpause()
+  dispatcher = {
+
+    /**
+     * pause() removes event listeners from the element, which stops the
+     * emitting of events on Compose.
+     */
+    pause: function () {
+      _events.forEach(function (handler) {
+        Compose.elem.removeEventListener(handler.event, handler.fn)
+      })
+
+      return this
+    },
+
+    /**
+     * unpause() attaches event listeners to the element and emits those
+     * events on Compose.
+     */
+    unpause: function () {
+      _events.forEach(function (handler) {
+        Compose.elem.addEventListener(handler.event, handler.fn)
+      })
+
+      return this
+    },
+
+    disable: function () {
+      this.pause()
+
+      return null
+    }
+  }
+
+  dispatcher.unpause()
+  Compose.provide('event-dispatcher', dispatcher)
 }
 
-/**
- * pause() removes event listeners from the element, which stops the
- * emitting of events on Compose.
- */
-EventDispatcher.prototype.pause = function () {
-
-  this.events.forEach(function (evt) {
-    this.elem.removeEventListener(evt.name, evt.listener, true)
-  }.bind(this))
-}
-
-/**
- * unpause() attaches event listeners to the element and emits those
- * events on Compose.
- */
-EventDispatcher.prototype.unpause = function () {
-
-  this.events.forEach(function (evt) {
-    this.elem.addEventListener(evt.name, evt.listener, true)
-  }.bind(this))
-}
-
-EventDispatcher.prototype.disable = function () {
-  this.pause()
-
-  delete this.elem
-  delete this.events
-}
-
-function eventPlugin (Compose) {
-  Compose.provide(
-    'event-dispatcher',
-    new EventDispatcher(Compose.elem, Compose.emit.bind(Compose))
-  )
-}
-
-module.exports = eventPlugin
+module.exports = Dispatcher

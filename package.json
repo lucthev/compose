@@ -23,6 +23,7 @@
     "bundle-collapser": "^1.1.0",
     "chai": "^1.9.1",
     "chalk": "^0.5.1",
+    "debug": "^2.0.0",
     "gulp": "^3.6.1",
     "gulp-jshint": "^1.5.3",
     "gulp-sourcemaps": "^1.1.5",
