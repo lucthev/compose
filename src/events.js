@@ -80,6 +80,23 @@ function Events (Compose) {
     return e.keyCode === 13 || (e.keyCode === 77 && e.ctrlKey)
   }
 
+  var composing = false
+  Compose.on('compositionstart', function () {
+    composing = true
+  })
+  Compose.on('compositionend', function () {
+    composing = false
+  })
+
+  /**
+   * composing() determines if IME composition is currently underway.
+   *
+   * @return {Boolean}
+   */
+  events.composing = function () {
+    return composing
+  }
+
   events.backspace = function (e) {
     return e.keyCode === 8
   }
