@@ -1,20 +1,20 @@
 /* jshint ignore:start */
 var expect = chai.expect
 
-describe('The event dispatcher', function () {
+describe('The event module', function () {
 
   var compose
 
   function disabler (Compose) {
-    var dispatcher = Compose.require('event-dispatcher')
+    var events = Compose.require('events')
 
-    dispatcher.pause()
+    events.pause()
   }
 
   function enabler (Compose) {
-    var dispatcher = Compose.require('event-dispatcher')
+    var events = Compose.require('events')
 
-    dispatcher.unpause()
+    events.unpause()
   }
 
   beforeEach(function () {

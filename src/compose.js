@@ -1,9 +1,9 @@
 'use strict';
 
 var eventEmitter = require('component-emitter'),
-    EventDispatcher = require('./event-dispatcher'),
     RichMode = require('./richMode/richMode'),
     UndoManager = require('./undo-manager'),
+    Events = require('./events'),
     timers = require('./timers')
 
 function hasOwnProp (obj, prop) {
@@ -36,7 +36,6 @@ function Compose (elem, mode) {
 
   // Plugins. Some are bundled.
   this.plugins = {
-    events: require('./events'),
     delta: require('./delta'),
     serialize: require('serialize-elem'),
     setImmediate: timers.setImmediate,
@@ -45,7 +44,7 @@ function Compose (elem, mode) {
     debug: require('debug')
   }
 
-  this.use(EventDispatcher)
+  this.use(Events)
   this.use(UndoManager)
 
   if (typeof mode === 'function')
