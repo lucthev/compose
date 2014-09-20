@@ -15,17 +15,6 @@ function viewPlugin (Compose) {
   Paragraph = paragraphs(Compose)
   Section = sections(Compose)
 
-  function scheduleSync () {
-    var sel = Selection.get(),
-        start
-
-    start = sel.isBackwards() ? sel.end : sel.start
-    this._modified = start[0]
-
-    this._rendering = true
-    setImmediate(this._render.bind(this))
-  }
-
   function View () {
     this._modified = -1
     this._queue = []
@@ -34,8 +23,16 @@ function viewPlugin (Compose) {
     this.paragraphs = []
     this.sections = []
 
-    Compose.on('keypress', scheduleSync.bind(this))
-    Compose.on('compositionend', scheduleSync.bind(this))
+    Compose.on('keydown', function () {
+      var sel = Selection.get(),
+          start
+
+      start = sel.isBackwards() ? sel.end : sel.start
+      this._modified = start[0]
+
+      this._rendering = true
+      setImmediate(this._render.bind(this))
+    }.bind(this))
   }
 
   /**
@@ -56,6 +53,26 @@ function viewPlugin (Compose) {
     return false
   }
 
+  View.prototype.sync = function () {
+    var children = getChildren(),
+        index = this._modified,
+        paragraph
+
+    this._modified = -1
+
+    if (index < 0)
+      return this
+
+    paragraph = Converter.toParagraph(children[index])
+
+    if (!paragraph.equals(this.paragraphs[index])) {
+      Compose.emit('sync', index, paragraph)
+      this.paragraphs[index] = paragraph
+    }
+
+    return this
+  }
+
   View.prototype.render = function (deltas) {
     if (!Array.isArray(deltas))
       this._queue.push(deltas)
@@ -66,21 +83,17 @@ function viewPlugin (Compose) {
       this._rendering = true
       setImmediate(this._render.bind(this))
     }
+
+    return this
   }
 
   View.prototype._render = function () {
-    var children = getChildren(),
-        index = this._modified,
-        paragraph,
-        i
+    var i
 
-    if (index >= 0) {
-      paragraph = Converter.toParagraph(children[index])
-
-      if (!paragraph.equals(this.paragraphs[index])) {
-        Compose.emit('sync', index, paragraph)
-        this.paragraphs[index] = paragraph
-      }
+    this.sync()
+    if (!this._queue.length) {
+      this._rendering = false
+      return
     }
 
     // TODO: cache result of getChildren() somewhere?
