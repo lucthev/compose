@@ -22,7 +22,6 @@ function smartText (Compose) {
         sel = Selection.get(),
         startPair,
         endPair,
-        markup,
         length,
         start,
         end,
@@ -55,17 +54,7 @@ function smartText (Compose) {
     start = start.substr(0, startPair[1])
     end = end.substr(endPair[1])
 
-    start.text += key
-    for (i = 0; i < start.markups.length; i += 1) {
-      markup = start.markups[i]
-
-      if (markup.start >= startPair[1])
-        markup.start += 1
-      if (markup.end >= endPair[1])
-        markup.end += 1
-    }
-
-    start = start
+    start = start.append(key)
       .replace(/<3$/, '❤')
       .replace(/\.\.\.$/, '…')
       .replace(/:\)$/, '☺')

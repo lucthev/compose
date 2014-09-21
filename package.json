@@ -37,6 +37,7 @@
     "mocha": "^1.21.4",
     "request": "^2.42.0",
     "selenium-webdriver": "^2.43.5",
+    "serialize-elem": "^2.1.0",
     "st": "^0.5.1",
     "vinyl-source-stream": "^1.0.0"
   },

@@ -16,7 +16,6 @@ function Enter (Compose) {
         startIndex,
         startPair,
         endPair,
-        markup,
         type,
         start,
         end,
@@ -59,18 +58,7 @@ function Enter (Compose) {
       if (!end.text)
         end.text = '\n'
 
-      start.text += '\n'
-
-      for (i = 0; i < start.markups.length; i += 1) {
-        markup = start.markups[i]
-
-        if (markup.start >= startPair[1])
-          markup.start += 1
-        if (markup.end >= startPair[1])
-          markup.end += 1
-      }
-
-      start = start.append(end)
+      start = start.append('\n').append(end)
 
       for (i = startIndex + 1; i <= endPair[0]; i += 1) {
         if (View.isSectionStart(i))

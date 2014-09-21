@@ -18,7 +18,7 @@ describe('Deleting text should', function () {
     return browser.get(utils.url())
   })
 
-  it('do nothing when backspacing in an empty first section.', function () {
+  it('do nothing when backspacing in an empty first section', function () {
     return utils
       .init('<section><p><br></p></section>', {
         start: [0, 0]
@@ -41,7 +41,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('do nothing when deleting in an empty first section.', function () {
+  it('do nothing when deleting in an empty first section', function () {
     return utils
       .init('<section><p><br></p></section>', {
         start: [0, 0]
@@ -64,7 +64,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('insert a <br> when backspacing the only character.', function () {
+  it('insert a <br> when backspacing the only character', function () {
     return utils
       .init('<section><p>1</p></section>', {
         start: [0, 1]
@@ -156,7 +156,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove adjacent spaces when backspacing.', function () {
+  it('remove adjacent spaces when backspacing', function () {
     return utils
       .init('<section><p>One 1 Two</p></section>', {
         start: [0, 5]
@@ -179,7 +179,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove adjacent spaces when deleting.', function () {
+  it('remove adjacent spaces when deleting', function () {
     return utils
       .init('<section><p>One 1 Two</p></section>', {
         start: [0, 4]
@@ -202,7 +202,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove selected text when backspacing.', function () {
+  it('remove selected text when backspacing', function () {
     return utils
       .init('<section><p>One two three</p></section>', {
         start: [0, 12],
@@ -226,7 +226,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove selected text when deleting.', function () {
+  it('remove selected text when deleting', function () {
     return utils
       .init('<section><p>One two three</p></section>', {
         start: [0, 12],
@@ -250,7 +250,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove paragraphs when backspacing over multiple.', function () {
+  it('remove paragraphs when backspacing over multiple', function () {
     return utils
       .init('<section><h2>One</h2><p>Two</p><p>Three</p></section>', {
         start: [0, 1],
@@ -274,7 +274,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove paragraphs when deleting over multiple.', function () {
+  it('remove paragraphs when deleting over multiple', function () {
     return utils
       .init('<section><h2>One</h2><p>Two</p><p>Three</p></section>', {
         start: [0, 1],
@@ -298,7 +298,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove sections when backspacing over multiple.', function () {
+  it('remove sections when backspacing over multiple', function () {
     return utils
       .init(
         '<section><p>One</p></section>' +
@@ -325,7 +325,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove sections when deleting over multiple.', function () {
+  it('remove sections when deleting over multiple', function () {
     return utils
       .init(
         '<section><p>One</p></section>' +
@@ -352,7 +352,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('insert a <br> when backspacing after the only character on a line.', function () {
+  it('insert a <br> when backspacing after the only character on a line', function () {
     return utils
       .init('<section><p>One<br>2</p></section>', {
         start: [0, 5]
@@ -375,7 +375,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('insert a <br> when deleting the only character on a line.', function () {
+  it('insert a <br> when deleting the only character on a line', function () {
       return utils
       .init('<section><p>One<br>2</p></section>', {
         start: [0, 4]
@@ -398,7 +398,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('insert a <br> when backspacing over all text on a line.', function () {
+  it('insert a <br> when backspacing over all text on a line', function () {
     return utils
       .init('<section><p>One<br>Two</p></section>', {
         start: [0, 4],
@@ -422,7 +422,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('insert a <br> when deleting all text on a line.', function () {
+  it('insert a <br> when deleting all text on a line', function () {
     return utils
       .init('<section><p>One<br>Two</p></section>', {
         start: [0, 4],
@@ -446,7 +446,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('convert a <li> to a <p> when backspacing at the start.', function () {
+  it('convert a <li> to a <p> when backspacing at the start', function () {
     return utils
       .init('<section><ol><li>One</li></ol></section>', {
         start: [0, 0]
@@ -469,7 +469,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('split lists if necessary.', function () {
+  it('split lists if necessary', function () {
     return utils
       .init('<section><ol><li>1</li><li>2</li><li>3</li></ol></section>', {
         start: [1, 0]
@@ -504,7 +504,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('merge lists when deleting at the end of one.', function () {
+  it('merge lists when deleting at the end of one', function () {
     return utils
       .init('<section><ol><li>One</li><li>Two</li></ol></section>', {
         start: [0, 3]
@@ -530,7 +530,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('merge paragraphs when backspacing at the start of one.', function () {
+  it('merge paragraphs when backspacing at the start of one', function () {
     return utils
       .init('<section><p>One</p><h2>Two</h2></section>', {
         start: [1, 0]
@@ -553,7 +553,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('merge paragraphs when deleting at the end of one.', function () {
+  it('merge paragraphs when deleting at the end of one', function () {
     return utils
       .init('<section><pre>One</pre><p>Two</p></section>', {
         start: [0, 3]
@@ -576,7 +576,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('ignore trailing <br>s when deleting at the end of a paragraph.', function () {
+  it('ignore trailing <br>s when deleting at the end of a paragraph', function () {
     return utils
       .init('<section><p>One<br></p><p>Two</p></section>', {
         start: [0, 3]
@@ -599,7 +599,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('ignore trailing <br>s when backspacing at the start of a paragraph.', function () {
+  it('ignore trailing <br>s when backspacing at the start of a paragraph', function () {
     return utils
       .init('<section><p>One<br></p><p>Two</p></section>', {
         start: [1, 0]
@@ -622,7 +622,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('respect newlines when backspacing at the start of a paragraph.', function () {
+  it('respect newlines when backspacing at the start of a paragraph', function () {
     return utils
       .init('<section><p>One<br><br></p><p>Two</p></section>', {
         start: [1, 0]
@@ -645,7 +645,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('preserve <br>s if necessary when backspacing.', function () {
+  it('preserve <br>s if necessary when backspacing', function () {
     return utils
       .init('<section><p>One<br><br></p><p><br></p></section>', {
         start: [1, 0]
@@ -668,7 +668,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('respect newlines when deleting at the end of a paragraph.', function () {
+  it('respect newlines when deleting at the end of a paragraph', function () {
     return utils
       .init('<section><p>One<br><br></p><p>Two</p></section>', {
         start: [0, 4]
@@ -691,7 +691,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('preserve <br>s if necessary when deleting.', function () {
+  it('preserve <br>s if necessary when deleting', function () {
     return utils
       .init('<section><p>One<br><br></p><p><br></p></section>', {
         start: [0, 4]
@@ -714,7 +714,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove sections when backspacing collapsed at the start of one.', function () {
+  it('remove sections when backspacing collapsed at the start of one', function () {
     return utils
       .init(
         '<section><p>One</p></section>' +
@@ -742,7 +742,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('remove sections when deleting collapsed at the end of one.', function () {
+  it('remove sections when deleting collapsed at the end of one', function () {
     return utils
       .init(
         '<section><p>One</p></section>' +
@@ -770,7 +770,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('ignore trailing <br>s when deleting collapsed at the end of a section.', function () {
+  it('ignore trailing <br>s when deleting collapsed at the end of a section', function () {
     return utils
       .init(
         '<section><p>One<br></p></section>' +
@@ -798,7 +798,7 @@ describe('Deleting text should', function () {
       })
   })
 
-  it('be able to delete sections after newlines.', function () {
+  it('be able to delete sections after newlines', function () {
     return utils
       .init(
         '<section><p>One<br><br></p></section>' +
@@ -822,6 +822,54 @@ describe('Deleting text should', function () {
         expect(sel).to.deep.equal({
           start: [0, 4],
           end: [0, 4]
+        })
+      })
+  })
+
+  it('merge markups it brings together when deleting', function () {
+    return utils
+      .init('<section><p><em>1</em>2<em>3</em></p></section>', {
+        start: [0, 1]
+      })
+      .keys(keys.DELETE)
+      .result(function (tree, sel) {
+        expect(tree).to.resemble([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            html: '<em>13</em>'
+          }]
+        }])
+
+        expect(sel).to.deep.equal({
+          start: [0, 1],
+          end: [0, 1]
+        })
+      })
+  })
+
+  it('merge markups it brings together when backspacing', function () {
+    return utils
+      .init('<section><p><em>1</em>2<em>3</em></p></section>', {
+        start: [0, 2]
+      })
+      .keys(keys.BACK_SPACE)
+      .result(function (tree, sel) {
+        expect(tree).to.resemble([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            html: '<em>13</em>'
+          }]
+        }])
+
+        expect(sel).to.deep.equal({
+          start: [0, 1],
+          end: [0, 1]
         })
       })
   })

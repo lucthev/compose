@@ -14,7 +14,6 @@ function Spacebar (Compose) {
     var sel = Selection.get(),
         startIndex,
         textIndex,
-        markup,
         startPair,
         endPair,
         start,
@@ -79,18 +78,9 @@ function Spacebar (Compose) {
     } else if (!spaceRegex.test(end.text[0])) {
       if (!end.text || !start.text || start.text[start.length - 1] === '\n' ||
           end.text[0] === '\n')
-        start.text +=  nbsp
+        start = start.append(nbsp)
       else
-        start.text += ' '
-
-      for (i = 0; i < start.markups.length; i += 1) {
-        markup = start.markups[i]
-
-        if (markup.start >= textIndex)
-          markup.start += 1
-        if (markup.end >= textIndex)
-          markup.end += 1
-      }
+        start = start.append(' ')
     }
 
     start = start.append(end)
