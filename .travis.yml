@@ -5,8 +5,8 @@ node_js:
 - '0.10'
 env:
   matrix:
-    - BROWSER=Chrome PLATFORM='Linux' VERSION=35
-    - BROWSER=Chrome PLATFORM='Windows 7' VERSION=34
+    - BROWSER=Chrome PLATFORM='Linux' VERSION=36
+    - BROWSER=Chrome PLATFORM='Windows 7' VERSION=37
     - BROWSER=Firefox PLATFORM='Linux' VERSION=30
     - BROWSER=Firefox PLATFORM='OS X 10.9' VERSION=29
   global:
