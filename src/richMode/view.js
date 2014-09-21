@@ -91,21 +91,20 @@ function viewPlugin (Compose) {
   }
 
   View.prototype._render = function () {
-    var len = this._queue.length,
-        i
+    var i
 
     this.sync()
-    if (!len) {
+    if (!this._queue.length) {
       this._rendering = false
       return
     }
 
     // TODO: cache result of getChildren() somewhere?
-    for (i = 0; i < len; i += 1) {
+    for (i = 0; i < this._queue.length; i += 1) {
       resolveDelta(this, this._queue[i])
     }
 
-    debug('rendered %d deltas', len)
+    debug('rendered %d deltas', this._queue.length)
 
     this._queue = []
     this._modified = -1
