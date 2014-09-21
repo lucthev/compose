@@ -1,8 +1,7 @@
 'use strict';
 
 function shortcuts (Compose) {
-  var types = Compose.require('serialize').types,
-      Formatter = Compose.require('formatter'),
+  var Formatter = Compose.require('formatter'),
       Selection = Compose.require('selection'),
       events = Compose.require('events'),
       View = Compose.require('view')
@@ -28,12 +27,17 @@ function shortcuts (Compose) {
       // Mod+B
 
       e.preventDefault()
-      Formatter.inline.exec(types.bold)
+      Formatter.inline.exec('bold')
     } else if (e.keyCode === 73 && events.modKey(e)) {
       // Mod+I
 
       e.preventDefault()
-      Formatter.inline.exec(types.italic)
+      Formatter.inline.exec('italic')
+    } else if (e.keyCode === 75 && e.shiftKey && events.modKey(e)) {
+      // Mod+Shift+K
+
+      e.preventDefault()
+      Formatter.inline.exec('code')
     } else if (e.altKey) {
 
       switch (e.keyCode) {

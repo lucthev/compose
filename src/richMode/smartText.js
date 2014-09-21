@@ -12,8 +12,9 @@ function replaceQuotes (open, close, prime) {
 }
 
 function smartText (Compose) {
-  var Selection = Compose.require('selection'),
+  var types = Compose.require('serialize').types,
       Formatter = Compose.require('formatter'),
+      Selection = Compose.require('selection'),
       Delta = Compose.require('delta'),
       View = Compose.require('view')
 
@@ -22,14 +23,15 @@ function smartText (Compose) {
         sel = Selection.get(),
         startPair,
         endPair,
+        markup,
         length,
         start,
         end,
         i
 
     /**
-     * Smart text shortcuts. All are disabled in <pre> blocks.
-     * TODO: also disable in <code> markups.
+     * Smart text shortcuts. All are disabled in <pre> blocks and
+     * <code> markups.
      *
      *  <3      →   ❤
      *  ...     →   …
@@ -47,7 +49,24 @@ function smartText (Compose) {
     start = View.paragraphs[startPair[0]]
     end = View.paragraphs[endPair[0]]
 
-    if (start.type === 'pre') return
+    if (start.type === 'pre' || Formatter.inline.status('code'))
+      return
+
+    /**
+     * All browsers, in the following cases, will treat the next input
+     * character as being in a <code>; disable smart text accordingly.
+     *    |<code>1</code>23|
+     *    <code>1|2</code>3|
+     */
+    for (i = 0; i < start.markups.length; i += 1) {
+      markup = start.markups[i]
+
+      if (markup.type < types.code) continue
+      if (markup.type > types.code) break
+
+      if (markup.start <= startPair[1] && startPair[1] < markup.end)
+        return
+    }
 
     e.preventDefault()
 
