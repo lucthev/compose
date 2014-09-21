@@ -4,7 +4,8 @@ var paragraphs = require('./paragraphs'),
     sections = require('./sections')
 
 function viewPlugin (Compose) {
-  var setImmediate = Compose.require('setImmediate'),
+  var debug = Compose.require('debug')('compose:view'),
+      setImmediate = Compose.require('setImmediate'),
       getChildren = Compose.require('getChildren'),
       Selection = Compose.require('selection'),
       Converter = Compose.require('converter'),
@@ -29,6 +30,7 @@ function viewPlugin (Compose) {
 
       start = sel.isBackwards() ? sel.end : sel.start
       this._modified = start[0]
+      debug('scheduling sync at index %d', start[0])
 
       this._rendering = true
       setImmediate(this._render.bind(this))
@@ -68,6 +70,7 @@ function viewPlugin (Compose) {
     if (!paragraph.equals(this.paragraphs[index])) {
       Compose.emit('sync', index, paragraph)
       this.paragraphs[index] = paragraph
+      debug('synced paragraph %d', index)
     }
 
     return this
@@ -88,18 +91,21 @@ function viewPlugin (Compose) {
   }
 
   View.prototype._render = function () {
-    var i
+    var len = this._queue.length,
+        i
 
     this.sync()
-    if (!this._queue.length) {
+    if (!len) {
       this._rendering = false
       return
     }
 
     // TODO: cache result of getChildren() somewhere?
-    for (i = 0; i < this._queue.length; i += 1) {
+    for (i = 0; i < len; i += 1) {
       resolveDelta(this, this._queue[i])
     }
+
+    debug('rendered %d deltas', len)
 
     this._queue = []
     this._modified = -1
