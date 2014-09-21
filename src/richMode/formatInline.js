@@ -18,7 +18,8 @@ function overlaps (paragraph, type, start, end) {
 }
 
 function formatInline (Compose) {
-  var types = Compose.require('serialize').types,
+  var debug = Compose.require('debug')('compose:formatter:inline'),
+      types = Compose.require('serialize').types,
       Formatter = Compose.require('formatter'),
       Selection = Compose.require('selection'),
       events = Compose.require('events'),
@@ -27,9 +28,12 @@ function formatInline (Compose) {
       waiting = null,
       change = {}
 
-  function cancel () {
-    waiting = null
-    change = {}
+  function cancel (reason) {
+    return function () {
+      debug('Cancelling: ' + reason)
+      waiting = null
+      change = {}
+    }
   }
 
   function status (type) {
@@ -84,6 +88,8 @@ function formatInline (Compose) {
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
 
+    debug((active ? 'Disabling: ' : 'Enabling: ') + type)
+
     if (sel.isCollapsed()) {
       if (change[type] === active)
         delete change[type]
@@ -122,20 +128,25 @@ function formatInline (Compose) {
     })
   }
 
-  Compose.on('paste', cancel)
-  Compose.on('mousedown', cancel)
+  Compose.on('paste', cancel('paste'))
+  Compose.on('mousedown', cancel('mousedown'))
   Compose.on('keydown', function (e) {
     if (events.selectKey(e))
-      cancel()
+      cancel('selection key')()
   })
 
   Compose.on('sync', function (index, paragraph) {
     var types = Object.keys(change),
         sel = Selection.get()
 
+    if (events.composing()) {
+      debug('Delaying, composition underway.')
+      return
+    }
+
     if (!sel || !waiting || !sel.isCollapsed() || types.length === 0 ||
       sel.start[0] !== waiting.start[0] || sel.start[1] <= waiting.start[1])
-      return cancel()
+      return cancel('sync conditions not met')()
 
     paragraph = paragraph.substr(0)
     sel = new Selection(sel.start.slice())
@@ -158,7 +169,7 @@ function formatInline (Compose) {
       Selection.set(sel)
     })
 
-    cancel()
+    cancel('successful sync')()
   })
 
   Compose.on('paragraphUpdate', function (index, paragraph) {
@@ -168,7 +179,7 @@ function formatInline (Compose) {
       return
 
     if (!waiting || types.length === 0 || paragraph.length <= waiting.start[1])
-      return cancel()
+      return cancel('paragraphUpdate conditions not met')()
 
     types.forEach(function (type) {
       paragraph[change[type] ? 'addMarkups' : 'removeMarkup']({
@@ -183,13 +194,13 @@ function formatInline (Compose) {
       delete change[type]
     })
 
-    cancel()
+    cancel('successful paragraphUpdate')()
   })
 
   Formatter.inline = {
     exec: exec,
     status: status,
-    preventDefault: cancel
+    preventDefault: cancel('default prevented')
   }
 }
 
