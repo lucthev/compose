@@ -16,7 +16,9 @@ function smartText (Compose) {
       Formatter = Compose.require('formatter'),
       Selection = Compose.require('selection'),
       Delta = Compose.require('delta'),
-      View = Compose.require('view')
+      View = Compose.require('view'),
+      startNbsp = /^[\u00A0]/,
+      endNbsp = /[\u00A0]$/
 
   Compose.on('keypress', function (e) {
     var key = String.fromCharCode(e.which),
@@ -70,8 +72,8 @@ function smartText (Compose) {
 
     e.preventDefault()
 
-    start = start.substr(0, startPair[1])
-    end = end.substr(endPair[1])
+    start = start.substr(0, startPair[1]).replace(endNbsp, ' ')
+    end = end.substr(endPair[1]).replace(startNbsp, ' ')
 
     start = start.append(key)
       .replace(/<3$/, '❤')
