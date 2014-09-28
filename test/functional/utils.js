@@ -133,26 +133,12 @@ exports.chai = function (chai) {
   })
 }
 
-function meta (keys) {
-  var platform = process.env.PLATFORM,
-      key
-
-  if (platform) {
-    key = /OS X/.test(platform) ? keys.COMMAND : keys.CONTROL
-  } else {
-    key = process.platform === 'darwin' ? keys.COMMAND : keys.CONTROL
-  }
-
-  return key
-}
-
 exports.bold = function () {
   browser.executeScript(function () {
     window.editor.use(function (Compose) {
-      var formatter = Compose.require('formatter'),
-          serialize = Compose.require('serialize')
+      var formatter = Compose.require('formatter')
 
-      formatter.inline.exec(serialize.types.bold)
+      formatter.inline.exec('bold')
     })
   })
 
@@ -162,14 +148,43 @@ exports.bold = function () {
 exports.italics = function () {
   browser.executeScript(function () {
     window.editor.use(function (Compose) {
-      var formatter = Compose.require('formatter'),
-          serialize = Compose.require('serialize')
+      var formatter = Compose.require('formatter')
 
-      formatter.inline.exec(serialize.types.italic)
+      formatter.inline.exec('italic')
     })
   })
 
   return exports
+}
+
+exports.code = function () {
+  browser.executeScript(function () {
+    window.editor.use(function (Compose) {
+      var formatter = Compose.require('formatter')
+
+      formatter.inline.exec('code')
+    })
+  })
+
+  return exports
+}
+
+exports.link = function (href) {
+  browser.executeScript(function (href) {
+    window.editor.use(function (Compose) {
+      var formatter = Compose.require('formatter')
+
+      formatter.inline.exec('link', href)
+    })
+  }, href)
+
+  return exports
+}
+
+exports.status = function (type, cb) {
+  return browser.executeScript(function (type) {
+    return window.editor.plugins.formatter.inline.status(type)
+  }, type).then(cb)
 }
 
 exports.url = function () {

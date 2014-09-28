@@ -1,7 +1,9 @@
 /* global before, describe, it, beforeEach */
+/* jshint expr:true */
 'use strict';
 
 var chai = require('chai'),
+    types = require('serialize-elem/src/types'),
     keys = require('selenium-webdriver').Key,
     utils = require('./utils'),
     expect = chai.expect,
@@ -13,7 +15,7 @@ before(function () {
   browser = utils.browser
 })
 
-describe('Rich text', function () {
+describe('Rich text exec', function () {
 
   if (!/chrome/i.test(utils.browserName))
     describe('with a collapsed selection should', inlineTests)
@@ -276,6 +278,30 @@ describe('Rich text', function () {
             }, {
               name: 'p',
               html: '1…'
+            }]
+          }])
+
+          expect(sel).to.deep.equal({
+            start: [0, 2],
+            end: [0, 2]
+          })
+        })
+    })
+
+    it('remove a containing link', function () {
+      return utils
+        .init('<section><p><a href="#">Stuff</a></p></section>', {
+          start: [0, 2]
+        })
+        .link()
+        .result(function (tree, sel) {
+          expect(tree).to.resemble([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              html: 'Stuff'
             }]
           }])
 
@@ -621,6 +647,141 @@ describe('Rich text', function () {
         })
     })
 
+    it('remove all links from the selection', function () {
+      return utils
+        .init(
+          '<section><p>1 2 <a href="http://example.com">3</a></p></section>' +
+          '<section><p><a href="http://g.co">4</a> 5 <a href="/x">6</a></p></section>', {
+          start: [0, 2],
+          end: [1, 3]
+        })
+        .link()
+        .result(function (tree, sel) {
+          expect(tree).to.resemble([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              html: '1 2 3'
+            }]
+          }, {
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              html: '4 5 <a href="/x">6</a>'
+            }]
+          }])
+
+          expect(sel).to.deep.equal({
+            start: [0, 2],
+            end: [1, 3]
+          })
+        })
+    })
+
+    it('leave other links alone', function () {
+      return utils
+        .init('<section><p><a href="/x">1</a>2<a href="/y">3</a></p></section>', {
+          start: [0, 0],
+          end: [0, 1]
+        })
+        .link()
+        .result(function (tree, sel) {
+          expect(tree).to.resemble([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              html: '12<a href="/y">3</a>'
+            }]
+          }])
+
+          expect(sel).to.deep.equal({
+            start: [0, 0],
+            end: [0, 1]
+          })
+        })
+    })
+
+    it('remove partially selected links.', function () {
+      return utils
+        .init('<section><p><a href="/y">123</a>456<p></section>', {
+          start: [0, 2],
+          end: [0, 4]
+        })
+        .link()
+        .result(function (tree, sel) {
+          expect(tree).to.resemble([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              html: '123456'
+            }]
+          }])
+
+          expect(sel).to.deep.equal({
+            start: [0, 2],
+            end: [0, 4]
+          })
+        })
+    })
+
+    it('not remove links not selected (1)', function () {
+      return utils
+        .init('<section><p><a href="#">1</a><a href="/">2</a></p></section>', {
+          start: [0, 0],
+          end: [0, 1]
+        })
+        .link()
+        .result(function (tree, sel) {
+          expect(tree).to.resemble([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              html: '1<a href="/">2</a>'
+            }]
+          }])
+
+          expect(sel).to.deep.equal({
+            start: [0, 0],
+            end: [0, 1]
+          })
+        })
+    })
+
+    it('not remove links not selected (2)', function () {
+      return utils
+        .init('<section><p><a href="#">1</a><a href="/">2</a></p></section>', {
+          start: [0, 1],
+          end: [0, 2]
+        })
+        .link()
+        .result(function (tree, sel) {
+          expect(tree).to.resemble([{
+            name: 'section',
+            children: [{
+              name: 'hr'
+            }, {
+              name: 'p',
+              html: '<a href="#">1</a>2'
+            }]
+          }])
+
+          expect(sel).to.deep.equal({
+            start: [0, 1],
+            end: [0, 2]
+          })
+        })
+    })
+
     /*it('', function () {
       return utils
         .init('<section></section>', {
@@ -644,5 +805,293 @@ describe('Rich text', function () {
           })
         })
     })*/
+  })
+})
+
+describe('Rich text status', function () {
+
+  describe('with a collapsed selection should', function () {
+    beforeEach(function () {
+      return browser.get(utils.url())
+    })
+
+    it('return true when the caret is in a markup', function () {
+      return utils
+        .init('<section><p><em>12</em></p></section>', {
+          start: [0, 1]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when the caret is at the end of a non-link markup.', function () {
+      return utils
+        .init('<section><p><strong>1</strong></p></section>', {
+          start: [0, 1]
+        })
+        .status(types.bold, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when the caret is at the start of a starting non-link markup', function () {
+      return utils
+        .init('<section><p><strong>1</strong></p></section>', {
+          start: [0, 0]
+        })
+        .status(types.bold, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return false when the caret is at the start of a non-starting markup', function () {
+      return utils
+        .init('<section><p>1<em>2</em></p></section>', {
+          start: [0, 1]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.false
+        })
+    })
+
+    it('return true when the caret is at the start of a markup following a newline', function () {
+      return utils
+        .init('<section><p>1<br><em>2</em></p></section>', {
+          start: [0, 2]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return false when the caret is at the start of a link', function () {
+      return utils
+        .init('<section><p><a href="http://www.example.com">1</a></p></section>', {
+          start: [0, 0]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.false
+        })
+    })
+
+    it('return false when the caret is at the end of a link', function () {
+      return utils
+        .init('<section><p><a href="/">1</a></p></section>', {
+          start: [0, 1]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.false
+        })
+    })
+
+    it('return true when the caret is in a link', function () {
+      return utils
+        .init('<section><p><a href="#">12</a></p></section>', {
+          start: [0, 1]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return false when the caret is not in a markup', function () {
+      return utils
+        .init('<section><p>Stuff</p></section>', {
+          start: [0, 2]
+        })
+        .status(types.bold, function (status) {
+          expect(status).to.be.false
+        })
+    })
+  })
+
+  describe('with a non-collapsed selection should', function () {
+    beforeEach(function () {
+      return browser.get(utils.url())
+    })
+
+    it('return false when the selection is outside all markups', function () {
+      return utils
+        .init('<section><p>Stuff <em>words</em></p></section>', {
+          start: [0, 1],
+          end: [0, 5]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.false
+        })
+    })
+
+    it('return false the selection hangs left off a markup', function () {
+      return utils
+        .init('<section><p>12<em>34</em>56</p></section>', {
+          start: [0, 1],
+          end: [0, 3]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.false
+        })
+    })
+
+    it('return false the selection hangs right off a markup', function () {
+      return utils
+        .init('<section><p>12<em>34</em>56</p></section>', {
+          start: [0, 3],
+          end: [0, 5]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.false
+        })
+    })
+
+    it('return true when the selection covers exactly a markup', function () {
+      return utils
+        .init('<section><p>1<em>234</em>5</p></section>', {
+          start: [0, 1],
+          end: [0, 4]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when the selection is within a markup', function () {
+      return utils
+        .init('<section><p><em>123456</em></p></section>', {
+          start: [0, 1],
+          end: [0, 5]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when the selection is within a markup (2)', function () {
+      return utils
+        .init('<section><p><em>123456</em></p></section>', {
+          start: [0, 0],
+          end: [0, 1]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when the selection is within a markup (3)', function () {
+      return utils
+        .init('<section><p><em>123456</em></p></section>', {
+          start: [0, 5],
+          end: [0, 6]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return false when the selection contains a markup', function () {
+      return utils
+        .init('<section><p>12<em>34</em>56</p></section>', {
+          start: [0, 1],
+          end: [0, 5]
+        })
+        .status(types.italic, function (status) {
+          expect(status).to.be.false
+        })
+    })
+
+    it('return true when there are markups over multiple paragraphs', function () {
+      return utils
+        .init(
+          '<section>' +
+            '<p>1<em>2</em></p>' +
+            '<p><em>3</em>4</p>' +
+          '</section>', {
+          start: [0, 1],
+          end: [1, 1]
+        }).status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when there are markups over multiple section', function () {
+      return utils
+        .init(
+          '<section><p><em>123</em></p></section>' +
+          '<section><p><em>45</em>6</p></section>', {
+          start: [0, 0],
+          end: [1, 2]
+        }).status(types.italic, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when a link is partially selected (1)', function () {
+      return utils
+        .init('<section><p>12<a href="#">34</a></p></section>', {
+          start: [0, 1],
+          end: [0, 3]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when a link is partially selected (2)', function () {
+      return utils
+        .init('<section><p><a href="#">12</a>34</p></section>', {
+          start: [0, 1],
+          end: [0, 3]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when there’s a link in the selection', function () {
+      return utils
+        .init('<section><p>12<a href="/">3</a>456</p></section>', {
+          start: [0, 0],
+          end: [0, 6]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when there’s a link in a selected paragraph', function () {
+      return utils
+        .init(
+          '<section><p>12</p></section>' +
+          '<section><p><a href="/">34</a></p></section>' +
+          '<section><p>56</p></section>', {
+          start: [0, 0],
+          end: [2, 2]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when a link is wholly selected', function () {
+      return utils
+        .init('<section><p>1<a href="/">234</a>5</p></section>', {
+          start: [0, 1],
+          end: [0, 4]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.true
+        })
+    })
+
+    it('return true when the selection is within a link', function () {
+      return utils
+        .init('<section><p><a href="/">12345</a></p></section>', {
+          start: [0, 1],
+          end: [0, 4]
+        })
+        .status(types.link, function (status) {
+          expect(status).to.be.true
+        })
+    })
   })
 })

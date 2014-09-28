@@ -33,6 +33,14 @@ function shortcuts (Compose) {
 
       e.preventDefault()
       Formatter.inline.exec('italic')
+    } else if (e.keyCode === 75 && events.modKey(e)) {
+      // Mod+K
+
+      e.preventDefault()
+      if (Formatter.inline.status('link'))
+        Formatter.inline.exec('link')
+      else
+        Formatter.inline.exec('link', 'http://www.google.com')
     } else if (e.keyCode === 75 && e.shiftKey && events.modKey(e)) {
       // Mod+Shift+K
 
