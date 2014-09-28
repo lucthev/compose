@@ -7,41 +7,36 @@ var types
  * markups.forEach scenario, perhaps?
  */
 
-function overlaps (paragraph, type, start, end) {
+function forEachMarkup (paragraph, type, fn) {
   var markup,
       i
 
   for (i = 0; i < paragraph.markups.length; i += 1) {
     markup = paragraph.markups[i]
 
-    if (markup.type > type) break
     if (markup.type < type) continue
+    if (markup.type > type) break
 
-    if (markup.start <= start && markup.end >= end)
+    if (fn(markup))
       return true
   }
 
   return false
 }
 
+function overlaps (paragraph, type, start, end) {
+  return forEachMarkup(paragraph, type, function (markup) {
+    return markup.start <= start && markup.end >= end
+  })
+}
+
 function collapsed (paragraph, type, index) {
-  var atStart = index === 0 || paragraph.text[index - 1] === '\n',
-      markup,
-      i
+  var atStart = index === 0 || paragraph.text[index - 1] === '\n'
 
-  for (i = 0; i < paragraph.markups.length; i += 1) {
-    markup = paragraph.markups[i]
-
-    if (markup.type > type) break
-    if (markup.type < type) continue
-
-    if (atStart && markup.start <= index && markup.end >= index)
-      return true
-    if (markup.start < index && markup.end >= index)
-      return true
-  }
-
-  return false
+  return forEachMarkup(paragraph, type, function (markup) {
+    return (atStart && markup.start === index) ||
+      markup.start < index && markup.end >= index
+  })
 }
 
 /**
@@ -55,33 +50,20 @@ function collapsed (paragraph, type, index) {
  * @return {Boolean}
  */
 function link (paragraph, start, end) {
-  var collapsed,
-      markup,
-      i
+  var collapsed
 
-  if (end === undefined)
-    end = start
-
+  // End should be >= start, so if end === 0, start === 0 anyways.
+  end = end || start
   collapsed = start === end
 
-  for (i = 0; i < paragraph.markups.length; i += 1) {
-    markup = paragraph.markups[i]
-
-    if (markup.type > types.link) break
-    if (markup.type < types.link) continue
-
+  return forEachMarkup(paragraph, types.link, function (markup) {
     if (collapsed && markup.start < start && markup.end > end)
-      return markup
-    if (collapsed)
-      continue
+      return true
 
-    if (start <= markup.start && markup.start <= end ||
-        start <= markup.end && markup.end <= end ||
-        markup.start <= start && end <= markup.end)
-      return markup
-  }
-
-  return false
+    return !collapsed && (start <= markup.start && markup.start <= end ||
+      start <= markup.end && markup.end <= end ||
+      markup.start <= start && end <= markup.end)
+  })
 }
 
 /**
@@ -94,23 +76,14 @@ function link (paragraph, start, end) {
  * @param {Int >= 0} end
  */
 function removeLinks (paragraph, start, end) {
-  var markup,
-      i
+  end = end || start
 
-  if (end === undefined)
-    end = start
-
-  for (i = 0; i < paragraph.markups.length; i += 1) {
-    markup = paragraph.markups[i]
-
-    if (markup.type < types.link) continue
-    if (markup.type > types.link) break
-
+  return forEachMarkup(paragraph, link, function (markup) {
     if (markup.start <= start && start < markup.end ||
         markup.start < end && end <= markup.end ||
         markup.start >= start && markup.end <= end)
       paragraph.removeMarkup(markup)
-  }
+  })
 }
 
 function formatInline (Compose) {
@@ -150,7 +123,7 @@ function formatInline (Compose) {
       paragraph = View.paragraphs[startPair[0]]
 
       if (type === types.link)
-        return !!link(paragraph, startPair[1])
+        return link(paragraph, startPair[1])
 
       if (change[type] !== undefined)
         return change[type]
@@ -206,15 +179,24 @@ function formatInline (Compose) {
     debug((active ? 'Disabling: ' : 'Enabling: ') + type)
 
     if (sel.isCollapsed()) {
-      if (type === types.link && active) {
+      if (type === types.link) {
+        if (!active) return
+
         paragraph = View.paragraphs[startPair[0]].substr(0)
-        paragraph.removeMarkup(link(paragraph, startPair[1]))
+        start = startPair[1]
+
+        forEachMarkup(paragraph, type, function (markup) {
+          if (markup.start < start && markup.end > start) {
+            paragraph.removeMarkup(markup)
+            return true
+          }
+        })
 
         View.render(new Delta('paragraphUpdate', startPair[0], paragraph))
         Compose.once('render', function () {
           Selection.set(sel)
         })
-      } else if (type === types.link) {
+
         return
       }
 
