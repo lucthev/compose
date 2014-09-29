@@ -19,7 +19,7 @@ describe('Pressing the spacebar should', function () {
     return browser.get(utils.url())
   })
 
-  it('insert an &nbsp; at the end of a paragraph.', function () {
+  it('insert an &nbsp; at the end of a paragraph', function () {
     return utils
       .init('<section><p>One</p></section>', {
         start: [0, 3]
@@ -43,7 +43,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('insert a regular space in the middle of other characters.', function () {
+  it('insert a regular space in the middle of other characters', function () {
     return utils
       .init('<section><p>EverlastingLight</p></section>', {
         start: [0, 11]
@@ -67,7 +67,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('insert an &nbsp at the start of a paragraph.', function () {
+  it('insert an &nbsp at the start of a paragraph', function () {
     return utils
       .init('<section><p>El Camino</p></section>', {
         start: [0, 0]
@@ -91,7 +91,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('insert an nbsp; before a newline.', function () {
+  it('insert an nbsp; before a newline', function () {
     return utils
       .init('<section><p>One<br>Two</p></section>', {
         start: [0, 3]
@@ -115,7 +115,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('insert an &nbsp; after a newline.', function () {
+  it('insert an &nbsp; after a newline', function () {
     return utils
       .init('<section><p>One<br>Two</p></section>', {
         start: [0, 4]
@@ -139,7 +139,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('move the cursor forward when the next character is a space.', function () {
+  it('move the cursor forward when the next character is a space', function () {
     return utils
       .init('<section><p>One Two</p></section>', {
         start: [0, 3]
@@ -163,7 +163,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('do nothing when the previous char is a space.', function () {
+  it('do nothing when the previous char is a space', function () {
     return utils
       .init('<section><p>A sly fox.</p></section>', {
         start: [0, 2]
@@ -187,7 +187,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('should remove highlighted text.', function () {
+  it('should remove highlighted text', function () {
     return utils
       .init('<section><p>OneABCTwo</p></section>', {
         start: [0, 6],
@@ -212,7 +212,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('insert an &nbsp; when the text is selected to the end of a paragraph.', function () {
+  it('insert an &nbsp; when the text is selected to the end of a paragraph', function () {
     return utils
       .init('<section><p>OneABC</p></section>', {
         start: [0, 3],
@@ -237,7 +237,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('insert an &nbsp; when selected text starts at the beginning of a paragraph.', function () {
+  it('insert an &nbsp; when selected text starts at the beginning of a paragraph', function () {
     return utils
       .init('<section><p>ABCOne</p></section>', {
         start: [0, 0],
@@ -262,7 +262,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('remove paragraphs when the selection spans multiple.', function () {
+  it('remove paragraphs when the selection spans multiple', function () {
     return utils
       .init(
         '<section>' +
@@ -293,7 +293,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('remove sections when the selection spans multiple.', function () {
+  it('remove sections when the selection spans multiple', function () {
     return utils
       .init(
         '<section><p>One</p></section>' +
@@ -321,7 +321,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('convert a paragraph to an ordered list under special circumstances.', function () {
+  it('convert a paragraph to an ordered list under special circumstances', function () {
     return utils
       .init('<section><p>1.</p></section>', {
         start: [0, 2]
@@ -372,7 +372,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('not convert anything but a <p> to an <ol>.', function () {
+  it('not convert anything but a <p> to an <ol>', function () {
     return utils
       .init('<section><h2>1.</h2></section>', {
         start: [0, 2]
@@ -396,7 +396,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('it should convert a <p> to an <ul> when the paragraph starts with -.', function () {
+  it('it should convert a <p> to an <ul> when the paragraph starts with -', function () {
     return utils
       .init('<section><p>-</p></section>', {
         start: [0, 1]
@@ -423,7 +423,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('it should convert a <p> to an <ul> when the paragraph starts with *.', function () {
+  it('it should convert a <p> to an <ul> when the paragraph starts with *', function () {
     return utils
       .init('<section><p>*</p></section>', {
         start: [0, 1]
@@ -450,7 +450,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('not convert a <p> to an <ul> when the caret is not after the */-.', function () {
+  it('not convert a <p> to an <ul> when the caret is not after the */-', function () {
     return utils
       .init('<section><p>*</p></section>', {
         start: [0, 0]
@@ -474,7 +474,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('not convert anything but a <p> to an <ul>.', function () {
+  it('not convert anything but a <p> to an <ul>', function () {
     return utils
       .init('<section><pre>-</pre></section>', {
         start: [0, 1]
@@ -498,7 +498,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('not create multiple adjacent spaces when one precedes a non-collapsed selection.', function () {
+  it('not create multiple adjacent spaces when one precedes a non-collapsed selection', function () {
     return utils
       .init('<section><p>One ABCTwo</p></section>', {
         start: [0, 4],
@@ -523,7 +523,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('not create multiple adjacent spaces when one follows a non-collapsed selection.', function () {
+  it('not create multiple adjacent spaces when one follows a non-collapsed selection', function () {
     return utils
       .init('<section><p>OneABC Two</p></section>', {
         start: [0, 3],
@@ -548,7 +548,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('not keep multiple adjacent spaces when a non-collapsed selection in surrounded by spaces.', function () {
+  it('not keep multiple adjacent spaces when a non-collapsed selection in surrounded by spaces', function () {
     return utils
       .init('<section><p>One ABC Two</p></section>', {
         start: [0, 4],
@@ -623,7 +623,7 @@ describe('Pressing the spacebar should', function () {
       })
   })
 
-  it('deal with trailing <br>s, if they exist.', function () {
+  it('deal with trailing <br>s, if they exist', function () {
     return utils
       .init('<section><p>One<br></p></section>', {
         start: [0, 3]
@@ -643,6 +643,54 @@ describe('Pressing the spacebar should', function () {
         expect(sel).to.deep.equal({
           start: [0, 4],
           end: [0, 4]
+        })
+      })
+  })
+
+  it('extend non-link markups', function () {
+    return utils
+      .init('<section><p><strong><em>1</em></strong></p></section>', {
+        start: [0, 1]
+      })
+      .keys(keys.SPACE)
+      .result(function (tree, sel) {
+        expect(tree).to.resemble([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            html: '<strong><em>1&nbsp;</em></strong>'
+          }]
+        }])
+
+        expect(sel).to.deep.equal({
+          start: [0, 2],
+          end: [0, 2]
+        })
+      })
+  })
+
+  it('not extend links', function () {
+    return utils
+      .init('<section><p><a href="/x">1</a></p></section>', {
+        start: [0, 1]
+      })
+      .keys(keys.SPACE)
+      .result(function (tree, sel) {
+        expect(tree).to.resemble([{
+          name: 'section',
+          children: [{
+            name: 'hr'
+          }, {
+            name: 'p',
+            html: '<a href="/x">1</a>&nbsp;'
+          }]
+        }])
+
+        expect(sel).to.deep.equal({
+          start: [0, 2],
+          end: [0, 2]
         })
       })
   })

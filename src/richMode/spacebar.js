@@ -1,7 +1,8 @@
 'use strict';
 
 function Spacebar (Compose) {
-  var Selection = Compose.require('selection'),
+  var types = Compose.require('serialize').types,
+      Selection = Compose.require('selection'),
       events = Compose.require('events'),
       Delta = Compose.require('delta'),
       View = Compose.require('view'),
@@ -16,6 +17,7 @@ function Spacebar (Compose) {
         textIndex,
         startPair,
         endPair,
+        space,
         start,
         end,
         last,
@@ -78,9 +80,16 @@ function Spacebar (Compose) {
     } else if (!spaceRegex.test(end.text[0])) {
       if (!end.text || !start.text || start.text[start.length - 1] === '\n' ||
           end.text[0] === '\n')
-        start = start.append(nbsp)
+        space = nbsp
       else
-        start = start.append(' ')
+        space = ' '
+
+      start.markups.forEach(function (markup) {
+        if (markup.type !== types.link && markup.end === start.length)
+          markup.end += 1
+      })
+
+      start.text += space
     }
 
     start = start.append(end)
