@@ -11,7 +11,8 @@ var getChildren = require('./getChildren'),
     Spacebar = require('./spacebar'),
     ViewPlugin = require('./view'),
     Setup = require('./setup'),
-    Enter = require('./enterKey')
+    Enter = require('./enterKey'),
+    Cut = require('./cut')
 
 function RichMode (Compose) {
   Compose.provide('classes', {
@@ -23,7 +24,7 @@ function RichMode (Compose) {
 
   /**
    * This is a kind of advance declaration of the 'formatter' module;
-   * it is not used by any plugins until user events occer, but must
+   * it is not used by any plugins until user events occur, but must
    * be present when they are initialized.
    */
   Compose.provide('formatter', {})
@@ -36,6 +37,7 @@ function RichMode (Compose) {
 
   Compose.use(Enter)
   Compose.use(Backspace)
+  Compose.use(Cut)
   Compose.use(Spacebar)
   Compose.use(SmartText)
 
@@ -48,7 +50,7 @@ function RichMode (Compose) {
   // Trim trailing <br>s:
   Compose.on('paragraphUpdate', function (index, paragraph) {
 
-    // FIXME: this only works because replace mutates serializations.
+    // FIXME: this only works because 'replace' mutates serializations.
     if (/.\n$/.test(paragraph.text)) {
       paragraph.replace(/\n$/, '')
     }
