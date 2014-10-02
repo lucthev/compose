@@ -79,7 +79,7 @@ function SelectionPlugin (Compose) {
   }
 
   Selection.get = function () {
-    return current
+    return current && current.clone()
   }
 
   Compose.provide('selection', Selection)

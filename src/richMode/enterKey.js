@@ -34,14 +34,12 @@ function Enter (Compose) {
     type = start.type
 
     if (e.shiftKey && start.text[startPair[1] - 1] === '\n') {
-      startPair = startPair.slice()
       startPair[1] -= 1
       fallthrough = true
     }
 
     if (e.shiftKey && end.text[endPair[1]] === '\n' &&
       endPair[1] < end.length - 1) {
-        endPair = endPair.slice()
         endPair[1] += 1
         fallthrough = true
       }

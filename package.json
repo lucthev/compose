@@ -41,7 +41,7 @@
     "vinyl-source-stream": "^1.0.0"
   },
   "dependencies": {
-    "choice": "1.0.0",
+    "choice": "~1.1.0",
     "component-emitter": "1.1.3",
     "serialize-elem": "2.1.3"
   }

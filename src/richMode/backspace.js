@@ -59,7 +59,6 @@ function Backspace (Compose) {
           return
         }
 
-        startPair = startPair.slice()
         startPair[0] -= 1
         start = View.paragraphs[startPair[0]]
 
@@ -68,7 +67,6 @@ function Backspace (Compose) {
         else
           startPair[1] = start.length
       } else if (backspace) {
-        startPair = startPair.slice()
         startPair[1] -= 1
       } else if ((textIndex === start.length - 1 && /\n$/.test(start.text)) ||
           textIndex === start.length) {
@@ -83,11 +81,9 @@ function Backspace (Compose) {
           return
         }
 
-        endPair = endPair.slice()
         endPair[0] += 1
         endPair[1] = 0
       } else {
-        endPair = endPair.slice()
         endPair[1] += 1
       }
     }

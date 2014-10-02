@@ -206,7 +206,7 @@ function formatInline (Compose) {
         change[type] = !active
 
       if (!waiting)
-        waiting = new Selection(sel.start.slice())
+        waiting = sel.clone()
 
       return
     }
@@ -267,7 +267,7 @@ function formatInline (Compose) {
       return cancel('sync conditions not met')()
 
     paragraph = paragraph.substr(0)
-    sel = new Selection(sel.start.slice())
+    sel = sel.clone()
 
     types.forEach(function (type) {
       paragraph[change[type] ? 'addMarkups' : 'removeMarkup']({
