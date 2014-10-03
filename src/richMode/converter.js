@@ -1,6 +1,26 @@
 'use strict';
 
 /**
+ * ConversionEvent(from, to) creates a conversion event object; 'from'
+ * and 'to' are the start and end products of the conversion,
+ * respectively.
+ *
+ * @param {Element || Object} from
+ * @param {Element || Object} to
+ */
+function ConversionEvent (from, to) {
+  this.from = from
+  this.to = to
+
+  this.direction = from.nodeType ? 'object' : 'element'
+
+  if ((from.nodeType ? from : to).nodeName === 'SECTION')
+    this.type = 'section'
+  else
+    this.type = 'paragraph'
+}
+
+/**
  * A module for converting between elements and their abstract
  * representations. Also defines what types of paragraphs are allowed.
  *
@@ -8,14 +28,21 @@
  *
  * @require {serialize}
  * @provide {converter}
+ * @emit {conversion}
  */
 function Converter (Compose) {
   var Serialize = Compose.require('serialize'),
-      listRegex = /^[ou]l$/,
       allowed
 
   // The allowed paragraph types.
-  allowed = ['p', 'h2', 'h3', 'pre', 'blockquote', 'li']
+  allowed = {
+    p: 1,
+    h2: 1,
+    h3: 1,
+    pre: 1,
+    blockquote: 1,
+    li: 1
+  }
 
   /**
    * allows(name) determines if an element with the given name is allowed
@@ -25,13 +52,8 @@ function Converter (Compose) {
    * @return {Boolean}
    */
   function allows (name) {
-    return !!allows[name.toLowerCase()]
+    return !!allowed[name.toLowerCase()]
   }
-
-  // So the allows can be used as an object.
-  allowed.forEach(function (key) {
-    allows[key] = 1
-  })
 
   /**
    * toParagraph(elem) converts an element to a serialization. The
@@ -43,7 +65,8 @@ function Converter (Compose) {
    * @return {Serialize}
    */
   function toParagraph (elem) {
-    var result = new Serialize(elem)
+    var result = new Serialize(elem),
+        evt
 
     if (elem.nodeName === 'LI' && elem.parentNode)
       result.type = elem.parentNode.nodeName.toLowerCase()
@@ -53,7 +76,10 @@ function Converter (Compose) {
     if (elem.hasAttribute('data-align'))
       result.align = elem.getAttribute('data-align')
 
-    return result
+    evt = new ConversionEvent(elem, result)
+    Compose.emit('conversion', evt)
+
+    return evt.to
   }
 
   /**
@@ -71,9 +97,10 @@ function Converter (Compose) {
   function toElement (paragraph) {
     var type = paragraph.type,
         base,
-        elem
+        elem,
+        evt
 
-    if (listRegex.test(type)) {
+    if (/^[ou]l$/.test(type)) {
       paragraph.type = 'li'
       base = paragraph.toElement()
       paragraph.type = type
@@ -93,7 +120,10 @@ function Converter (Compose) {
     if (paragraph.align)
       base.setAttribute('data-align', paragraph.align)
 
-    return base
+    evt = new ConversionEvent(paragraph, base)
+    Compose.emit('conversion', evt)
+
+    return evt.to
   }
 
   /**
@@ -130,7 +160,8 @@ function Converter (Compose) {
    * @return {Object}
    */
   function toSectionObj (elem) {
-    var section = {}
+    var section = {},
+        evt
 
     if (!elem) return section
 
@@ -138,8 +169,10 @@ function Converter (Compose) {
       throw new Error('Cannot create a section object for ' + elem)
 
     // TODO: things with sections.
+    evt = new ConversionEvent(elem, section)
+    Compose.emit('conversion', evt)
 
-    return section
+    return evt.to
   }
 
   /**
@@ -152,7 +185,8 @@ function Converter (Compose) {
    */
   function toSectionElem (section) {
     var elem = document.createElement('section'),
-        hr = document.createElement('hr')
+        hr = document.createElement('hr'),
+        evt
 
     hr.setAttribute('contenteditable', false)
     elem.appendChild(hr)
@@ -160,8 +194,10 @@ function Converter (Compose) {
     if (!section) return elem
 
     // TODO: things with sections.
+    evt = new ConversionEvent(section, elem)
+    Compose.emit('conversion', evt)
 
-    return elem
+    return evt.to
   }
 
   Compose.provide('converter', {
