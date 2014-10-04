@@ -43,25 +43,29 @@ exports.keys = function () {
 }
 
 exports.result = function (fn) {
-  return browser.executeScript(function () {
-    /* global tree */
-    var elem = window.editor.elem,
-        children = [],
-        sel
+  return browser.executeAsyncScript(function () {
+    var cb = arguments[arguments.length - 1]
 
-    Array.prototype.forEach.call(elem.childNodes, function (child) {
-      this.push(tree(child))
-    }, children)
+    setTimeout(function () {
+      /* global tree */
+      var elem = window.editor.elem,
+          children = [],
+          sel
 
-    sel = window.editor.plugins.selection.get()
+      Array.prototype.forEach.call(elem.childNodes, function (child) {
+        this.push(tree(child))
+      }, children)
 
-    return {
-      children: children,
-      sel: {
-        start: sel.start,
-        end: sel.end
-      }
-    }
+      sel = window.editor.plugins.selection.get()
+
+      cb({
+        children: children,
+        sel: {
+          start: sel.start,
+          end: sel.end
+        }
+      })
+    }, 100)
   }).then(function (obj) {
     fn(obj.children, obj.sel)
   })
@@ -254,6 +258,9 @@ before(function () {
     .usingServer(address)
     .withCapabilities(desired)
     .build()
+
+  // Set a higher timeout for async WD scripts; the default seems to be 1ms?
+  browser.manage().timeouts().setScriptTimeout(2000)
 
   exports.browser = browser
 })
