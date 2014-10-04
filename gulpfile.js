@@ -3,7 +3,6 @@
 var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     browserify = require('browserify'),
-    vinyl = require('vinyl-source-stream'),
     uglify = require('gulp-uglify'),
     jshint = require('gulp-jshint'),
     Mocha = require('mocha'),
@@ -26,8 +25,7 @@ gulp.task('browserify', function () {
       console.log(err.toString())
       this.emit('end')
     })
-    .pipe(vinyl('compose.min.js'))
-    .pipe(gulp.dest('dist'))
+    .pipe(fs.createWriteStream('dist/compose.min.js'))
 })
 
 gulp.task('minify', ['browserify'], function () {
