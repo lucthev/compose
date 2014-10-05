@@ -1,14 +1,24 @@
 'use strict';
 
+function ancestor (node) {
+  while (node.parentNode)
+    node = node.parentNode
+
+  return node
+}
+
 function Cut (Compose) {
   var debug = Compose.require('debug')('compose:cut'),
       Selection = Compose.require('selection'),
+      Converter = Compose.require('converter'),
       Delta = Compose.require('delta'),
       View = Compose.require('view'),
+      dom = Compose.require('dom'),
       startSpace = /^[\u00A0 \u200A]/,
       endSpace = /[\u00A0 \u200A]$/,
       nbsp = '\u00A0'
 
+  // FIXME: does the charset of the document affect copied HTML?
   Compose.on('cut', function (e) {
     var sel = Selection.get(),
         cutHtml = '<meta charset="UTF-8">',
@@ -16,6 +26,8 @@ function Cut (Compose) {
         paragraph,
         startPair,
         endPair,
+        current,
+        before,
         start,
         end,
         i
@@ -28,7 +40,8 @@ function Cut (Compose) {
     for (i = startPair[0]; i <= endPair[0]; i += 1) {
       paragraph = View.paragraphs[i]
       start = i === startPair[0] ? startPair[1] : 0
-      end = i === endPair[0] ? endPair[1] :
+      end = i === endPair[0] ?
+        endPair[1] :
         paragraph.length - Number(/.\n$/.test(paragraph.text))
 
       paragraph = paragraph.substring(start, end)
@@ -38,14 +51,39 @@ function Cut (Compose) {
         cutText += '\n\n'
 
       cutText += paragraph.text
-      cutHtml += paragraph.toElement().outerHTML
 
       if (i !== startPair[0] && View.isSectionStart(i))
         View.render(new Delta('sectionDelete', startPair[0] + 1))
 
       if (i !== startPair[0])
         View.render(new Delta('paragraphDelete', startPair[0] + 1))
+
+      if (!before) {
+        before = ancestor(Converter.toElement(paragraph))
+        continue
+      }
+
+      current = ancestor(Converter.toElement(paragraph))
+
+      while (Converter.canMerge(current, before)) {
+        before = before.lastChild
+
+        while (current.lastChild)
+          dom.after(before, dom.remove(current.lastChild))
+
+        current = before.nextSibling
+      }
+
+      if (current !== ancestor(current)) {
+        before = ancestor(current)
+        continue
+      }
+
+      cutHtml += before.outerHTML
+      before = ancestor(current)
     }
+
+    cutHtml += before.outerHTML
 
     start = View.paragraphs[startPair[0]].substr(0, startPair[1])
     end = View.paragraphs[endPair[0]].substr(endPair[1])

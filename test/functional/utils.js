@@ -43,9 +43,7 @@ exports.keys = function () {
 }
 
 exports.result = function (fn) {
-  return browser.executeAsyncScript(function () {
-    var cb = arguments[arguments.length - 1]
-
+  return browser.executeAsyncScript(function (cb) {
     setTimeout(function () {
       /* global tree */
       var elem = window.editor.elem,
@@ -189,6 +187,44 @@ exports.status = function (type, cb) {
   return browser.executeScript(function (type) {
     return window.editor.plugins.formatter.inline.status(type)
   }, type).then(cb)
+}
+
+exports.cut = function (cb) {
+  browser.executeScript(function () {
+    var evt = {},
+        data = {},
+        elem
+
+    // There doesn’t seem to be a good way to mimick the cut event.
+    evt.preventDefault = function () {}
+    evt.type = 'cut'
+    evt.currentTarget = evt.target = window.editor.elem
+    evt.clipboardData = {
+      clearData: function () {},
+      setData: function (type, toCopy) {
+        if (/plain/.test(type))
+          type = 'text'
+        else if (/html/.test(type))
+          type = 'html'
+
+        data[type] = toCopy
+      }
+    }
+
+    window.editor.emit('cut', evt)
+    if (data.html) {
+      elem = document.createElement('div')
+      elem.innerHTML = data.html.replace(/<meta charset="UTF-8">/i, '')
+      data.children = []
+      Array.prototype.forEach.call(elem.childNodes, function (child) {
+        this.push(tree(child))
+      }, data.children)
+    }
+
+    return data
+  }).then(cb)
+
+  return exports
 }
 
 exports.url = function () {
