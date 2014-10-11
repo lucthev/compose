@@ -18,10 +18,9 @@ function Cut (Compose) {
       endSpace = /[\u00A0 \u200A]$/,
       nbsp = '\u00A0'
 
-  // FIXME: does the charset of the document affect copied HTML?
   Compose.on('cut', function (e) {
     var sel = Selection.get(),
-        cutHtml = '<meta charset="UTF-8">',
+        cutHtml = '',
         cutText = '',
         paragraph,
         startPair,
