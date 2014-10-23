@@ -32,7 +32,7 @@ function Sanitize (Compose) {
    * @return {Object}
    */
   function sanitize (html) {
-    var container = document.createElement('div'),
+    var container = dom.create('div'),
         forEach = Array.prototype.forEach,
         paragraphs = [],
         sections = [],
@@ -53,7 +53,7 @@ function Sanitize (Compose) {
 
     collapseWhitespace(container)
 
-    node = container
+    node = firstChild(container)
     while (node) {
       if (!dom.isText(node) && !dom.isElem(node)) {
         next = nextSibling(node)
@@ -64,7 +64,7 @@ function Sanitize (Compose) {
 
       // Wrap stray inline nodes in <p> elements.
       if (!dom.isBlock(node)) {
-        elem = document.createElement('p')
+        elem = dom.create('p')
         dom.replace(node, elem)
         elem.appendChild(node)
 
@@ -91,6 +91,7 @@ function Sanitize (Compose) {
         if (name === 'SECTION' || name === 'HR') {
           section = Converter.toSectionObj(name !== 'HR' ? node : null)
           section.start = paragraphs.length
+          sections.push(section)
         }
 
         while (node.lastChild)
@@ -136,11 +137,8 @@ function Sanitize (Compose) {
     }
 
     // Make sure there’s a section starting at index 0.
-    if (!sections.length || sections[0].start !== 0) {
-      section = Converter.toSectionObj()
-      section.start = 0
-      sections.unshift(section)
-    }
+    if (sections[0])
+      sections[0].start = 0
 
     // Remove sections starting at the same index.
     for (i = 1; i < sections.length; i += 1) {

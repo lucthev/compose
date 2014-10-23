@@ -20,9 +20,29 @@ exports.isText = function (node) {
   return node && node.nodeType === Node.TEXT_NODE
 }
 
-var blocks = ['ADDRESS', 'ASIDE', 'BLOCKQUOTE', 'FIGURE', 'FIGCAPTION',
-      'FOOTER', 'H[1-6]', 'HEADER', 'OL', 'UL', 'LI', 'P', 'PRE'],
-    blockRegex = new RegExp('^(' + blocks.join('|') + ')$')
+var blocks = {
+  ADDRESS: 1,
+  ASIDE: 1,
+  BLOCKQUOTE: 1,
+  DIV: 1,
+  FIGCAPTION: 1,
+  FIGURE: 1,
+  FOOTER: 1,
+  H1: 1,
+  H2: 1,
+  H3: 1,
+  H4: 1,
+  H5: 1,
+  H6: 1,
+  HEADER: 1,
+  HR: 1,
+  LI: 1,
+  OL: 1,
+  P: 1,
+  PRE: 1,
+  SECTION: 1,
+  UL: 1
+}
 
 /**
  * isBlock(elem) determines if an element is a block element
@@ -32,21 +52,36 @@ var blocks = ['ADDRESS', 'ASIDE', 'BLOCKQUOTE', 'FIGURE', 'FIGCAPTION',
  * @return {Boolean}
  */
 exports.isBlock = function (elem) {
-  return exports.isElem(elem) && blockRegex.test(elem.nodeName)
+  return !!(exports.isElem(elem) && blocks[elem.nodeName])
 }
 
-var inlines = ['B', 'I', 'EM', 'STRONG', 'A', 'SUB', 'SUP', 'CODE', 'IMG'],
-    inlineRegex = new RegExp('^(' + inlines.join('|') + ')$')
+var inlines = {
+  A: 1,
+  ABBR: 1,
+  B: 1,
+  BIG: 1,
+  CITE: 1,
+  CODE: 1,
+  EM: 1,
+  I: 1,
+  IMG: 1,
+  Q: 1,
+  SAMP: 1,
+  SMALL: 1,
+  STRONG: 1,
+  SUB: 1,
+  SUP: 1
+}
 
 /**
- * isInline(elem) determines if an element is a block element
+ * isInline(elem) determines if an element is an inline element
  * according to the above RegExp. Hardly comprehensive.
  *
  * @param {Node} elem
  * @return {Boolean}
  */
 exports.isInline = function (elem) {
-  return exports.isElem(elem) && inlineRegex.test(elem.nodeName)
+  return !!(exports.isElem(elem) && inlines[elem.nodeName])
 }
 
 /**
@@ -68,7 +103,7 @@ exports.remove = function (node) {
  * Returns the inserted node.
  *
  * @param {Node} node
- * @param {Node}
+ * @param {Node} after
  * @return {Node}
  */
 exports.after = function (node, after) {
@@ -76,15 +111,50 @@ exports.after = function (node, after) {
 }
 
 /**
+ * before(node, before) inserts the node 'before' before the node 'node'.
+ * Returns the inserted node.
+ *
+ * @param {Node} node
+ * @param {Node} before
+ * @return {Node}
+ */
+exports.before = function (node, before) {
+  return node.parentNode.insertBefore(before, node)
+}
+
+/**
  * replace(node, other) replaces the node 'node' with the node 'other'.
  * Returns the replaced node ('node', in this case).
  *
  * @param {Node} node
- * @param {Node} after
+ * @param {Node} other
  * @return {Node}
  */
 exports.replace = function (node, other) {
   return node.parentNode.replaceChild(other, node)
+}
+
+/**
+ * prepend(child, parent) is like parent.appendChild(child), but the
+ * child will become the parent’s firstChild. Returns the appended
+ * child.
+ *
+ * @param {Node} child
+ * @param {Node} parent
+ * @return {Node}
+ */
+exports.prepend = function (child, parent) {
+  return parent.insertBefore(child, parent.firstChild)
+}
+
+/**
+ * create(tag) is a thin wrapper around document.createElement().
+ *
+ * @param {String} tag
+ * @return {Element}
+ */
+exports.create = function (tag) {
+  return document.createElement(tag)
 }
 
 /**

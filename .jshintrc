@@ -1,5 +1,6 @@
 {
   "asi": true,
+  "boss": true,
   "quotmark": "single",
   "undef": true,
   "unused": true,
