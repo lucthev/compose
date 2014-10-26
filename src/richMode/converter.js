@@ -68,7 +68,11 @@ function Converter (Compose) {
     var result = new Serialize(elem),
         evt
 
-    if (elem.nodeName === 'LI' && elem.parentNode)
+    // <li>s arbitrarily default to being ordered list items.
+    if (elem.nodeName === 'LI' && (!elem.parentNode ||
+        !/^[OU]L$/.test(elem.parentNode.nodeName)))
+      result.type = 'OL'
+    else if (elem.nodeName === 'LI')
       result.type = elem.parentNode.nodeName.toLowerCase()
     else if (elem.classList.contains('pullquote'))
       result.type = 'pullquote'
