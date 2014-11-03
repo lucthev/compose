@@ -2,6 +2,7 @@
 
 var getChildren = require('./getChildren'),
     Converter = require('./converter'),
+    Sanitize = require('./sanitize'),
     SelectionPlugin = require('../selection'),
     Shortcuts = require('./shortcuts'),
     Backspace = require('./backspace'),
@@ -30,6 +31,7 @@ function RichMode (Compose) {
   Compose.provide('formatter', {})
 
   Compose.use(Converter)
+  Compose.use(Sanitize)
   Compose.use(getChildren)
   Compose.use(SelectionPlugin)
   Compose.use(ViewPlugin)

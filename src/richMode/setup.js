@@ -4,127 +4,57 @@
  * This module sets up the editor when in rich mode. Adds the paragraphs
  * to the view, etc.
  *
- * @require {getChildren, converter, classes, view, dom}
+ * TODO: “strict” version?
  */
 function setup (Compose) {
-  var getChildren = Compose.require('getChildren'),
-      Converter = Compose.require('converter'),
+  var Converter = Compose.require('converter'),
+      sanitize = Compose.require('sanitize'),
       classes = Compose.require('classes'),
+      Delta = Compose.require('delta'),
       View = Compose.require('view'),
       dom = Compose.require('dom'),
-      listRegex = /^[OU]L$/,
-      numChildren = 0,
-      sectionObj,
+      elem = Compose.elem,
       paragraph,
       section,
-      next,
-      li,
-      hr
+      result
 
-  section = Compose.elem.firstChild
-  while (section) {
-    if (section.nodeName !== 'SECTION') {
-      next = section.nextSibling
-      dom.remove(section)
-      section = next
-      continue
-    }
+  result = sanitize(elem.innerHTML)
+  while (elem.firstChild)
+    dom.remove(elem.firstChild)
 
-    hr = section.firstChild
-    if (!hr || hr.nodeName !== 'HR')
-      hr = section.insertBefore(document.createElement('hr'), hr)
-    hr.setAttribute('contenteditable', false)
+  section = Converter.toSectionElem('section')
+  section.className = classes.firstSection + ' ' + classes.lastSection
 
-    paragraph = hr.nextSibling
-    while (paragraph) {
-      if (!Converter.allows(paragraph.nodeName) &&
-          !listRegex.test(paragraph.nodeName)) {
-        next = paragraph.nextSibling
-        dom.remove(paragraph)
-        paragraph = next
-        continue
-      }
+  paragraph = dom.create('p')
+  paragraph.appendChild(dom.create('br'))
+  paragraph.className = classes.firstParagraph + ' ' + classes.lastParagraph
 
-      if (listRegex.test(paragraph.nodeName)) {
-        li = paragraph.firstChild
+  section.appendChild(paragraph)
+  elem.appendChild(section)
 
-        while (li) {
-          if (li.nodeName !== 'LI') {
-            next = li.nextSibling
-            dom.remove(li)
-            li = next
-            continue
-          }
+  section = Converter.toSectionObj(section)
+  section.start = 0
+  View.paragraphs.push(Converter.toParagraph(paragraph))
+  View.sections.push(section)
 
-          View.paragraphs.push(Converter.toParagraph(li))
+  result.paragraphs = result.paragraphs.map(function (paragraph, index) {
+    if (index === 0)
+      return new Delta('paragraphUpdate', index, paragraph)
 
-          li = li.nextSibling
-        }
+    return new Delta('paragraphInsert', index, paragraph)
+  })
 
-        if (!paragraph.firstChild) {
-          next = paragraph.nextSibling
-          dom.remove(paragraph)
-          paragraph = next
-          continue
-        }
-      } else {
-        View.paragraphs.push(Converter.toParagraph(paragraph))
-      }
+  result.sections = result.sections.map(function (section, index) {
+    if (index === 0)
+      return new Delta('sectionUpdate', section.start, section)
 
-      paragraph = paragraph.nextSibling
-    }
+    return new Delta('sectionInsert', section.start, section)
+  })
 
-    if (section.childNodes.length === 1) {
-      // We’ve removed all paragraphs.
-
-      next = section.nextSibling
-      dom.remove(section)
-      section = next
-      continue
-    }
-
-    paragraph = section.childNodes[1]
-    if (listRegex.test(paragraph.nodeName))
-      paragraph = paragraph.firstChild
-
-    paragraph.classList.add(classes.firstParagraph)
-
-    paragraph = section.lastChild
-    if (listRegex.test(paragraph.nodeName))
-      paragraph = paragraph.lastChild
-
-    paragraph.classList.add(classes.lastParagraph)
-
-    sectionObj = Converter.toSectionObj(section)
-    sectionObj.start = numChildren
-    View.sections.push(sectionObj)
-    numChildren += section.childNodes.length - 1
-
-    section = section.nextSibling
-  }
-
-  if (!Compose.elem.firstChild) {
-    section = Converter.toSectionElem()
-    paragraph = document.createElement('p')
-    paragraph.appendChild(document.createElement('br'))
-    section.appendChild(paragraph)
-    Compose.elem.appendChild(section)
-
-    paragraph.classList.add(classes.firstParagraph)
-    paragraph.classList.add(classes.lastParagraph)
-
-    sectionObj = Converter.toSectionObj(section)
-    sectionObj.start = 0
-    View.sections.push(sectionObj)
-    View.paragraphs.push(Converter.toParagraph(paragraph))
-  }
-
-  Compose.elem.firstChild.classList.add(classes.firstSection)
-  Compose.elem.lastChild.classList.add(classes.lastSection)
-
-  if (Compose.elem.childNodes.length !== View.sections.length ||
-      getChildren().length !== View.paragraphs.length)
-    throw new Error('Failed to properly initialize Compose.')
+  View
+    .render(result.paragraphs)
+    .render(result.sections)
+    ._render()
 }
 
 module.exports = setup
