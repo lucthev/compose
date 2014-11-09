@@ -22,6 +22,7 @@ exports.isText = function (node) {
 
 var blocks = {
   ADDRESS: 1,
+  ARTICLE: 1,
   ASIDE: 1,
   BLOCKQUOTE: 1,
   DIV: 1,
