@@ -19,6 +19,12 @@ function setup (Compose) {
       result
 
   result = sanitize(elem.innerHTML)
+  if (!result.sections[0] || result.sections[0].start !== 0) {
+    section = Converter.toSectionObj()
+    section.start = 0
+    result.sections.unshift(section)
+  }
+
   while (elem.firstChild)
     dom.remove(elem.firstChild)
 

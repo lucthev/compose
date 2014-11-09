@@ -136,10 +136,6 @@ function Sanitize (Compose) {
       node = nextSibling(node)
     }
 
-    // Make sure there’s a section starting at index 0.
-    if (sections[0])
-      sections[0].start = 0
-
     // Remove sections starting at the same index.
     for (i = 1; i < sections.length; i += 1) {
       if (sections[i].start === sections[i - 1].start)
