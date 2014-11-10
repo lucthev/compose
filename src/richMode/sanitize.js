@@ -136,9 +136,15 @@ function Sanitize (Compose) {
       node = nextSibling(node)
     }
 
-    // Remove sections starting at the same index.
-    for (i = 1; i < sections.length; i += 1) {
-      if (sections[i].start === sections[i - 1].start)
+    // Remove sections starting at the same index, or starting at an
+    // invalid index.
+    for (i = 0; i < sections.length; i += 1) {
+      if (sections[i].start >= paragraphs.length) {
+        sections = sections.slice(0, i - 1)
+        break
+      }
+
+      if (sections[i - 1] && sections[i].start === sections[i - 1].start)
         sections.splice(i - 1, 1)
     }
 
