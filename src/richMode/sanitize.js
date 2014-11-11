@@ -19,8 +19,65 @@ function firstChild (node) {
 
 function Sanitize (Compose) {
   var debug = Compose.require('debug')('compose:sanitizer'),
+      types = Compose.require('serialize').types,
       Converter = Compose.require('converter'),
-      dom = Compose.require('dom')
+      dom = Compose.require('dom'),
+      nbsp = '\u00A0',
+      simpleText
+
+  // Smart text things.
+  simpleText = /(?:\.\.\.|<3|:\)|:\(|[\-–—]>|'|")/g
+  function replacer (paragraph) {
+    return function (match, index, string) {
+      var before = string[index - 1],
+          end = index + match.length,
+          markup,
+          i
+
+      for (i = 0; i < paragraph.markups.length; i += 1) {
+        markup = paragraph.markups[i]
+
+        if (markup.type < types.code) continue
+        if (markup.type > types.code) break
+
+        // If the matched simple text overlaps a <code> markup, do nothing.
+        if (index >= markup.start && index < markup.end ||
+            end > markup.start && end <= markup.end)
+          return match
+      }
+
+      switch (match) {
+        case '...':
+          return '…'
+        case '<3':
+          return '❤'
+        case ':)':
+          return '☺'
+        case ':(':
+          return '☹'
+        case '->': // Regular dash
+        case '\u2013>': // En dash
+        case '\u2014>': // Em dash
+          return '→'
+        case '\'':
+          if (!before || /[\s\(\[\{]/.test(before))
+            return '‘'
+          if (/\d/.test(before))
+            return '′'
+
+          return '’'
+        case '"':
+          if (!before || /[\s\(\[\{]/.test(before))
+            return '“'
+          if (/\d/.test(before))
+            return '″'
+
+          return '”'
+        default:
+          return match
+      }
+    }
+  }
 
   /**
    * Sanitize(html) takes a string of html as its only parameter and
@@ -130,6 +187,18 @@ function Sanitize (Compose) {
       // block element. We’ll assume that these block elements do not
       // contain other block elements.
       paragraph = Converter.toParagraph(node)
+      if (paragraph.type !== 'pre') {
+
+        // Remove consecutive spaces
+        paragraph = paragraph
+          .replace(/[^\S\n]{2,}/g, ' ')
+          .replace(/^[^\S\n\u00A0]/, nbsp)
+          .replace(/[^\S\n\u00A0]$/, nbsp)
+
+          // Smart text things
+          .replace(simpleText, replacer(paragraph))
+      }
+
       if (paragraph.text)
         paragraphs.push(paragraph)
 
