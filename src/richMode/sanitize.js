@@ -98,6 +98,7 @@ function Sanitize (Compose) {
         elem,
         next,
         name,
+        type,
         node,
         obj,
         i
@@ -160,19 +161,19 @@ function Sanitize (Compose) {
         continue
       }
 
-      if (/^[OU]L$/.test(name)) {
-        node = firstChild(node)
-        continue
-      }
-
       // <blockquote>s and <li>s can contain other block children.
       // We change the types of those children to match their parent.
-      if (name === 'BLOCKQUOTE' || name === 'LI') {
+      if (/^[OU]L$/.test(name) || name === 'BLOCKQUOTE' || name === 'LI') {
         obj = sanitize(node.innerHTML)
-        paragraph = Converter.toParagraph(node)
+
+        if (/^[OU]L$/.test(name)) {
+          type = name.toLowerCase()
+        } else {
+          type = Converter.toParagraph(node).type
+        }
 
         for (i = 0; i < obj.paragraphs.length; i += 1)
-          obj.paragraphs[i].type = paragraph.type
+          obj.paragraphs[i].type = type
         for (i = 0; i < obj.sections.length; i += 1)
           section.start += paragraphs.length
 

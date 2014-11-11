@@ -195,7 +195,7 @@ describe('The sanitizer should', function () {
       text: 'One',
       type: 'ol'
     })
-    expect(result.paragraphs[0]).to.superset({
+    expect(result.paragraphs[1]).to.superset({
       text: 'Two',
       type: 'ol'
     })
