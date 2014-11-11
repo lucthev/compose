@@ -87,7 +87,7 @@ function Sanitize (Compose) {
       name = node.nodeName
       if (!Converter.allows(name) && !/^[OU]L$/.test(name)) {
 
-        // We’ll assume sections or <hr>s represent visual sections.
+        // We’ll assume <section>s and <hr>s represent visual sections.
         if (name === 'SECTION' || name === 'HR') {
           section = Converter.toSectionObj(name !== 'HR' ? node : null)
           section.start = paragraphs.length

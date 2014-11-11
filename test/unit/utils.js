@@ -72,3 +72,18 @@ function ChildMatcher (_chai, utils) {
     })
   })
 }
+
+function Superset (_chai, utils) {
+  var Assertion = _chai.Assertion
+
+  Assertion.addMethod('superset', function (subset) {
+    var superset = this._obj
+
+    Object.keys(subset).forEach(function (key) {
+      if (typeof subset[key] === 'object' && !Array.isArray(subset[key]))
+        new Assertion(superset[key]).to.superset(subset[key])
+      else
+        new Assertion(superset[key]).to.deep.equal(subset[key])
+    }, this)
+  })
+}
