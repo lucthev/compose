@@ -2,7 +2,7 @@
 
 var getChildren = require('./getChildren'),
     Converter = require('./converter'),
-    Sanitize = require('./sanitize'),
+    Sanitize = require('./sanitizer'),
     SelectionPlugin = require('../selection'),
     Shortcuts = require('./shortcuts'),
     Backspace = require('./backspace'),
