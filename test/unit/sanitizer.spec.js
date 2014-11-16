@@ -335,24 +335,6 @@ describe('The sanitizer should', function () {
     })
   })
 
-  it('strip unwanted attributes', function () {
-    var result = sanitize(
-      '<h2 style="background: orange;">One</h2>' +
-      '<p><a href="javascript:alert(1)">Two</a></p>'
-    )
-
-    expect(result.paragraphs.length).to.equal(2)
-    expect(result.paragraphs[0]).to.superset({
-      text: 'One',
-      type: 'h2',
-    })
-    expect(result.paragraphs[1]).to.superset({
-      text: 'Two',
-      type: 'p',
-      markups: []
-    })
-  })
-
   it('recognize <section>s as section starters', function () {
     var result = sanitize(
       '<p>One</p>' +

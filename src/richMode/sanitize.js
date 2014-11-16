@@ -161,7 +161,7 @@ function Sanitize (Compose) {
         continue
       }
 
-      // <blockquote>s and <li>s can contain other block children.
+      // <blockquote>s, lists, and <li>s can contain other block children.
       // We change the types of those children to match their parent.
       if (/^[OU]L$/.test(name) || name === 'BLOCKQUOTE' || name === 'LI') {
         obj = sanitize(node.innerHTML)
@@ -188,6 +188,7 @@ function Sanitize (Compose) {
       // block element. We’ll assume that these block elements do not
       // contain other block elements.
       paragraph = Converter.toParagraph(node)
+
       if (paragraph.type !== 'pre') {
 
         // Remove consecutive spaces
@@ -199,6 +200,26 @@ function Sanitize (Compose) {
           // Smart text things
           .replace(simpleText, replacer(paragraph))
       }
+
+      // Remove unnecessary newlines at the start of a paragraph.
+      if (/^\n+./.test(paragraph.text))
+        paragraph = paragraph.replace(/^\n+/, '')
+
+      // Split paragraph into multiple paragraphs if there are double
+      // newlines with text around them (double newlines at the end of
+      // a paragraph are okay).
+      paragraph = paragraph.replace(/\n{3,}/g, '\n\n')
+      for (i = 0; i < paragraph.length - 2; i += 1) {
+        if (paragraph.text[i] !== '\n' || paragraph.text[i + 1] !== '\n')
+          continue
+
+        paragraphs.push(paragraph.substr(0, i))
+        paragraph = paragraph.substr(i + 2)
+        i = 0
+      }
+
+      if (paragraph.text === '\n\n')
+        paragraph = paragraph.substr(0, 1)
 
       if (paragraph.text)
         paragraphs.push(paragraph)
