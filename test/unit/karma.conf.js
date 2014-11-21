@@ -8,7 +8,7 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai'],
     reporters: ['dots'],
     files: [
-      '../../dist/compose.min.js',
+      '../../dist/compose.js',
       './utils.js',
       './**/*.spec.js'
     ],
