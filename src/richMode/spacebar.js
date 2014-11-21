@@ -98,6 +98,17 @@ function Spacebar (Compose) {
       Selection.set(new Selection([startIndex, textIndex + 1]))
     })
   })
+
+  // Sanitizer listener to remove unwanted consecutive spaces.
+  Compose.on('sanitize', function (e) {
+    if (e.paragraph.type === 'pre')
+      return
+
+    e.paragraph = e.paragraph
+      .replace(/[^\S\n]{2,}/g, ' ')
+      .replace(/^[^\S\n\u00A0]/, nbsp)
+      .replace(/[^\S\n\u00A0]$/, nbsp)
+  })
 }
 
 module.exports = Spacebar

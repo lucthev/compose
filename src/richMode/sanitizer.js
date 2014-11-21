@@ -19,65 +19,8 @@ function firstChild (node) {
 
 function Sanitize (Compose) {
   var debug = Compose.require('debug')('compose:sanitizer'),
-      types = Compose.require('serialize').types,
       Converter = Compose.require('converter'),
-      dom = Compose.require('dom'),
-      nbsp = '\u00A0',
-      simpleText
-
-  // Smart text things.
-  simpleText = /(?:\.\.\.|<3|:\)|:\(|[\-–—]>|'|")/g
-  function replacer (paragraph) {
-    return function (match, index, string) {
-      var before = string[index - 1],
-          end = index + match.length,
-          markup,
-          i
-
-      for (i = 0; i < paragraph.markups.length; i += 1) {
-        markup = paragraph.markups[i]
-
-        if (markup.type < types.code) continue
-        if (markup.type > types.code) break
-
-        // If the matched simple text overlaps a <code> markup, do nothing.
-        if (index >= markup.start && index < markup.end ||
-            end > markup.start && end <= markup.end)
-          return match
-      }
-
-      switch (match) {
-        case '...':
-          return '…'
-        case '<3':
-          return '❤'
-        case ':)':
-          return '☺'
-        case ':(':
-          return '☹'
-        case '->': // Regular dash
-        case '\u2013>': // En dash
-        case '\u2014>': // Em dash
-          return '→'
-        case '\'':
-          if (!before || /[\s\(\[\{]/.test(before))
-            return '‘'
-          if (/\d/.test(before))
-            return '′'
-
-          return '’'
-        case '"':
-          if (!before || /[\s\(\[\{]/.test(before))
-            return '“'
-          if (/\d/.test(before))
-            return '″'
-
-          return '”'
-        default:
-          return match
-      }
-    }
-  }
+      dom = Compose.require('dom')
 
   /**
    * Sanitize(html) takes a string of html as its only parameter and
@@ -95,12 +38,14 @@ function Sanitize (Compose) {
         sections = [],
         paragraph,
         section,
+        split,
         elem,
         next,
         name,
         type,
         node,
         obj,
+        evt,
         i
 
     debug('Sanitizing %s', html)
@@ -189,40 +134,41 @@ function Sanitize (Compose) {
       // contain other block elements.
       paragraph = Converter.toParagraph(node)
 
-      if (paragraph.type !== 'pre') {
+      if (/^\n+./.test(paragraph.text))
+        paragraph = paragraph.replace(/^\n+/, '')
 
-        // Remove consecutive spaces
-        paragraph = paragraph
-          .replace(/[^\S\n]{2,}/g, ' ')
-          .replace(/^[^\S\n\u00A0]/, nbsp)
-          .replace(/[^\S\n\u00A0]$/, nbsp)
-
-          // Smart text things
-          .replace(simpleText, replacer(paragraph))
-      }
+      paragraph = paragraph.replace(/\n{3,}/g, '\n\n')
+      if (paragraph.text === '\n\n')
+        paragraph = paragraph.substr(1)
 
       // Remove unnecessary newlines at the start of a paragraph.
       if (/^\n+./.test(paragraph.text))
         paragraph = paragraph.replace(/^\n+/, '')
 
-      // Split paragraph into multiple paragraphs if there are double
-      // newlines with text around them (double newlines at the end of
-      // a paragraph are okay).
-      paragraph = paragraph.replace(/\n{3,}/g, '\n\n')
+      // Split the paragraph at double newlines
+      split = []
       for (i = 0; i < paragraph.length - 2; i += 1) {
         if (paragraph.text[i] !== '\n' || paragraph.text[i + 1] !== '\n')
           continue
 
-        paragraphs.push(paragraph.substr(0, i))
+        split.push(paragraph.substr(0, i))
         paragraph = paragraph.substr(i + 2)
         i = 0
       }
 
-      if (paragraph.text === '\n\n')
-        paragraph = paragraph.substr(0, 1)
+      split.push(paragraph)
 
-      if (paragraph.text)
-        paragraphs.push(paragraph)
+      // Give plugins a chance to act during the sanitizing process
+      for (i = 0; i < split.length; i += 1) {
+        evt = {
+          type: 'sanitize',
+          paragraph: split[i]
+        }
+
+        Compose.emit('sanitize', evt)
+        if (evt.paragraph && evt.paragraph.length)
+          paragraphs.push(evt.paragraph)
+      }
 
       node = nextSibling(node)
     }

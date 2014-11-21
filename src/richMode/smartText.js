@@ -1,5 +1,16 @@
 'use strict';
 
+/**
+ * replaceQuotes(), given an opening, closing and prime variant of a
+ * quotation mark (e.g “, ”, ″), returns a function that can be used
+ * in String#replace or similar to replace straight quotation marks
+ * with curly (or prime) ones.
+ *
+ * @param {String} open
+ * @param {String} close
+ * @param {String} prime
+ * @return {Function}
+ */
 function replaceQuotes (open, close, prime) {
   return function (match, index, str) {
     var before = str[index - 1]
@@ -11,8 +22,21 @@ function replaceQuotes (open, close, prime) {
   }
 }
 
+/**
+ * Smart text shortcuts. All are disabled in <pre> blocks and
+ * <code> markups.
+ *
+ *  <3      →   ❤
+ *  ...     →   …
+ *  :)      →   ☺
+ *  :(      →   ☹
+ *  '       →   One of “” (quotation marks) or ″ (prime)
+ *  "       →   One of ‘’ (quotation marks) or ′ (prime)
+ *  ->      →   →
+ */
 function smartText (Compose) {
-  var types = Compose.require('serialize').types,
+  var simpleText = /(?:\.\.\.|<3|:\)|:\(|[\-–—]>|'|")/g,
+      types = Compose.require('serialize').types,
       Formatter = Compose.require('formatter'),
       Selection = Compose.require('selection'),
       Delta = Compose.require('delta'),
@@ -31,18 +55,6 @@ function smartText (Compose) {
         end,
         i
 
-    /**
-     * Smart text shortcuts. All are disabled in <pre> blocks and
-     * <code> markups.
-     *
-     *  <3      →   ❤
-     *  ...     →   …
-     *  :)      →   ☺
-     *  :(      →   ☹
-     *  '       →   One of “” (quotation marks) or ″ (prime)
-     *  "       →   One of ‘’ (quotation marks) or ′ (prime)
-     *  ->      →   →
-     */
     if (!/[3\.\(\)'">]/.test(key))
       return
 
@@ -103,6 +115,73 @@ function smartText (Compose) {
     Compose.once('render', function () {
       Selection.set(new Selection([startPair[0], length]))
     })
+  })
+
+  /**
+   * smarten(paragraph) takes an instance of Serialize and applies the
+   * various smart text filters to it.
+   *
+   * @param {Serialize} paragraph
+   * @return {Serialize}
+   */
+  function smarten (paragraph) {
+    return paragraph.replace(simpleText, function (match, index, string) {
+      var before = string[index - 1],
+          end = index + match.length,
+          markup,
+          i
+
+      for (i = 0; i < paragraph.markups.length; i += 1) {
+        markup = paragraph.markups[i]
+
+        if (markup.type < types.code) continue
+        if (markup.type > types.code) break
+
+        // If the matched simple text overlaps a <code> markup, do nothing.
+        if (index >= markup.start && index < markup.end ||
+            end > markup.start && end <= markup.end)
+          return match
+      }
+
+      switch (match) {
+        case '...':
+          return '…'
+        case '<3':
+          return '❤'
+        case ':)':
+          return '☺'
+        case ':(':
+          return '☹'
+        case '->': // Regular dash
+        case '\u2013>': // En dash
+        case '\u2014>': // Em dash
+          return '→'
+        case '\'':
+          if (!before || /[\s\(\[\{]/.test(before))
+            return '‘'
+          if (/\d/.test(before))
+            return '′'
+
+          return '’'
+        case '"':
+          if (!before || /[\s\(\[\{]/.test(before))
+            return '“'
+          if (/\d/.test(before))
+            return '″'
+
+          return '”'
+        default:
+          return match
+      }
+    })
+  }
+
+  // Sanitizer plugin.
+  Compose.on('sanitize', function (e) {
+    if (e.paragraph.type === 'pre')
+      return
+
+    e.paragraph = smarten(e.paragraph)
   })
 }
 
