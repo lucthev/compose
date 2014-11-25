@@ -38,7 +38,7 @@
     "karma-mocha": "^0.1.4",
     "karma-sauce-launcher": "^0.2.9",
     "mocha": "^1.21.4",
-    "selenium-webdriver": "^2.43.5",
+    "selenium-webdriver": "2.43.5",
     "st": "^0.5.1",
     "uglify-js": "~2.4.15",
     "watchify": "~2.1.1"
