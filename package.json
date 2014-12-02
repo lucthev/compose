@@ -9,7 +9,7 @@
     "predebug": "mkdir -p dist",
     "debug": "browserify -s Compose src/compose.js > dist/compose.js",
     "lint": "jshint src || exit 0",
-    "dev": "watchify -v -o dist/compose.js src/compose.js",
+    "dev": "watchify -v -s Compose -o dist/compose.js src/compose.js",
     "unit-test": "karma start test/unit/karma.conf.js",
     "preintegration": "test -f vendor/selenium-2.43.1.jar || curl --create-dirs -o vendor/selenium-2.43.1.jar http://selenium-release.storage.googleapis.com/2.43/selenium-server-standalone-2.43.1.jar",
     "integration": "mocha -t 120000 test/functional/*.spec.js",
