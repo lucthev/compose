@@ -13,6 +13,7 @@ var getChildren = require('./getChildren'),
     ViewPlugin = require('./view'),
     Setup = require('./setup'),
     Enter = require('./enterKey'),
+    Paste = require('./paste'),
     Cut = require('./cut')
 
 function RichMode (Compose) {
@@ -40,6 +41,7 @@ function RichMode (Compose) {
   Compose.use(Enter)
   Compose.use(Backspace)
   Compose.use(Cut)
+  Compose.use(Paste)
   Compose.use(Spacebar)
   Compose.use(SmartText)
 

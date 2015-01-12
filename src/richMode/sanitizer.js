@@ -19,11 +19,13 @@ function firstChild (node) {
 
 function Sanitize (Compose) {
   var debug = Compose.require('debug')('compose:sanitizer'),
+      Serialize = Compose.require('serialize'),
       Converter = Compose.require('converter'),
-      dom = Compose.require('dom')
+      dom = Compose.require('dom'),
+      nbsp = '\u00A0'
 
   /**
-   * Sanitize(html) takes a string of html as its only parameter and
+   * sanitize(html) takes a string of html as its only parameter and
    * returns an object with two properties, paragraphs and sections,
    * arrays representing the paragraphs and sections, respectively,
    * that could be extracted from the html.
@@ -51,8 +53,14 @@ function Sanitize (Compose) {
     debug('Sanitizing %s', html)
     container.innerHTML = html
 
-    forEach.call(container.querySelectorAll('script'), dom.remove)
-    forEach.call(container.querySelectorAll('style'), dom.remove)
+    // Certain copied text (e.g. from MS word) is in the form of an
+    // entire document; DOCTYPE, head, title, body and all. Browsers
+    // remove the head/body, but leave the title, which we don’t really
+    // want. Also remove <script>s and <style>s.
+    forEach.call(
+      container.querySelectorAll('script, style, title'),
+      dom.remove
+    )
 
     collapseWhitespace(container)
 
@@ -141,10 +149,6 @@ function Sanitize (Compose) {
       if (paragraph.text === '\n\n')
         paragraph = paragraph.substr(1)
 
-      // Remove unnecessary newlines at the start of a paragraph.
-      if (/^\n+./.test(paragraph.text))
-        paragraph = paragraph.replace(/^\n+/, '')
-
       // Split the paragraph at double newlines
       split = []
       for (i = 0; i < paragraph.length - 2; i += 1) {
@@ -174,7 +178,8 @@ function Sanitize (Compose) {
     }
 
     // Remove sections starting at the same index, or starting at an
-    // invalid index.
+    // invalid index. This can happen when, for example, there is a
+    // <section> with an <hr> as its first child.
     for (i = 0; i < sections.length; i += 1) {
       if (sections[i].start >= paragraphs.length) {
         sections = sections.slice(0, i - 1)
@@ -194,6 +199,37 @@ function Sanitize (Compose) {
     }
   }
 
+  /**
+   * text(data) “sanitizes” a string of text. It mainly just formats
+   * the text in a Compose-compatible way, by removing adjacent spaces
+   * and splitting paragraph at double newlines.
+   *
+   * @param {String} text
+   * @return {Object}
+   */
+  function text (data) {
+    var paragraphs
+
+    debug('Sanitizing text “%s”', data)
+
+    data = data
+      .replace(/[^\S\n]{2,}/, ' ')
+      .replace(/^[^\S\n\u00A0]/, nbsp)
+      .replace(/[^\S\n\u00A0]$/, nbsp)
+
+    paragraphs = data.split(/\n{2,}/).map(function (paragraph) {
+      return Serialize.fromText(paragraph)
+    })
+
+    debug('Extracted paragraphs %o', paragraphs)
+
+    return {
+      paragraphs: paragraphs,
+      sections: []
+    }
+  }
+
+  sanitize.text = text
   Compose.provide('sanitize', sanitize)
 }
 
