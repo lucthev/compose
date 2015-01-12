@@ -227,6 +227,27 @@ exports.cut = function (cb) {
   return exports
 }
 
+exports.paste = function (mime, data) {
+  browser.executeScript(function (mime, data) {
+    var obj = { clipboardData: {} }
+
+    // There doesn’t seem to be a good way to mimick the paste event, either.
+    obj.preventDefault = function () {}
+    obj.currentTarget = obj.target = window.editor.elem
+    obj.clipboardData.types = [mime]
+    obj.clipboardData.getData = function (type) {
+      if (type === mime) return data
+
+      return ''
+    }
+
+    window.editor.emit('paste', obj)
+
+  }, mime, data)
+
+  return exports
+}
+
 exports.url = function () {
   var address = httpServer.address(),
       url = 'http://'
