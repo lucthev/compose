@@ -2,7 +2,6 @@
 
 var eventEmitter = require('component-emitter'),
     RichMode = require('./richMode/richMode'),
-    UndoManager = require('./undo-manager'),
     Events = require('./events'),
     timers = require('./timers')
 
@@ -45,7 +44,6 @@ function Compose (elem, mode) {
   }
 
   this.use(Events)
-  this.use(UndoManager)
 
   if (typeof mode === 'function')
     this.use(mode)
