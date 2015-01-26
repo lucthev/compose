@@ -129,7 +129,7 @@ function Events (Compose) {
    */
   events.pause = function () {
     handlers.forEach(function (handler) {
-      Compose.elem.removeEventListener(handler.event, handler.fn)
+      Compose.root.removeEventListener(handler.event, handler.fn)
     })
   }
 
@@ -139,7 +139,7 @@ function Events (Compose) {
    */
   events.unpause = function () {
     handlers.forEach(function (handler) {
-      Compose.elem.addEventListener(handler.event, handler.fn)
+      Compose.root.addEventListener(handler.event, handler.fn)
     })
   }
 

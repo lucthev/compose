@@ -24,7 +24,7 @@ describe('Paragraph operation', function () {
   }
 
   function teardown (editor) {
-    var elem = editor.elem
+    var elem = editor.root
 
     try {
       editor.destroy()
@@ -46,7 +46,7 @@ describe('Paragraph operation', function () {
 
       // Rendering is async, but should occur with setImmediate speeds.
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -84,7 +84,7 @@ describe('Paragraph operation', function () {
       ])
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -158,7 +158,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, Converter.toParagraph(pre)))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -210,7 +210,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 2, pullquote))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -256,7 +256,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -296,7 +296,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -341,7 +341,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -392,7 +392,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -451,7 +451,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 2, li))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -508,7 +508,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -566,7 +566,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -625,7 +625,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -678,7 +678,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, p))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
           name: 'hr'
@@ -705,7 +705,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, Converter.toParagraph(p)))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -733,7 +733,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, h2))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -769,7 +769,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, p))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -814,7 +814,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1, li))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -861,7 +861,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 2, li))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -915,7 +915,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, li))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -969,7 +969,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 2, li))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -1019,7 +1019,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0, p))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -1054,7 +1054,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 0, p))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -1097,7 +1097,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, p))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -1141,7 +1141,7 @@ describe('Paragraph operation', function () {
         View.render(new Delta(operation, 1, p))
 
         setTimeout(function () {
-          expect(editor.elem).to.have.children([{
+          expect(editor.root).to.have.children([{
             name: 'section',
             children: [{
               name: 'hr'
@@ -1188,7 +1188,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 0))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -1219,7 +1219,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -1253,7 +1253,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -1286,7 +1286,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -1336,7 +1336,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -1384,7 +1384,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'
@@ -1432,7 +1432,7 @@ describe('Paragraph operation', function () {
       View.render(new Delta(operation, 1))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           children: [{
             name: 'hr'

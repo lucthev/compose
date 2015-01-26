@@ -29,7 +29,7 @@ function Compose (elem, mode) {
   if (!elem)
     throw new Error('Invalid element or query string provided to Compose.')
 
-  this.elem = elem
+  this.root = elem
   elem.setAttribute('contenteditable', true)
 
   // Plugins. Some are bundled.

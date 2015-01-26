@@ -46,7 +46,7 @@ exports.result = function (fn) {
   return browser.executeAsyncScript(function (cb) {
     setTimeout(function () {
       /* global tree */
-      var elem = window.editor.elem,
+      var elem = window.editor.root,
           children = [],
           sel
 
@@ -198,7 +198,7 @@ exports.cut = function (cb) {
     // There doesn’t seem to be a good way to mimick the cut event.
     evt.preventDefault = function () {}
     evt.type = 'cut'
-    evt.currentTarget = evt.target = window.editor.elem
+    evt.currentTarget = evt.target = window.editor.root
     evt.clipboardData = {
       clearData: function () {},
       setData: function (type, toCopy) {

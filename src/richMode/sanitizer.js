@@ -58,7 +58,7 @@ function Sanitize (Compose) {
 
     node = firstChild(container)
     while (node) {
-      if (!dom.isText(node) && !dom.isElem(node)) {
+      if (!dom.isText(node) && !dom.isElement(node)) {
         next = nextSibling(node)
         dom.remove(node)
         node = next
@@ -72,7 +72,7 @@ function Sanitize (Compose) {
         elem.appendChild(node)
 
         while (node = elem.nextSibling) {
-          if (!dom.isText(node) && !dom.isElem(node)) {
+          if (!dom.isText(node) && !dom.isElement(node)) {
             dom.remove(node)
             continue
           }

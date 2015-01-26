@@ -33,7 +33,7 @@ function ChildPlugin (Compose) {
       listRegex = /^[OU]L$/
 
   function getChildren () {
-    var section = Compose.elem.firstChild,
+    var section = Compose.root.firstChild,
         dom = Compose.require('dom'),
         children = [],
         child,
@@ -41,7 +41,7 @@ function ChildPlugin (Compose) {
         li
 
     while (section) {
-      if (!dom.isElem(section) || section.nodeName !== 'SECTION')
+      if (!dom.isElement(section) || section.nodeName !== 'SECTION')
         throw new Error('Immediate children of the editor should be sections.')
 
       child = section.firstChild

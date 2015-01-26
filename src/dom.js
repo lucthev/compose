@@ -12,12 +12,12 @@ if (blocks.indexOf('LI') < 0)
   blocks.push('LI')
 
 /**
- * isElem(node) determines if a object is an element.
+ * isElement(node) determines if a object is an element.
  *
  * @param {Node} node
  * @return {Boolean}
  */
-exports.isElem = function (node) {
+exports.isElement = function (node) {
   return node && node.nodeType === Node.ELEMENT_NODE
 }
 
@@ -39,7 +39,7 @@ exports.isText = function (node) {
  * @return {Boolean}
  */
 exports.isBlock = function (elem) {
-  return !!(exports.isElem(elem) && blocks.indexOf(elem.nodeName) >= 0)
+  return !!(exports.isElement(elem) && blocks.indexOf(elem.nodeName) >= 0)
 }
 
 /**

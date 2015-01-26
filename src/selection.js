@@ -22,7 +22,7 @@ var Choice = require('choice')
  */
 function SelectionPlugin (Compose) {
   var getChildren = Compose.require('getChildren'),
-      choice = new Choice(Compose.elem, getChildren),
+      choice = new Choice(Compose.root, getChildren),
       events = Compose.require('events'),
       Selection = Choice.Selection,
       current = false

@@ -13,7 +13,7 @@ function setup (Compose) {
       Delta = Compose.require('delta'),
       View = Compose.require('view'),
       dom = Compose.require('dom'),
-      elem = Compose.elem,
+      elem = Compose.root,
       paragraph,
       section,
       result

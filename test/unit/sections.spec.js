@@ -24,7 +24,7 @@ describe('Section operation', function () {
   }
 
   function teardown (editor) {
-    var elem = editor.elem
+    var elem = editor.root
 
     try {
       editor.destroy()
@@ -47,7 +47,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 1, { start: 1 }))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
@@ -126,7 +126,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 2, { start: 2 }))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
@@ -185,7 +185,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 2, { start: 2 }))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
@@ -239,7 +239,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 1, { start: 1 }))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
@@ -297,7 +297,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 2, { start: 2 }))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
@@ -359,7 +359,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 3, { start: 3 }))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
@@ -417,7 +417,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 3, { start: 3 }))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
@@ -478,7 +478,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', 'section-last'],
           children: [{
@@ -559,7 +559,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', 'section-last'],
           children: [{
@@ -613,7 +613,7 @@ describe('Section operation', function () {
       View.render(new Delta(operation, 2))
 
       setTimeout(function () {
-        expect(editor.elem).to.have.children([{
+        expect(editor.root).to.have.children([{
           name: 'section',
           classes: ['section-first', '!section-last'],
           children: [{
