@@ -2,14 +2,11 @@
 
 var eventEmitter = require('component-emitter'),
     RichMode = require('./richMode/richMode'),
+    hasOwnProp = require('has-own-prop'),
     Events = require('./events')
 
 // Shim setImmedaite/clearImmediate
 require('setimmediate')
-
-function hasOwnProp (obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop)
-}
 
 /**
  * Compose(elem [, mode]) is the constructor for Compose. Takes an
