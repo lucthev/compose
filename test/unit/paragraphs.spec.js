@@ -5,8 +5,7 @@ chai.use(TreeMatcher)
 chai.use(ChildMatcher)
 
 describe('Paragraph operation', function () {
-  var clearImmediate,
-      View,
+  var View,
       Converter,
       Delta
 
@@ -17,12 +16,9 @@ describe('Paragraph operation', function () {
     elem.innerHTML = html
     document.body.appendChild(elem)
     editor = new Compose(elem)
-    editor.use(function (Compose) {
-      View = Compose.require('view')
-      Converter = Compose.require('converter')
-      Delta = Compose.require('delta')
-      clearImmediate = Compose.require('clearImmediate')
-    })
+    View = editor.plugins.view
+    Converter = editor.plugins.converter
+    Delta = editor.plugins.delta
 
     return editor
   }

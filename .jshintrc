@@ -12,6 +12,10 @@
   "globals": {
     "module": false,
     "exports": false,
-    "require": false
+    "require": false,
+
+    // Shimmed by the setimmediate module:
+    "setImmediate": false,
+    "clearImmediate": false
   }
 }

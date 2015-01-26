@@ -5,7 +5,6 @@ var paragraphs = require('./paragraphs'),
 
 function viewPlugin (Compose) {
   var debug = Compose.require('debug')('compose:view'),
-      setImmediate = Compose.require('setImmediate'),
       getChildren = Compose.require('getChildren'),
       Selection = Compose.require('selection'),
       Converter = Compose.require('converter'),

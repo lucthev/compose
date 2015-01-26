@@ -48,6 +48,7 @@
     "collapse-whitespace": "~1.0.4",
     "component-emitter": "1.1.3",
     "debug": "^2.0.0",
-    "serialize-elem": "2.1.3"
+    "serialize-elem": "2.1.3",
+    "setimmediate": "^1.0.2"
   }
 }

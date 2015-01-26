@@ -21,8 +21,7 @@ var Choice = require('choice')
  * @emit {selectionchange}
  */
 function SelectionPlugin (Compose) {
-  var setImmediate = Compose.require('setImmediate'),
-      getChildren = Compose.require('getChildren'),
+  var getChildren = Compose.require('getChildren'),
       choice = new Choice(Compose.elem, getChildren),
       events = Compose.require('events'),
       Selection = Choice.Selection,

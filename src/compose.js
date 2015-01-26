@@ -2,8 +2,10 @@
 
 var eventEmitter = require('component-emitter'),
     RichMode = require('./richMode/richMode'),
-    Events = require('./events'),
-    timers = require('./timers')
+    Events = require('./events')
+
+// Shim setImmedaite/clearImmediate
+require('setimmediate')
 
 function hasOwnProp (obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop)
@@ -37,8 +39,6 @@ function Compose (elem, mode) {
   this.plugins = {
     delta: require('./delta'),
     serialize: require('serialize-elem'),
-    setImmediate: timers.setImmediate,
-    clearImmediate: timers.clearImmediate,
     dom: require('./dom'),
     debug: require('debug')
   }
