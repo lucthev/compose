@@ -44,6 +44,7 @@
     "watchify": "~2.1.1"
   },
   "dependencies": {
+    "block-elements": "^1.0.0",
     "choice": "~1.1.0",
     "collapse-whitespace": "~1.0.4",
     "component-emitter": "1.1.3",

@@ -1,5 +1,16 @@
 'use strict';
 
+var blocks = require('block-elements')
+
+blocks = blocks.map(function (name) {
+  return name.toUpperCase()
+})
+
+// For out purposes, <li>s should be considered block elements;
+// otherwise, the sanitizer will wrap them in a <p>.
+if (blocks.indexOf('LI') < 0)
+  blocks.push('LI')
+
 /**
  * isElem(node) determines if a object is an element.
  *
@@ -20,31 +31,6 @@ exports.isText = function (node) {
   return node && node.nodeType === Node.TEXT_NODE
 }
 
-var blocks = {
-  ADDRESS: 1,
-  ARTICLE: 1,
-  ASIDE: 1,
-  BLOCKQUOTE: 1,
-  DIV: 1,
-  FIGCAPTION: 1,
-  FIGURE: 1,
-  FOOTER: 1,
-  H1: 1,
-  H2: 1,
-  H3: 1,
-  H4: 1,
-  H5: 1,
-  H6: 1,
-  HEADER: 1,
-  HR: 1,
-  LI: 1,
-  OL: 1,
-  P: 1,
-  PRE: 1,
-  SECTION: 1,
-  UL: 1
-}
-
 /**
  * isBlock(elem) determines if an element is a block element
  * according to the above RegExp. Hardly comprehensive.
@@ -53,36 +39,7 @@ var blocks = {
  * @return {Boolean}
  */
 exports.isBlock = function (elem) {
-  return !!(exports.isElem(elem) && blocks[elem.nodeName])
-}
-
-var inlines = {
-  A: 1,
-  ABBR: 1,
-  B: 1,
-  BIG: 1,
-  CITE: 1,
-  CODE: 1,
-  EM: 1,
-  I: 1,
-  IMG: 1,
-  Q: 1,
-  SAMP: 1,
-  SMALL: 1,
-  STRONG: 1,
-  SUB: 1,
-  SUP: 1
-}
-
-/**
- * isInline(elem) determines if an element is an inline element
- * according to the above RegExp. Hardly comprehensive.
- *
- * @param {Node} elem
- * @return {Boolean}
- */
-exports.isInline = function (elem) {
-  return !!(exports.isElem(elem) && inlines[elem.nodeName])
+  return !!(exports.isElem(elem) && blocks.indexOf(elem.nodeName) >= 0)
 }
 
 /**
