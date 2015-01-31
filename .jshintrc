@@ -1,21 +1,19 @@
 {
   "asi": true,
   "boss": true,
+  "browser": true,
+  "eqeqeq": true,
+  "globals": {
+    "clearImmediate": false,
+    "exports": false,
+    "module": false,
+    "require": false,
+    "setImmediate": false
+  },
+  "globalstrict": true,
+  "newcap": false,
   "quotmark": "single",
   "undef": true,
   "unused": true,
-  "eqeqeq": true,
-  "browser": true,
-  "devel": true,
-  "globalstrict": true,
-  "validthis": true,
-  "globals": {
-    "module": false,
-    "exports": false,
-    "require": false,
-
-    // Shimmed by the setimmediate module:
-    "setImmediate": false,
-    "clearImmediate": false
-  }
+  "validthis": true
 }

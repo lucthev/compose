@@ -1,6 +1,6 @@
 'use strict';
 
-var eventEmitter = require('component-emitter'),
+var EventEmitter = require('component-emitter'),
     RichMode = require('./richMode/richMode'),
     hasOwnProp = require('has-own-prop'),
     Events = require('./events')
@@ -50,7 +50,7 @@ function Compose (elem, mode) {
     this.use(RichMode)
 }
 
-eventEmitter(Compose.prototype)
+EventEmitter(Compose.prototype)
 
 /**
  * require(module) 'loads' the module with the given name, if it exists.
