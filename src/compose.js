@@ -42,6 +42,12 @@ function Compose (elem, mode) {
 
   this.use(Events)
 
+  // Don’t silently swallow errors:
+  this.on('error', function onError (err) {
+    if (this.listeners('error').length === 1)
+      throw err
+  }.bind(this))
+
   if (typeof mode === 'function')
     this.use(mode)
   // else if (mode === 'inline')
