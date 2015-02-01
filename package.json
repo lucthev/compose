@@ -46,7 +46,7 @@
   "dependencies": {
     "block-elements": "^1.0.0",
     "choice": "^1.3.0",
-    "collapse-whitespace": "~1.0.4",
+    "collapse-whitespace": "1.0.5",
     "component-emitter": "1.1.3",
     "debug": "^2.0.0",
     "has-own-prop": "^1.0.0",
