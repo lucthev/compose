@@ -1,6 +1,7 @@
 'use strict';
 
-var blocks = require('block-elements')
+var blocks = require('block-elements'),
+    dom = exports
 
 blocks = blocks.map(function (name) {
   return name.toUpperCase()
@@ -116,31 +117,38 @@ exports.create = function (tag) {
 }
 
 /**
- * split(child) splits a node’s parent in two at child (child stays
- * in the first one). Returns the original parent. Example:
+ * splitAt(node, until) splits a DOM tree at the given node up until
+ * the node matching ‘until.’ ‘until’ can be either a string (nodeName)
+ * or an actual element.
  *
- * <ul><li>…</li><li id="second">…</li><li>…</li></ul>
- *
- * ul.split(second) results in:
- *
- * <ul><li>…</li><li id="second">…</li></ul>
- * <ul><li>…</li></ul>
- *
- * @param {Node} child
- * @return {Node}
+ * @param {Node} node
+ * @param {String || Element} until
+ * @return {Element}
  */
-exports.split = function (node) {
+exports.splitAt = function (node, until) {
   var parent = node.parentNode,
       nextParent
 
-  if (node === parent.lastChild)
-    return parent
+  until = until || 'SECTION'
+  if (typeof until === 'string')
+    until = until.toUpperCase()
 
-  nextParent = parent.cloneNode(false)
-  while (node.nextSibling)
-    nextParent.appendChild(exports.remove(node.nextSibling))
+  while (parent && parent !== until && parent.nodeName !== until) {
+    if (node === parent.lastChild) {
+      node = parent
+      parent = node.parentNode
+      continue
+    }
 
-  exports.after(parent, nextParent)
+    nextParent = parent.cloneNode(false)
+    while (node.nextSibling)
+      nextParent.appendChild(dom.remove(node.nextSibling))
 
-  return parent
+    dom.after(parent, nextParent)
+
+    node = parent
+    parent = node.parentNode
+  }
+
+  return node
 }

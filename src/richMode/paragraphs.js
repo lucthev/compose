@@ -106,7 +106,7 @@ function ParagraphOperations (Compose) {
     // without this step, the paragraph would be inserted after the
     // <o/ul>, after all those other paragraphs.
     if (i < otherParents.length - 1)
-      dom.split(otherParents[i + 1])
+      dom.splitAt(otherParents[i + 1])
 
     dom.after(before, dom.remove(elem))
 
@@ -189,9 +189,9 @@ function ParagraphOperations (Compose) {
     oldElem = otherParents[len]
     for (len; len > i; len -= 1) {
       if (oldElem.previousSibling)
-        dom.split(oldElem.previousSibling)
+        dom.splitAt(oldElem.previousSibling)
 
-      dom.split(oldElem)
+      dom.splitAt(oldElem)
       oldElem = oldElem.parentNode
     }
 

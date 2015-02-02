@@ -34,7 +34,7 @@ function SectionOperations (Compose) {
     parent = start.parentNode
     while (parent.nodeName !== 'SECTION') {
       if (start.previousSibling)
-        dom.split(start.previousSibling)
+        dom.splitAt(start.previousSibling)
 
       start = start.parentNode
       parent = start.parentNode
