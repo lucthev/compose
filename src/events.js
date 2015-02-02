@@ -120,7 +120,7 @@ function Events (Compose) {
   }
 
   events.selectKey = function (e) {
-    return !!selectionKeys[e.keyCode]
+    return !!(/key/.test(e.type) && selectionKeys[e.keyCode])
   }
 
   /**
