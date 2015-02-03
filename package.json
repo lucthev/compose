@@ -4,17 +4,8 @@
   "description": "Yet another contentEditable thing.",
   "main": "src/compose.js",
   "scripts": {
-    "prebuild": "mkdir -p dist",
-    "build": "browserify -p bundle-collapser/plugin -s Compose src/compose.js | uglifyjs -m > dist/compose.js",
-    "predebug": "mkdir -p dist",
-    "debug": "browserify -s Compose src/compose.js > dist/compose.js",
-    "lint": "jshint src || exit 0",
-    "dev": "watchify -v -s Compose -o dist/compose.js src/compose.js",
-    "unit-test": "karma start test/unit/karma.conf.js",
-    "preintegration": "test -f vendor/selenium-2.43.1.jar || curl --create-dirs -o vendor/selenium-2.43.1.jar http://selenium-release.storage.googleapis.com/2.43/selenium-server-standalone-2.43.1.jar",
-    "integration": "mocha -t 120000 test/functional/*.spec.js",
-    "test": "npm run lint && npm run build && npm run unit-test && npm run integration",
-    "clean": "rm -rf dist vendor"
+    "dev": "make watch",
+    "test": "make test"
   },
   "repository": {
     "type": "git",

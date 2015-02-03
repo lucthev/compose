@@ -1,3 +1,4 @@
+/* jshint ignore:start */
 'use strict';
 
 function TreeMatcher (_chai, utils) {
