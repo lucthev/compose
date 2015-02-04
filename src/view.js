@@ -311,6 +311,9 @@ function ViewPlugin (Compose) {
 
   Compose.provide('view', new View())
 
+  // Expose the Selection constructor.
+  Compose.provide('selection', Choice.Selection)
+
   // Initialize the default paragraph and section handlers.
   Compose.use(paragraph)
   Compose.use(section)
