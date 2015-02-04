@@ -1,27 +1,22 @@
 'use strict';
 
 var EventEmitter = require('component-emitter'),
-    RichMode = require('./richMode/richMode'),
-    hasOwnProp = require('has-own-prop'),
-    Events = require('./events')
+    hasOwnProp = require('has-own-prop')
 
 // Shim setImmedaite/clearImmediate
 require('setimmediate')
 
 /**
- * Compose(elem [, mode]) is the constructor for Compose. Takes an
- * element as a first parameter and optionally a string or function as
- * a second parameter to define the mode. If a string, mode should be
- * one of 'rich', 'inline'. If not specified, defaults to 'rich',
- * meaning the editor will be in “rich” editing mode.
+ * Compose(elem) is the constructor for Compose. Takes an element or
+ * string as it only parameter; if passed a string, it will be used
+ * to get an element via document.querySelector().
  *
- * @param {Element} elem
- * @param {String || Function} mode
+ * @param {Element || String} elem
  * @return {Compose}
  */
-function Compose (elem, mode) {
+function Compose (elem) {
   if (!(this instanceof Compose))
-    return new Compose(elem, mode)
+    return new Compose(elem)
 
   if (typeof elem === 'string')
     elem = document.querySelector(elem)
@@ -40,20 +35,13 @@ function Compose (elem, mode) {
     debug: require('debug')
   }
 
-  this.use(Events)
+  this.use(require('./events'))
 
   // Don’t silently swallow errors:
   this.on('error', function onError (err) {
     if (this.listeners('error').length === 1)
       throw err
   }.bind(this))
-
-  if (typeof mode === 'function')
-    this.use(mode)
-  // else if (mode === 'inline')
-  //   this.use(InlineMode)
-  else
-    this.use(RichMode)
 }
 
 EventEmitter(Compose.prototype)
