@@ -3,7 +3,7 @@
 
 chai.use(Superset)
 
-describe('The sanitizer should', function () {
+describe.skip('The sanitizer should', function () {
   var Serialize,
       sanitize
 

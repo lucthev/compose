@@ -15,7 +15,7 @@ before(function () {
   browser = utils.browser
 })
 
-describe('Rich text exec', function () {
+describe.skip('Rich text exec', function () {
 
   if (!/chrome/i.test(utils.browserName))
     describe('with a collapsed selection should', inlineTests)
@@ -808,7 +808,7 @@ describe('Rich text exec', function () {
   })
 })
 
-describe('Rich text status', function () {
+describe.skip('Rich text status', function () {
 
   describe('with a collapsed selection should', function () {
     beforeEach(function () {

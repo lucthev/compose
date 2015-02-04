@@ -2,8 +2,8 @@
 
 module.exports = ViewPlugin
 
-var paragraph = require('./new-paragraph'),
-    section = require('./new-section'),
+var paragraph = require('./paragraph'),
+    section = require('./section'),
     resolve = require('./resolve'),
     Choice = require('choice')
 

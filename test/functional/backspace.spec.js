@@ -13,7 +13,7 @@ before(function () {
   browser = utils.browser
 })
 
-describe('Deleting text should', function () {
+describe.skip('Deleting text should', function () {
   beforeEach(function () {
     return browser.get(utils.url())
   })

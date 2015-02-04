@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 
-describe('Compose\'s plugin system', function () {
+describe.skip('Compose\'s plugin system', function () {
 
   var compose
 

@@ -4,7 +4,7 @@
 chai.use(TreeMatcher)
 chai.use(ChildMatcher)
 
-describe('Section operation', function () {
+describe.skip('Section operation', function () {
   var View,
       Converter,
       Delta

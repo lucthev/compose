@@ -14,7 +14,7 @@ before(function () {
   browser = utils.browser
 })
 
-describe('Pressing the spacebar should', function () {
+describe.skip('Pressing the spacebar should', function () {
   beforeEach(function () {
     return browser.get(utils.url())
   })

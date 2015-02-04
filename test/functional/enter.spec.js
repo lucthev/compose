@@ -13,7 +13,7 @@ before(function () {
   browser = utils.browser
 })
 
-describe('Enter key', function () {
+describe.skip('Enter key', function () {
   beforeEach(function () {
     return browser.get(utils.url())
   })
