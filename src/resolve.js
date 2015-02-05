@@ -123,8 +123,8 @@ exports.DOM = function (View, delta) {
       // paragraph won’t know how to properly handle element of the
       // other type.
       if (delta.paragraph.type !== previous.type) {
+        handler.insert(delta.index + 1, delta.paragraph)
         View.handlerForParagraph(previous.type).remove(delta.index)
-        handler.insert(delta.index, delta.paragraph)
       } else {
         handler.update(delta.index, delta.paragraph)
       }
