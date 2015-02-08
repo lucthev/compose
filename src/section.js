@@ -77,7 +77,7 @@ function SectionOperations (Compose) {
   }
 
   View.allow({
-    element: ['SECTION'],
+    elements: ['SECTION', 'HR'],
     paragraphs: [],
     serialize: serialize,
     insert: insert,
