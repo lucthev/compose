@@ -10,15 +10,15 @@ karma := ./node_modules/.bin/karma
 name := Compose
 src := src/compose.js
 dest := dist/compose.js
+all := $(shell $(browserify) --list $(src))
 
 # Things for testing:
 minor := 2.43
 patch := 2.43.1
 
-all:
+$(dest): $(all)
 	@mkdir -p dist
-	$(browserify) -p bundle-collapser/plugin -s $(name) $(src) |\
-		$(uglifyjs) -m > $(dest)
+	$(browserify) -s $(name) $(src) | $(uglifyjs) -m -o $@
 
 debug:
 	@mkdir -p dist
@@ -31,10 +31,10 @@ watch:
 lint:
 	$(jshint) src test
 
-unit-test: all
+unit-test: bundle
 	$(karma) start test/unit/karma.conf.js
 
-integration-test: all
+integration-test: bundle
 	@test -f vendor/selenium-$(patch).jar || echo "Downloading Selenium server…"
 	@test -f vendor/selenium-$(patch).jar || curl --create-dirs -o \
 		vendor/selenium-$(patch).jar \
@@ -46,4 +46,4 @@ test: lint unit-test integration-test
 clean:
 	rm -rf dist vendor
 
-.PHONY: clean test debug all lint unit-test
+.PHONY: clean watch test debug lint unit-test

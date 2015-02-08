@@ -19,7 +19,6 @@
   "homepage": "https://github.com/lucthev/compose",
   "devDependencies": {
     "browserify": "8.1.2",
-    "bundle-collapser": "1.1.1",
     "chai": "1.10.0",
     "jshint": "2.6.0",
     "karma": "0.12.31",
