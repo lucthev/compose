@@ -36,6 +36,11 @@ function Compose (elem) {
   }
 
   this.use(require('./events'))
+  this.use(require('./view'))
+  this.use(require('./sanitizer'))
+  this.use(require('./backspace'))
+  this.use(require('./enter'))
+  this.use(require('./spacebar'))
 
   // Don’t silently swallow errors:
   this.on('error', function onError (err) {

@@ -1,6 +1,6 @@
 'use strict';
 
-var Delta = require('../delta')
+var Delta = require('./delta')
 
 /**
  * inline(View, delta) resolves a delta against the given View
