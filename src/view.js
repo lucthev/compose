@@ -8,11 +8,12 @@ var paragraph = require('./paragraph'),
     Choice = require('choice')
 
 function ViewPlugin (Compose) {
+  var debug = Compose.require('debug')('compose:view')
 
   function View () {
     var handler
 
-    this._choice = new Choice(Compose.root, this._getParagraphs.bind(this))
+    this._choice = new Choice(Compose.root, this._getElements.bind(this))
     this._handlers = []
 
     this._selection = null
@@ -33,6 +34,7 @@ function ViewPlugin (Compose) {
         this._modified = sel.isBackwards() ? sel.end[0] : sel.start[0]
 
       // Schedule sync/render:
+      debug('Scheduling sync at index %d', this._modified)
       this.resolve()
     }.bind(this)
 
@@ -156,17 +158,22 @@ function ViewPlugin (Compose) {
   }
 
   /**
-   * _getParagraphs() returns an array containing all “allowed”
+   * _getElements() returns an array containing all “allowed”
    * children of the editor’s root element.
    *
    * @return {Array}
    */
-  View.prototype._getParagraphs = function () {
-    var all = [],
+  View.prototype._getElements = function () {
+    var sectionHandler = this.handlerForElement('SECTION'),
+        all = [],
         i
 
-    for (i = 0; i < this._handlers.length; i += 1)
+    for (i = 0; i < this._handlers.length; i += 1) {
+      if (this._handlers[i] === sectionHandler)
+        continue
+
       all = all.concat(this._handlers[i].elements)
+    }
 
     return [].slice.call(Compose.root.querySelectorAll(all.join(',')))
   }
@@ -194,9 +201,9 @@ function ViewPlugin (Compose) {
    * and updates the View accordingly.
    */
   View.prototype.sync = function () {
-    var all = this._getParagraphs(),
+    var all = this._getElements(),
         len = this.elements.length,
-        index = this._modiked,
+        index = this._modified,
         paragraph,
         element,
         sel
@@ -217,7 +224,7 @@ function ViewPlugin (Compose) {
 
     if (index >= 0) {
       element = all[index]
-      paragraph = this._handlers[element.nodeName].serialize(element)
+      paragraph = this.handlerForElement(element.nodeName).serialize(element)
 
       if (!paragraph.equals(this.paragraphs[index])) {
         this.paragraphs[index] = paragraph
@@ -225,8 +232,8 @@ function ViewPlugin (Compose) {
       }
     }
 
+    debug('Synced paragraph at index %d', this._modified)
     this._modified = -1
-
     return this
   }
 
@@ -280,7 +287,7 @@ function ViewPlugin (Compose) {
 
     this.sync()
 
-    for (i = 0; i < this._toRender[i].length; i += 1) {
+    for (i = 0; i < this._toRender.length; i += 1) {
       try {
         resolve.DOM(this, this._toRender[i])
       } catch (err) {
@@ -289,17 +296,19 @@ function ViewPlugin (Compose) {
       }
     }
 
-    try {
-      this._choice.restore(this.selection)
-      if (this._selectionChanged)
-        Compose.emit('selectionchange')
-    } catch (err) {
-      Compose.emit('error', err)
+    if (this.selection) {
+      try {
+        this._choice.restore(this.selection)
+        if (this._selectionChanged)
+          Compose.emit('selectionchange')
+      } catch (err) {
+        Compose.emit('error', err)
+      }
     }
 
     this._selectionChanged = false
     this._toRender = []
-    this._rendering = 0
+    this._isRendering = 0
 
     // NOTE: previously, the only real use of a “render” event was to
     // restore the selection afterwards; now that the selection is
