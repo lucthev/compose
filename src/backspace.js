@@ -69,7 +69,7 @@ function Backspace (Compose) {
         startPair[1] = View.paragraphs[endPair[0]].length - 1
       else
         startPair[1] = View.paragraphs[endPair[0]].length
-    } else if (endPair[0] > 0) {
+    } else if (endPair[1] > 0) {
       startPair[1] -= 1
     }
 
@@ -97,8 +97,8 @@ function Backspace (Compose) {
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
 
-    start = start.substr(0, startPair[1])
-    end = end.substr(endPair[1])
+    start = View.paragraphs[startPair[0]].substr(0, startPair[1])
+    end = View.paragraphs[endPair[0]].substr(endPair[1])
 
     // If appending start and end would result in two adjacent spaces,
     // remove one of them. If one of the spaces is “exotic” (not a
