@@ -5,7 +5,8 @@ module.exports = ViewPlugin
 var paragraph = require('./paragraph'),
     section = require('./section'),
     resolve = require('./resolve'),
-    Choice = require('choice')
+    Choice = require('choice'),
+    Selection = Choice.Selection
 
 function ViewPlugin (Compose) {
   var debug = Compose.require('debug')('compose:view')
@@ -59,14 +60,12 @@ function ViewPlugin (Compose) {
       return this._selection
     },
     set: function (sel) {
-      var Selection = this._choice.Selection
-
       if (Selection.equals(sel, this._selection))
         return
 
       this._selection = sel
       this._selectionChanged = true
-      this.render()
+      this.resolve()
     }
   })
 
@@ -217,7 +216,7 @@ function ViewPlugin (Compose) {
     this.elements = all
 
     sel = this._choice.getSelection()
-    if (!Choice.Selection.equals(sel, this._selection)) {
+    if (!this._selectionChanged && !Selection.equals(sel, this._selection)) {
       this._selection = sel
       Compose.emit('selectionchange')
     }
@@ -226,10 +225,8 @@ function ViewPlugin (Compose) {
       element = all[index]
       paragraph = this.handlerForElement(element.nodeName).serialize(element)
 
-      if (!paragraph.equals(this.paragraphs[index])) {
+      if (!paragraph.equals(this.paragraphs[index]))
         this.paragraphs[index] = paragraph
-        Compose.emit('paragraphUpdate', index)
-      }
     }
 
     debug('Synced paragraph at index %d', this._modified)
@@ -321,7 +318,7 @@ function ViewPlugin (Compose) {
   Compose.provide('view', new View())
 
   // Expose the Selection constructor.
-  Compose.provide('selection', Choice.Selection)
+  Compose.provide('selection', Selection)
 
   // Initialize the default paragraph and section handlers.
   Compose.use(paragraph)
