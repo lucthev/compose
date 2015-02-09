@@ -22,7 +22,7 @@ function ParagraphOperations (Compose) {
         previous = View.elements[index - 1]
 
     View.elements.splice(index, 0, element)
-    previous = dom.split(previous)
+    previous = dom.splitAt(previous)
     dom.after(previous, element)
   }
 

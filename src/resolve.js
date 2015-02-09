@@ -15,7 +15,7 @@ exports.inline = function (View, delta) {
       i
 
   switch (delta.type) {
-    case Delta.paragraphInsert:
+    case Delta.types.paragraphInsert:
       if (index <= 0 || index > paragraphs.length)
         throw RangeError('Cannot insert a paragraph at index ' + index)
 
@@ -26,14 +26,14 @@ exports.inline = function (View, delta) {
       }
       break
 
-    case Delta.paragraphUpdate:
+    case Delta.types.paragraphUpdate:
       if (index < 0 || index >= paragraphs.length)
         throw RangeError('Cannot update a paragraph at index ' + index)
 
       View.paragraphs[index] = delta.paragraph
       break
 
-    case Delta.paragraphDelete:
+    case Delta.types.paragraphDelete:
       if (index < 0 || index >= paragraphs.length)
         throw RangeError('Cannot remove paragraph at index ' + index)
 
@@ -48,7 +48,7 @@ exports.inline = function (View, delta) {
       }
       break
 
-    case Delta.sectionInsert:
+    case Delta.types.sectionInsert:
       if (index < 0 || index >= paragraphs.length)
         throw RangeError('Cannot create section starting at index ' + index)
 
@@ -60,7 +60,7 @@ exports.inline = function (View, delta) {
       View.sections.splice(i, 0, delta.section)
       break
 
-    case Delta.sectionUpdate:
+    case Delta.types.sectionUpdate:
       if (!View.isSectionStart(index))
         throw Error('Cannot update non-existant section at index ' + index)
 
@@ -73,7 +73,7 @@ exports.inline = function (View, delta) {
       }
       break
 
-    case Delta.sectionDelete:
+    case Delta.types.sectionDelete:
       if (index === 0)
         throw Error('The first section cannot be removed.')
       if (!View.isSectionStart(index))
