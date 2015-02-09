@@ -26,6 +26,7 @@ function ViewPlugin (Compose) {
 
     this._toRender = []
     this._isRendering = 0
+    this._isSyncing = 0
     this._modified = -1
 
     handler = function (e) {
@@ -36,7 +37,8 @@ function ViewPlugin (Compose) {
 
       // Schedule sync/render:
       debug('Scheduling sync at index %d', this._modified)
-      this.resolve()
+      this._isSyncing = setImmediate(this.sync.bind(this))
+      this._isRendering = setImmediate(this._render.bind(this))
     }.bind(this)
 
     Compose.on('keydown', handler)
@@ -65,7 +67,9 @@ function ViewPlugin (Compose) {
 
       this._selection = sel
       this._selectionChanged = true
-      this.resolve()
+
+      if (!this._isRendering)
+        this._isRendering = setImmediate(this._render.bind(this))
     }
   })
 
@@ -231,6 +235,7 @@ function ViewPlugin (Compose) {
 
     debug('Synced paragraph at index %d', this._modified)
     this._modified = -1
+    this._isSyncing = 0
     return this
   }
 
@@ -245,30 +250,29 @@ function ViewPlugin (Compose) {
   View.prototype.resolve = function (deltas) {
     var i
 
-    if (Array.isArray(deltas)) {
-      for (i = 0; i < deltas.length; i += 1) {
-        try {
-          resolve.inline(this, deltas[i])
-        } catch (err) {
-          Compose.emit('error', err)
-          return this
-        }
-      }
+    if (!Array.isArray(deltas))
+      deltas = [deltas]
 
-      this._toRender = this._toRender.concat(deltas)
-    } else if (deltas) {
+    for (i = 0; i < deltas.length; i += 1) {
       try {
-        resolve.inline(this, deltas)
+        resolve.inline(this, deltas[i])
       } catch (err) {
         Compose.emit('error', err)
         return this
       }
-
-      this._toRender.push(deltas)
     }
+
+    this._toRender = this._toRender.concat(deltas)
 
     if (!this._isRendering)
       this._isRendering = setImmediate(this._render.bind(this))
+
+    // Cancel a sync, if one is scheduled. Otherwise, the sync can
+    // overwrite changes made via inline resolves.
+    if (this._isSyncing) {
+      clearImmediate(this._isSyncing)
+      this._isSyncing = 0
+    }
 
     return this
   }
@@ -281,8 +285,6 @@ function ViewPlugin (Compose) {
    */
   View.prototype._render = function () {
     var i
-
-    this.sync()
 
     for (i = 0; i < this._toRender.length; i += 1) {
       try {
