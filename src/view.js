@@ -200,7 +200,7 @@ function ViewPlugin (Compose) {
   }
 
   /**
-   * sync() relefects changes made to the editor or the selection,
+   * sync() reflects changes made to the editor or the selection,
    * and updates the View accordingly.
    */
   View.prototype.sync = function () {
@@ -255,11 +255,14 @@ function ViewPlugin (Compose) {
 
     for (i = 0; i < deltas.length; i += 1) {
       try {
-        resolve.inline(this, deltas[i])
+        resolve.validate(this, deltas[i])
       } catch (err) {
         Compose.emit('error', err)
         return this
       }
+
+      Compose.emit('delta', deltas[i])
+      resolve.inline(this, deltas[i])
     }
 
     this._toRender = this._toRender.concat(deltas)
