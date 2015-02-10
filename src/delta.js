@@ -1,21 +1,9 @@
 'use strict';
 
-var Types = {
-  paragraphInsert: 1,
-  paragraphUpdate: 2,
-  paragraphDelete: 3,
-  sectionInsert: 4,
-  sectionUpdate: 5,
-  sectionDelete: 6
-}
-
-// We should also be able to look up the string from the number.
-Object.keys(Types).forEach(function (key) {
-  Types[Types[key]] = key
-})
+module.exports = Delta
 
 /**
- * Delta constructor. Type should be one of the types above.
+ * Delta constructor. Type should be one of the types defined below.
  *
  * @param {String || Number} type
  * @param {Int} index
@@ -26,15 +14,20 @@ function Delta (type, index, data) {
     return new Delta(type, index, data)
 
   this.index = index
-  this.type = typeof type !== 'number' ? Types[type] : type
+  this.type = typeof type !== 'number' ? Delta.types[type] : type
 
-  if (data && this.type <= 3)
-    this.paragraph = data
-  else if (data)
-    this.section = data
+  if (this.type <= Delta.types.paragraphDelete)
+    this.paragraph = data || null
+  else
+    this.section = data || null
 }
 
 // Expose types.
-Delta.types = Types
-
-module.exports = Delta
+Delta.types = {
+  paragraphInsert: 1,
+  paragraphUpdate: 2,
+  paragraphDelete: 3,
+  sectionInsert: 4,
+  sectionUpdate: 5,
+  sectionDelete: 6
+}
