@@ -211,6 +211,9 @@ function ViewPlugin (Compose) {
         element,
         sel
 
+    this._modified = -1
+    this._isSyncing = 0
+
     len = this.elements.length
     if (all.length !== len) {
       Compose.emit('error', Error('View and DOM are out of sync'))
@@ -233,9 +236,7 @@ function ViewPlugin (Compose) {
         this.paragraphs[index] = paragraph
     }
 
-    debug('Synced paragraph at index %d', this._modified)
-    this._modified = -1
-    this._isSyncing = 0
+    debug('Synced paragraph at index %d', index)
     return this
   }
 
@@ -287,11 +288,15 @@ function ViewPlugin (Compose) {
    * @return {Context}
    */
   View.prototype._render = function () {
-    var i
+    var queue = this._toRender,
+        i
 
-    for (i = 0; i < this._toRender.length; i += 1) {
+    this._toRender = []
+    this._isRendering = 0
+
+    for (i = 0; i < queue.length; i += 1) {
       try {
-        resolve.DOM(this, this._toRender[i])
+        resolve.DOM(this, queue[i])
       } catch (err) {
         Compose.emit('error', err)
         return this
@@ -301,16 +306,14 @@ function ViewPlugin (Compose) {
     if (this.selection) {
       try {
         this._choice.restore(this.selection)
-        if (this._selectionChanged)
+        if (this._selectionChanged) {
+          this._selectionChanged = false
           Compose.emit('selectionchange')
+        }
       } catch (err) {
         Compose.emit('error', err)
       }
     }
-
-    this._selectionChanged = false
-    this._toRender = []
-    this._isRendering = 0
 
     // NOTE: previously, the only real use of a “render” event was to
     // restore the selection afterwards; now that the selection is
