@@ -66,9 +66,9 @@ function Backspace (Compose) {
       // accounts for the case that the previous paragraph ends in a double
       // newline.
       if (start.text[start.length - 1] === '\n')
-        startPair[1] = View.paragraphs[endPair[0]].length - 1
+        startPair[1] = start.length - 1
       else
-        startPair[1] = View.paragraphs[endPair[0]].length
+        startPair[1] = start.length
     } else if (endPair[1] > 0) {
       startPair[1] -= 1
     }
