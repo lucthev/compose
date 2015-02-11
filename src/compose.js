@@ -3,7 +3,7 @@
 var EventEmitter = require('component-emitter'),
     hasOwnProp = require('has-own-prop')
 
-// Shim setImmedaite/clearImmediate
+// Shim setImmediate/clearImmediate
 require('setimmediate')
 
 /**

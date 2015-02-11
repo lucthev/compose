@@ -53,6 +53,7 @@ function Spacebar (Compose) {
 
     // What we just did is essentially the equivalent of a backspace;
     // now, insert the appropriate space.
+    // TODO(luc): use backspace.usingSelection()?
     i = startPair[1]
 
     if (spaces.test(start.text[i - 1]))
