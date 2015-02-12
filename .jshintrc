@@ -14,6 +14,5 @@
   "newcap": false,
   "quotmark": "single",
   "undef": true,
-  "unused": true,
-  "validthis": true
+  "unused": true
 }
