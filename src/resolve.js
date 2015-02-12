@@ -40,6 +40,8 @@ exports.validate = function (View, delta) {
     case Delta.types.sectionInsert:
       if (index < 0 || index >= paragraphs.length)
         throw RangeError('Cannot create section starting at index ' + index)
+      if (View.isSectionStart(index))
+        throw Error('An existing section begins at index ' + index)
 
       break
 
