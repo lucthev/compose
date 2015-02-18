@@ -151,4 +151,16 @@ describe('Compose\'s plugin system', function () {
 
     expect(checked).to.be.true
   })
+
+  it('should pass along extra arguments to plugins', function () {
+    var checked = false
+
+    function plugin (Compose, thing) {
+      checked = true
+      expect(thing).to.equal('thing')
+    }
+
+    compose.use(plugin, 'thing')
+    expect(checked).to.be.true
+  })
 })

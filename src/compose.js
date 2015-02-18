@@ -83,16 +83,22 @@ Compose.prototype.provide = function (name, exports) {
 }
 
 /**
- * use(plugin) sets up the given plugin.
+ * use(plugin) sets up the given plugin. Extra arguments are passed to
+ * the plugin.
  *
  * @param {Function} plugin
  * @return {Context}
  */
 Compose.prototype.use = function (plugin) {
+  var args
+
   if (typeof plugin !== 'function')
     throw new TypeError('Plugins must be functions.')
 
-  plugin(this)
+  args = Array.prototype.slice.call(arguments)
+  args[0] = this
+
+  plugin.apply(undefined, args)
 
   return this
 }
