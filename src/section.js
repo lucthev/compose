@@ -1,87 +1,77 @@
 'use strict';
 
-module.exports = SectionOperations
+var dom = require('./dom')
 
-/**
- * Plugin that defines section operations. Currently, not much is done
- * with sections.
- *
- * @param {Compose} Compose
- */
-function SectionOperations (Compose) {
-  var View = Compose.require('view'),
-      dom = Compose.require('dom')
+exports.insert = function (View, delta) {
+  var handler = View.handlerForElement('SECTION'),
+      previousSection,
+      section,
+      start
 
-  function serialize (/*section*/) {
-    return {}
-  }
+  start = View.elements[delta.index]
+  start = dom.splitAt(start)
 
-  function insert (index/*, section*/) {
-    var start = View.elements[index],
-        previous,
-        element
+  previousSection = start.parentNode
+  section = handler.deserialize(delta.section)
 
-    start = dom.split(start)
-    previous = start.parentNode
+  while (start.nextSibling)
+    section.appendChild(dom.remove(start.nextSibling))
 
-    element = dom.create('section')
-    element.appendChild(dom.create('hr'))
+  // Insert the first paragraph in the section after the HR
+  dom.after(section.firstChild, dom.remove(start))
+  dom.after(previousSection, section)
+}
 
-    while (start.nextSibling)
-      element.appendChild(dom.remove(start.nextSibling))
+exports.update = function (/*View, delta*/) {
 
-    // Insert the first pargraph in the section after the <hr>
-    dom.after(element.firstChild, dom.remove(start))
-    dom.after(previous, element)
-  }
+}
 
-  function update (/*index, section*/) {
+exports.remove = function (View, delta) {
+  var previous = View.paragraphs[delta.index - 1],
+      current = View.paragraphs[delta.index],
+      previousSection,
+      section,
+      len,
+      i
 
-  }
+  section = current.parentNode
+  while (section.nodeName !== 'SECTION')
+    section = section.parentNode
 
-  function remove (index) {
-    var paragraph,
-        section,
-        handler,
-        elem,
-        end,
-        i
+  previousSection = section.previousSibling
 
-    section = View.elements[index].parentNode
-    while (section.nodeName !== 'SECTION')
-      section = section.parentNode
+  while (section.lastChild.nodeName !== 'HR')
+    dom.after(previous, dom.remove(section.lastChild))
 
-    for (i = 0; i < View.sections.length; i += 1) {
-      if (View.sections[i].start !== index)
-        continue
+  dom.remove(section)
 
-      end = View.sections[i] ? View.sections[i].start : View.elements.length
+  // Join “nested” elements the removal might have brought together
+  // (e.g. two OL > LIs)
+  previous = ancestorsAsArray(previous)
+  current = ancestorsAsArray(current)
+
+  len = Math.min(current.length, previous.length) - 1
+  for (i = 0; i < len; i += 1) {
+    if (current[i].nodeName !== previous[i].nodeName)
       break
-    }
 
-    // Transfer paragraphs from the section being removed to the previous
-    // section by removing and reinserting it. In the case that there is a
-    // list on either side of the section break, for example, simply moving
-    // the elements themselves would result in two adjacent lists (instead
-    // of one merged list, which is probably desirable).
-    for (i = index; i < end; i += 1) {
-      elem = View.elements[i]
-      handler = View.handlerForElement(elem)
+    while (current[i].lastChild)
+      dom.after(previous[i + 1], dom.remove(current[i].lastChild))
 
-      paragraph = handler.serialize(elem)
-      handler.remove(i) // Not necessary?
-      handler.insert(i, paragraph)
-    }
+    dom.remove(current[i])
+  }
+}
 
-    dom.remove(section)
+// Utility function copied from paragraph.js.
+// TODO(luc): maybe find a way to share this code? Underscored methods
+// in the dom module, perhaps.
+function ancestorsAsArray (element) {
+  var ancestors = [element]
+
+  while (element.parentNode && element.parentNode.nodeName !== 'SECTION') {
+    element = element.parentNode
+    ancestors.unshift(element)
   }
 
-  View.allow({
-    elements: ['SECTION', 'HR'],
-    paragraphs: [],
-    serialize: serialize,
-    insert: insert,
-    update: update,
-    remove: remove
-  })
+  return ancestors
 }

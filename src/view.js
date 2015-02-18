@@ -2,27 +2,51 @@
 
 module.exports = ViewPlugin
 
-var paragraph = require('./paragraph'),
-    section = require('./section'),
-    resolve = require('./resolve'),
+var resolve = require('./resolve'),
     Choice = require('choice'),
     Selection = Choice.Selection
 
 function ViewPlugin (Compose) {
-  var debug = Compose.require('debug')('compose:view')
+  var Serialize = Compose.require('serialize'),
+      dom = Compose.require('dom')
 
   function View () {
     var handler
 
     this._choice = new Choice(Compose.root, this._getElements.bind(this))
-    this._handlers = []
+
+    // Handlers for various element types. Not much is done with sections
+    // at the moment; if it ever gets more complex, these handlers should
+    // probably be split out into separate files.
+    this._handlers = [{
+      elements: ['P'],
+      paragraphs: ['p'],
+      serialize: function (element) {
+        return new Serialize(element)
+      },
+      deserialize: function (paragraph) {
+        return [paragraph.toElement()]
+      }
+    }, {
+      elements: ['SECTION', 'HR'],
+      paragraphs: [],
+      serialize: function (/*section*/) {
+        return {}
+      },
+      deserialize: function (/*obj*/) {
+        var section = dom.create('section')
+
+        section.appendChild(dom.create('hr'))
+        return section
+      }
+    }]
 
     this._selection = null
     this._selectionChanged = false
 
     this.paragraphs = []
-    this.sections = []
     this.elements = []
+    this.sections = []
 
     this._toRender = []
     this._isRendering = 0
@@ -36,7 +60,6 @@ function ViewPlugin (Compose) {
         this._modified = sel.isBackwards() ? sel.end[0] : sel.start[0]
 
       // Schedule sync/render:
-      debug('Scheduling sync at index %d', this._modified)
       this._isSyncing = setImmediate(this.sync.bind(this))
       this._isRendering = setImmediate(this._render.bind(this))
     }.bind(this)
@@ -81,12 +104,8 @@ function ViewPlugin (Compose) {
    * are:
    *  - serialize(element) converts an element into an instance of
    *    Serialize
-   *  - insert(index, abstractElement) takes an instance of Serialize,
-   *    converts it back into an element, and inserts it at the given
-   *    index in the DOM
-   *  - update(index, abstractElement) like above, but for an update
-   *    operation
-   *  - remove(index) removes the paragraph at the given index from the DOM
+   *  - deserialize(paragraph) performs the opposite of serialize; takes
+   *    an instance of Serialize and turns it into an element.
    *
    * If any of these functions are not specified, the operations defined
    * for simple <p> elements are used.
@@ -94,26 +113,20 @@ function ViewPlugin (Compose) {
    * @param {Object} params
    * @return {Context}
    */
-  View.prototype.allow = function (params) {
-    var paragraph = this.handlerForElement('P')
+  View.prototype.allow = function (handler) {
+    var basic = this.handlerForElement('P')
 
-    if (!params || !params.elements || !params.paragraphs)
+    if (!handler || !handler.elements || !handler.paragraphs)
       return this
 
-    params.elements = params.elements.map(function (elem) {
+    handler.elements = handler.elements.map(function (elem) {
       return elem.toUpperCase()
     })
 
-    params.paragraphs = params.paragraphs.map(function (paragraph) {
-      return paragraph.toLowerCase()
-    })
+    handler.serialize = handler.serialize || basic.serialize
+    handler.deserialize = handler.deserialize || basic.deserialize
 
-    params.serialize = params.serialize || paragraph.serialize
-    params.insert = params.insert || paragraph.insert
-    params.update = params.update || paragraph.update
-    params.remove = params.remove || paragraph.remove
-
-    this._handlers.push(params)
+    this._handlers.push(handler)
 
     return this
   }
@@ -236,7 +249,6 @@ function ViewPlugin (Compose) {
         this.paragraphs[index] = paragraph
     }
 
-    debug('Synced paragraph at index %d', index)
     return this
   }
 
@@ -323,12 +335,8 @@ function ViewPlugin (Compose) {
     return this
   }
 
-  Compose.provide('view', new View())
-
   // Expose the Selection constructor.
   Compose.provide('selection', Selection)
 
-  // Initialize the default paragraph and section handlers.
-  Compose.use(paragraph)
-  Compose.use(section)
+  Compose.provide('view', new View())
 }

@@ -1,6 +1,8 @@
 'use strict';
 
-var Delta = require('./delta')
+var paragraph = require('./paragraph'),
+    section = require('./section'),
+    Delta = require('./delta')
 
 /**
  * validate(View, delta) performs a validation check on the given
@@ -148,49 +150,29 @@ exports.inline = function (View, delta) {
  * @param {Delta} delta
  */
 exports.DOM = function (View, delta) {
-  var handler
-
-  if (delta.paragraph)
-    handler = View.handlerForParagraph(delta.paragraph.type)
-  else
-    handler = View.handlerForElement('section')
-
-  if (!handler)
-    throw Error('No handler for paragraphs of type ' + delta.paragraph.type)
-
   switch (delta.type) {
     case Delta.types.paragraphInsert:
-      handler.insert(delta.index, delta.paragraph)
+      paragraph.insert(View, delta)
       break
 
     case Delta.types.paragraphUpdate:
-
-      // If the update operation changed the type: remove, then insert
-      // the two paragraphs. Presumably, the handler for one type of
-      // paragraph won’t know how to properly handle element of the
-      // other type.
-      if (delta.paragraph.type !== delta._oldType) {
-        handler.insert(delta.index + 1, delta.paragraph)
-        View.handlerForParagraph(delta._oldType).remove(delta.index)
-      } else {
-        handler.update(delta.index, delta.paragraph)
-      }
+      paragraph.update(View, delta)
       break
 
     case Delta.types.paragraphDelete:
-      handler.remove(delta.index)
+      paragraph.remove(View, delta)
       break
 
     case Delta.types.sectionInsert:
-      handler.insert(delta.index, delta.section)
+      section.insert(View, delta)
       break
 
     case Delta.types.sectionUpdate:
-      handler.update(delta.index, delta.section)
+      section.update(View, delta)
       break
 
     case Delta.types.sectionDelete:
-      handler.remove(delta.index)
+      section.remove(View, delta)
       break
   }
 }
