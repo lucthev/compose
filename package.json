@@ -1,7 +1,7 @@
 {
-  "name": "compose",
-  "version": "0.0.1",
-  "description": "Yet another contentEditable thing.",
+  "name": "compose-editor",
+  "version": "0.1.0",
+  "description": "Yet another rich text editor thing.",
   "main": "src/compose.js",
   "scripts": {
     "dev": "make watch",

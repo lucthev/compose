@@ -43,7 +43,10 @@ integration-test: bundle
 
 test: lint unit-test integration-test
 
+publish: dist/compose.js
+	npm publish
+
 clean:
 	rm -rf dist vendor
 
-.PHONY: clean watch test debug lint unit-test
+.PHONY: clean watch test debug lint unit-test integration-test publish
