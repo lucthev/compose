@@ -1,7 +1,7 @@
 /* jshint ignore:start */
 var expect = chai.expect
 
-describe.skip('The event module', function () {
+describe('The event module', function () {
 
   var compose
 

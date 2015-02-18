@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 
-describe.skip('Compose\'s plugin system', function () {
+describe('Compose\'s plugin system', function () {
 
   var compose
 
@@ -20,7 +20,7 @@ describe.skip('Compose\'s plugin system', function () {
     } catch (e) {}
   })
 
-  it('should allow plugins to export functionality via a "provide" method.', function () {
+  it('should allow plugins to export functionality via a "provide" method', function () {
     var checked = false
 
     function plugin (Compose) {
@@ -35,7 +35,7 @@ describe.skip('Compose\'s plugin system', function () {
     expect(compose.plugins.some).to.equal('thing')
   })
 
-  it('should allow plugins to access each other\'s exports via a "require" method.', function () {
+  it('should allow plugins to access each other\'s exports via a "require" method', function () {
     var checked = false
 
     function plugin (Compose) {
@@ -56,7 +56,7 @@ describe.skip('Compose\'s plugin system', function () {
     expect(checked).to.be.true
   })
 
-  it('should allow plugins to use other plugins.', function () {
+  it('should allow plugins to use other plugins', function () {
     var checked = false
 
     function plugin (Compose) {
@@ -75,7 +75,7 @@ describe.skip('Compose\'s plugin system', function () {
     expect(compose.require('some')).to.equal('thing')
   })
 
-  it('should throw an error when requiring a module that doesn\'t exist.', function () {
+  it('should throw an error when requiring a module that doesn\'t exist', function () {
     function plugin (Compose) {
       Compose.require('non-existant')
     }
@@ -87,7 +87,7 @@ describe.skip('Compose\'s plugin system', function () {
     expect(willThrow).to.throw(Error)
   })
 
-  it('should throw an error when plugins exports things with the same name.', function () {
+  it('should throw an error when plugins exports things with the same name', function () {
     function plugin (Compose) {
       Compose.provide('some', 'thing')
     }
@@ -105,7 +105,7 @@ describe.skip('Compose\'s plugin system', function () {
     expect(willThrow).to.throw(Error)
   })
 
-  it('can optionally disable plugins if they provide a "disable" method.', function () {
+  it('can optionally disable plugins if they provide a "disable" method', function () {
     var disabled = false
 
     function plugin (Compose) {
@@ -131,7 +131,7 @@ describe.skip('Compose\'s plugin system', function () {
     expect(willThrow).to.throw(Error)
   })
 
-  it('hasOwnProperty edge case.', function () {
+  it('hasOwnProperty edge case', function () {
     var checked = false
 
     function silly (Compose) {

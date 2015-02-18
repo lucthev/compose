@@ -5,7 +5,7 @@
 chai.use(TreeMatcher)
 chai.use(ChildMatcher)
 
-describe('Delta operation', function () {
+describe.skip('Delta operation', function () {
   var Serialize,
       editor,
       root,
