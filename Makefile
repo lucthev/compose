@@ -1,6 +1,5 @@
 # Various programs
 browserify := ./node_modules/.bin/browserify
-watchify := ./node_modules/.bin/watchify
 jshint := ./node_modules/.bin/jshint
 uglifyjs := ./node_modules/.bin/uglifyjs
 mocha := ./node_modules/.bin/mocha
@@ -9,32 +8,27 @@ karma := ./node_modules/.bin/karma
 # Build options
 name := Compose
 src := src/compose.js
-dest := dist/compose.js
 all := $(shell $(browserify) --list $(src))
 
 # Things for testing:
 minor := 2.43
 patch := 2.43.1
 
-$(dest): $(all)
+dist/compose.js: $(all)
 	@mkdir -p dist
 	$(browserify) -s $(name) $(src) | $(uglifyjs) -m -o $@
 
 debug:
 	@mkdir -p dist
-	$(browserify) -s $(name) $(src) > $(dest)
-
-watch:
-	@mkdir -p dist
-	$(watchify) -v -s $(name) -o $(dest) $(src)
+	$(browserify) -s $(name) $(src) > dist/compose.js
 
 lint:
 	$(jshint) src test
 
-unit-test: bundle
+unit-test: dist/compose.js
 	$(karma) start test/unit/karma.conf.js
 
-integration-test: bundle
+integration-test: dist/compose.js
 	@test -f vendor/selenium-$(patch).jar || echo "Downloading Selenium server…"
 	@test -f vendor/selenium-$(patch).jar || curl --create-dirs -o \
 		vendor/selenium-$(patch).jar \
