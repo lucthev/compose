@@ -31,8 +31,7 @@ function Compose (elem) {
   this.plugins = {
     delta: require('./delta'),
     serialize: require('serialize-elem'),
-    dom: require('./dom'),
-    debug: require('debug')
+    dom: require('./dom')
   }
 
   this.use(require('./events'))

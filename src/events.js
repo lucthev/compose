@@ -37,18 +37,14 @@ var selectionKeys = {
 }
 
 function Events (Compose) {
-  var debug = Compose.require('debug'),
-      events = {},
+  var events = {},
       handlers,
       modKey
 
   handlers = listenTo.map(function (name) {
-    var db = debug('compose:events:' + name)
-
     return {
       event: name,
       fn: function (e) {
-        db(e)
         Compose.emit(name, e)
       }
     }
