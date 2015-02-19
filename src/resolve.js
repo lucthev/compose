@@ -89,24 +89,11 @@ exports.inline = function (View, delta) {
       break
 
     case Delta.types.paragraphUpdate:
-
-      // Make note of the type of the previous paragraph. This information
-      // will be sued when swapping out paragraphs in the DOM; when a change
-      // of types occurs, we need to remove the old paragraph using one
-      // handler and insert the new paragraph using another.
-      delta._oldType = paragraphs[index].type
-
       paragraphs[index] = delta.paragraph
       break
 
     case Delta.types.paragraphDelete:
-
-      // Splice out the paragraph; append it to the Delta, because it will
-      // be used later in resolve.DOM to determine what handler should
-      // remove the paragraph.
-      delta.paragraph = paragraphs[index]
       paragraphs.splice(index, 1)
-
       for (i = 0; i < sections.length; i += 1) {
         if (sections[i].start > index)
           sections[i].start -= 1
