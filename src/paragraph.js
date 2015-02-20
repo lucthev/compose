@@ -40,19 +40,7 @@ exports.insert = function (View, delta) {
   if (View.isSectionStart(index) || index === View.elements.length - 1)
     return
 
-  adjacent = ancestorsAsArray(View.elements[index + 1])
-
-  // TODO(luc): factor out into a separate function?
-  len = Math.min(adjacent.length, inserted.length - 1)
-  for (i = 0; i < len; i += 1) {
-    if (adjacent[i].nodeName !== inserted[i].nodeName)
-      break
-
-    while (adjacent[i].lastChild)
-      dom.after(inserted[i + 1], dom.remove(adjacent[i].lastChild))
-
-    dom.remove(adjacent[i])
-  }
+  mergeAdjacent(View.elements[index], View.elements[index + 1])
 }
 
 /**
@@ -65,7 +53,6 @@ exports.insert = function (View, delta) {
 exports.update = function (View, delta) {
   var updated = delta.paragraph,
       index = delta.index,
-      adjacent,
       current,
       handler,
       len,
@@ -88,40 +75,14 @@ exports.update = function (View, delta) {
       dom.splitAt(current[i + 1].previousSibling, current[i - 1])
   }
 
-  dom.replace(current[i], updated[i])
+  dom.replace(current[i], joinElements(updated.slice(i)))
   View.elements[index] = updated[updated.length - 1]
 
-  if (!View.isSectionStart(index)) {
-    adjacent = ancestorsAsArray(View.elements[index - 1])
-    current = ancestorsAsArray(View.elements[index])
+  if (!View.isSectionStart(index))
+    mergeAdjacent(View.elements[index - 1], View.elements[index])
 
-    len = Math.min(adjacent.length, current.length) - 1
-    for (i = 0; i < len; i += 1) {
-      if (current[i].nodeName !== adjacent[i].nodeName)
-        break
-
-      while (current[i].lastChild)
-        dom.after(adjacent[i + 1], dom.remove(current[i].lastChild))
-
-      dom.remove(current[i])
-    }
-  }
-
-  if (!View.isSectionStart(index + 1) && View.elements[index + 1]) {
-    current = ancestorsAsArray(View.elements[index])
-    adjacent = ancestorsAsArray(View.elements[index + 1])
-
-    len = Math.min(adjacent.length, current.length) - 1
-    for (i = 0; i < len; i += 1) {
-      if (current[i].nodeName !== adjacent[i].nodeName)
-        break
-
-      while (adjacent[i].lastChild)
-        dom.after(current[i + 1], dom.remove(adjacent[i].lastChild))
-
-      dom.remove(adjacent[i])
-    }
-  }
+  if (!View.isSectionStart(index + 1) && View.elements[index + 1])
+    mergeAdjacent(View.elements[index], View.elements[index + 1])
 }
 
 /**
@@ -132,10 +93,7 @@ exports.update = function (View, delta) {
  */
 exports.remove = function (View, delta) {
   var index = delta.index,
-      adjacent,
-      current,
-      len,
-      i
+      current
 
   current = View.elements[index]
 
@@ -156,19 +114,7 @@ exports.remove = function (View, delta) {
   if (View.isSectionStart(index) || !View.elements[index])
     return
 
-  adjacent = ancestorsAsArray(View.elements[index - 1])
-  current = ancestorsAsArray(View.elements[index])
-
-  len = Math.min(current.length, adjacent.length) - 1
-  for (i = 0; i < len; i += 1) {
-    if (current[i].nodeName !== adjacent[i].nodeName)
-      break
-
-    while (current[i].lastChild)
-      dom.after(adjacent[i + 1], dom.remove(current[i].lastChild))
-
-    dom.remove(current[i])
-  }
+  mergeAdjacent(View.elements[index - 1], View.elements[index])
 }
 
 /**
@@ -202,8 +148,39 @@ function joinElements (elements) {
   var root = elements[0],
       i = 1
 
-  while (elements[i])
+  while (elements[i]) {
     elements[i - 1].appendChild(elements[i])
+    i += 1
+  }
 
   return root
+}
+
+/**
+ * mergeAdjacent(before, after) combines the similar ancestors of two
+ * adjacent paragraphs.
+ *
+ * @param {Element} before
+ * @param {Element} after
+ */
+function mergeAdjacent (before, after) {
+  var len,
+      i
+
+  before = ancestorsAsArray(before)
+  after = ancestorsAsArray(after)
+
+  if (before[0] === after[0])
+    return
+
+  len = Math.min(before.length, after.length) - 1
+  for (i = 0; i < len; i += 1) {
+    if (before[i].nodeName !== after[i].nodeName)
+      break
+
+    while (after[i].lastChild)
+      dom.after(before[i + 1], dom.remove(after[i].lastChild))
+
+    dom.remove(after[i])
+  }
 }
