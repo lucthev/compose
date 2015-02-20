@@ -81,7 +81,7 @@ exports.inline = function (View, delta) {
 
   switch (delta.type) {
     case Delta.types.paragraphInsert:
-      paragraphs.splice(index, 0, delta.paragraph)
+      paragraphs.splice(index, 0, delta.paragraph.substr(0))
       for (i = 0; i < sections.length; i += 1) {
         if (sections[i].start >= delta.index)
           sections[i].start += 1
@@ -89,7 +89,7 @@ exports.inline = function (View, delta) {
       break
 
     case Delta.types.paragraphUpdate:
-      paragraphs[index] = delta.paragraph
+      paragraphs[index] = delta.paragraph.substr(0)
       break
 
     case Delta.types.paragraphDelete:

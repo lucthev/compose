@@ -20,7 +20,7 @@ exports.insert = function (View, delta) {
       i
 
   handler = View.handlerForParagraph(inserted.type)
-  inserted = handler.deserialize(inserted)
+  inserted = handler.deserialize(inserted.substr(0))
   adjacent = ancestorsAsArray(View.elements[index - 1])
 
   len = Math.min(adjacent.length, inserted.length) - 1
@@ -72,7 +72,7 @@ exports.update = function (View, delta) {
       i
 
   handler = View.handlerForParagraph(updated.type)
-  updated = handler.deserialize(updated)
+  updated = handler.deserialize(updated.substr(0))
   current = ancestorsAsArray(View.elements[index])
 
   len = Math.min(updated.length, current.length) - 1
