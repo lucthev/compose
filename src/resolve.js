@@ -33,7 +33,7 @@ exports.validate = function (View, delta) {
       if (index < 0 || index >= paragraphs.length)
         throw RangeError('Cannot remove paragraph at index ' + index)
 
-      if ((View.isSectionStart(index + 1) || index === paragraphs.length) &&
+      if ((View.isSectionStart(index + 1) || index >= paragraphs.length - 1) &&
           View.isSectionStart(index))
         throw Error('Cannot remove the only paragraph in a section.')
 
