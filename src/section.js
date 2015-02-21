@@ -8,7 +8,7 @@ exports.insert = function (View, delta) {
       section,
       start
 
-  start = View.elements[delta.index]
+  start = View.elements[delta.index - 1]
   start = dom.splitAt(start)
 
   previousSection = start.parentNode
@@ -17,8 +17,6 @@ exports.insert = function (View, delta) {
   while (start.nextSibling)
     section.appendChild(dom.remove(start.nextSibling))
 
-  // Insert the first paragraph in the section after the HR
-  dom.after(section.firstChild, dom.remove(start))
   dom.after(previousSection, section)
 }
 
