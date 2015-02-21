@@ -1,39 +1,16 @@
-/* global describe, it, Compose, expect, chai, richmode,
-   TreeMatcher, ChildMatcher, afterEach */
+/* global describe, it, Compose, expect, chai, TreeMatcher, ChildMatcher,
+  afterEach, listPlugin, formatBlock */
 'use strict';
 
 chai.use(TreeMatcher)
 chai.use(ChildMatcher)
 
-describe.skip('Delta operation', function () {
+describe('Delta operation', function () {
   var Serialize,
       editor,
+      View,
       root,
       p
-
-  function setup (html) {
-    root = document.createElement('div')
-    root.innerHTML = html
-    document.body.appendChild(root)
-
-    editor = new Compose(root)
-    editor.use(richmode)
-    Serialize = editor.plugins.serialize
-  }
-
-  function makeApplier (type) {
-    return function (index, data) {
-      var Delta = editor.plugins.delta,
-          View = editor.plugins.view
-
-      View.resolve(new Delta(type, index, data))
-    }
-  }
-
-  function teardown () {
-    document.body.removeChild(root)
-    p = null
-  }
 
   describe('paragraphInsert should', function () {
     var op = makeApplier('paragraphInsert')
@@ -634,7 +611,7 @@ describe.skip('Delta operation', function () {
             name: 'hr'
           }, {
             name: 'p',
-            html: 'One'
+            html: '1'
           }]
         }])
 
@@ -646,7 +623,7 @@ describe.skip('Delta operation', function () {
       setup('<section><hr><p>One</p></section>')
 
       p = Serialize.fromText('One')
-      p.addMarkup({
+      p.addMarkups({
         type: Serialize.types.bold,
         start: 1,
         end: 2
@@ -908,9 +885,9 @@ describe.skip('Delta operation', function () {
     })
 
     it('change a middle OL > LI to a P', function (done) {
-      setup('<section><hr><ol><li>One</li><li>Two</li><p>Three</p></ol></section>')
+      setup('<section><hr><ol><li>One</li><li>Two</li></ol><p>Three</p></section>')
 
-      p = Serialize.fromText('Two', 1)
+      p = Serialize.fromText('Two')
       op(1, p)
 
       setTimeout(function () {
@@ -940,7 +917,7 @@ describe.skip('Delta operation', function () {
     it('change the middle OL > LI in a trio to a P', function (done) {
       setup('<section><hr><ol><li>One</li><li>Two</li><li>Three</li></ol></section>')
 
-      p = Serialize.fromText('Two', 1)
+      p = Serialize.fromText('Two')
       op(1, p)
 
       setTimeout(function () {
@@ -1146,7 +1123,7 @@ describe.skip('Delta operation', function () {
     })
 
     it('remove paragraphs in the middle', function (done) {
-      setup('<section><hr><p>One</p><p>Two</p><p>Three</p></section>')
+      setup('<section><hr><p>One</p><p>X</p><p>Two</p></section>')
 
       op(1)
 
@@ -1507,4 +1484,46 @@ describe.skip('Delta operation', function () {
       }, 0)
     })
   })
+
+  function setup (html) {
+    root = document.createElement('div')
+    root.innerHTML = html
+    document.body.appendChild(root)
+
+    editor = new Compose(root)
+    editor.use(listPlugin)
+    editor.use(formatBlock)
+    Serialize = editor.require('serialize')
+    View = editor.require('view')
+
+    // Perform some setup.
+    var all = [].slice.call(root.querySelectorAll('section,p,h2,li'))
+
+    all.forEach(function (el) {
+      var section
+
+      if (el.nodeName === 'SECTION') {
+        section = View.handlerForElement(el.nodeName).serialize(el)
+        section.start = View.elements.length
+        View.sections.push(section)
+      } else {
+        View.elements.push(el)
+        View.paragraphs.push(View.handlerForElement(el.nodeName).serialize(el))
+      }
+    })
+  }
+
+  function makeApplier (type) {
+    return function (index, data) {
+      var Delta = editor.plugins.delta,
+          View = editor.plugins.view
+
+      View.resolve(new Delta(type, index, data))
+    }
+  }
+
+  function teardown () {
+    document.body.removeChild(root)
+    p = null
+  }
 })

@@ -20,6 +20,8 @@
   "devDependencies": {
     "browserify": "8.1.2",
     "chai": "1.10.0",
+    "compose-formatblock": "0.1.0",
+    "compose-lists": "0.1.0",
     "jshint": "2.6.0",
     "karma": "0.12.31",
     "karma-chai": "0.1.0",

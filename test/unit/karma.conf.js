@@ -8,6 +8,8 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai'],
     reporters: ['dots'],
     files: [
+      require.resolve('compose-lists/dist/listPlugin.js'),
+      require.resolve('compose-formatblock/dist/formatBlock.js'),
       '../../dist/compose.js',
       './utils.js',
       './**/*.spec.js'
