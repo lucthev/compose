@@ -35,12 +35,21 @@ exports.insert = function (View, delta) {
     dom.splitAt(adjacent[i + 1], adjacent[i - 1])
 
   dom.after(adjacent[i], joinElements(inserted.slice(i)))
+
+  if (!isStart(View, index) && index < View.elements.length - 1)
+    mergeAdjacent(View.elements[index], View.elements[index + 1])
+
+  // Note that the insertion of the element has to be done after the
+  // isStart check. Consider inserting a paragraph right before a
+  // section starting at index 1 (i.e. with one paragraph preceding
+  // the section). Splicing in the paragraph before the isStart check
+  // would result in two paragraphs preceding the section, isStart
+  // would return false, and a merge attempt would be made; if OL > LIs
+  // surround the section break, this would result in the LIs after the
+  // break being transferred to before.
+  // This code highlights the fragility of the “update View immediately,
+  // DOM on next tick” approach, but overall it could be much worse.
   View.elements.splice(index, 0, inserted[inserted.length - 1])
-
-  if (View.isSectionStart(index) || index === View.elements.length - 1)
-    return
-
-  mergeAdjacent(View.elements[index], View.elements[index + 1])
 }
 
 /**
@@ -78,10 +87,10 @@ exports.update = function (View, delta) {
   dom.replace(current[i], joinElements(updated.slice(i)))
   View.elements[index] = updated[updated.length - 1]
 
-  if (!View.isSectionStart(index))
+  if (!isStart(View, index))
     mergeAdjacent(View.elements[index - 1], View.elements[index])
 
-  if (!View.isSectionStart(index + 1) && View.elements[index + 1])
+  if (!isStart(View, index + 1) && View.elements[index + 1])
     mergeAdjacent(View.elements[index], View.elements[index + 1])
 }
 
@@ -107,14 +116,12 @@ exports.remove = function (View, delta) {
   dom.remove(current)
   View.elements.splice(index, 1)
 
-  // FIXME(luc): isSectionStart(...) checks the View’s representation
-  // of sections and paragraphs, which, when it comes time to update
-  // the DOM, is “ahead”. As such, isSectionStart may return incorrect,
-  // or at least misleading, results. Does this matter?
-  if (View.isSectionStart(index) || !View.elements[index])
-    return
-
-  mergeAdjacent(View.elements[index - 1], View.elements[index])
+  // Note that in this case, splicing out the element has to occur before
+  // the isStart check; this covers both the case where the removed
+  // element is preceded by a section start and when the removed element
+  // is followed by a section start.
+  if (!isStart(View, index) && View.elements[index])
+    mergeAdjacent(View.elements[index - 1], View.elements[index])
 }
 
 /**
@@ -183,4 +190,32 @@ function mergeAdjacent (before, after) {
 
     dom.remove(after[i])
   }
+}
+
+/**
+ * isStart(View, index) determines a section element is preceded by
+ * ‘index’ paragraphs. This is different from View#isSectionStart(),
+ * which checks the view’s model of the DOM; when it comes time to
+ * insert paragraphs, the DOM lags behind the view and thus
+ * isSectionStart can return incorrect results. See specifically
+ * test/delta “insert an OL > LI before an OL > LI and a section.”
+ *
+ * @param {View} View
+ * @param {Int >= 0} index
+ * @return {Boolean}
+ */
+function isStart (View, index) {
+  var sections,
+      i
+
+  sections = View.elements.map(function (elem) {
+    return dom.ancestor(elem, 'SECTION')
+  })
+
+  for (i = 0; i < sections.length; i += 1) {
+    if (sections[i] !== sections[i - 1] && index === i)
+      return true
+  }
+
+  return false
 }

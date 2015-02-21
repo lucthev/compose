@@ -117,6 +117,28 @@ exports.create = function (tag) {
 }
 
 /**
+ * ancestor(child [, name]) returns the ancestor of the given child
+ * whose nodeName matches ‘name.’ If no name is given, returns the
+ * immediate ancestor of the child. In either case, returns null if
+ * an appropriate ancestor cannot be found.
+ *
+ * @param {Node} child
+ * @param {String} name
+ * @return {Element}
+ */
+exports.ancestor = function (child, name) {
+  var parent = child.parentNode
+
+  if (!name)
+    return parent
+
+  while (parent && parent.nodeName !== name)
+    parent = parent.parentNode
+
+  return parent
+}
+
+/**
  * splitAt(node, until) splits a DOM tree at the given node up until
  * the node matching ‘until.’ ‘until’ can be either a string (nodeName)
  * or an actual element.
