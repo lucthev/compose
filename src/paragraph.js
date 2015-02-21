@@ -80,8 +80,13 @@ exports.update = function (View, delta) {
   if (current[i + 1]) {
     dom.splitAt(current[i + 1], current[i - 1])
 
-    if (current[i + 1].previousSibling)
+    if (current[i + 1].previousSibling) {
       dom.splitAt(current[i + 1].previousSibling, current[i - 1])
+
+      // Splitting before this paragraph probably changed its list
+      // of parents; refresh it.
+      current = ancestorsAsArray(View.elements[index])
+    }
   }
 
   dom.replace(current[i], joinElements(updated.slice(i)))
