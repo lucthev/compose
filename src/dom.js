@@ -174,3 +174,52 @@ exports.splitAt = function (node, until) {
 
   return node
 }
+
+/**
+ * ancestorsAsArray(element) gets the ancestors of the given array,
+ * up to the first SECTION, and returns them as an array in descending
+ * (“highest” ancestor first) order.
+ *
+ * @param {Element} element
+ * @return {Array}
+ */
+var ancestorsAsArray =
+exports._ancestorsAsArray = function (element) {
+  var ancestors = [element]
+
+  while (element.parentNode && element.parentNode.nodeName !== 'SECTION') {
+    element = element.parentNode
+    ancestors.unshift(element)
+  }
+
+  return ancestors
+}
+
+/**
+ * _merge(before, after) combines the similar ancestors of two
+ * adjacent paragraphs.
+ *
+ * @param {Element} before
+ * @param {Element} after
+ */
+exports._merge = function (before, after) {
+  var len,
+      i
+
+  before = ancestorsAsArray(before)
+  after = ancestorsAsArray(after)
+
+  if (before[0] === after[0])
+    return
+
+  len = Math.min(before.length, after.length) - 1
+  for (i = 0; i < len; i += 1) {
+    if (before[i].nodeName !== after[i].nodeName)
+      break
+
+    while (after[i].lastChild)
+      dom.after(before[i + 1], dom.remove(after[i].lastChild))
+
+    dom.remove(after[i])
+  }
+}

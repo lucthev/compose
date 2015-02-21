@@ -25,51 +25,17 @@ exports.update = function (/*View, delta*/) {
 }
 
 exports.remove = function (View, delta) {
-  var previous = View.paragraphs[delta.index - 1],
-      current = View.paragraphs[delta.index],
-      previousSection,
-      section,
-      len,
-      i
+  var index = delta.index,
+      previous,
+      section
 
-  section = current.parentNode
-  while (section.nodeName !== 'SECTION')
-    section = section.parentNode
-
-  previousSection = section.previousSibling
+  previous = dom._ancestorsAsArray(View.elements[index - 1])[0]
+  section = dom.ancestor(View.elements[index], 'SECTION')
 
   while (section.lastChild.nodeName !== 'HR')
-    dom.after(previous, dom.remove(section.lastChild))
+    dom.after(previous, section.removeChild(section.lastChild))
 
   dom.remove(section)
 
-  // Join “nested” elements the removal might have brought together
-  // (e.g. two OL > LIs)
-  previous = ancestorsAsArray(previous)
-  current = ancestorsAsArray(current)
-
-  len = Math.min(current.length, previous.length) - 1
-  for (i = 0; i < len; i += 1) {
-    if (current[i].nodeName !== previous[i].nodeName)
-      break
-
-    while (current[i].lastChild)
-      dom.after(previous[i + 1], dom.remove(current[i].lastChild))
-
-    dom.remove(current[i])
-  }
-}
-
-// Utility function copied from paragraph.js.
-// TODO(luc): maybe find a way to share this code? Underscored methods
-// in the dom module, perhaps.
-function ancestorsAsArray (element) {
-  var ancestors = [element]
-
-  while (element.parentNode && element.parentNode.nodeName !== 'SECTION') {
-    element = element.parentNode
-    ancestors.unshift(element)
-  }
-
-  return ancestors
+  dom._merge(View.elements[index - 1], View.elements[index])
 }

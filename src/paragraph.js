@@ -21,7 +21,7 @@ exports.insert = function (View, delta) {
 
   handler = View.handlerForParagraph(inserted.type)
   inserted = handler.deserialize(inserted.substr(0))
-  adjacent = ancestorsAsArray(View.elements[index - 1])
+  adjacent = dom._ancestorsAsArray(View.elements[index - 1])
 
   len = Math.min(adjacent.length, inserted.length) - 1
   for (i = 0; i < len; i += 1) {
@@ -37,7 +37,7 @@ exports.insert = function (View, delta) {
   dom.after(adjacent[i], joinElements(inserted.slice(i)))
 
   if (!isStart(View, index) && index < View.elements.length - 1)
-    mergeAdjacent(View.elements[index], View.elements[index + 1])
+    dom._merge(View.elements[index], View.elements[index + 1])
 
   // Note that the insertion of the element has to be done after the
   // isStart check. Consider inserting a paragraph right before a
@@ -69,7 +69,7 @@ exports.update = function (View, delta) {
 
   handler = View.handlerForParagraph(updated.type)
   updated = handler.deserialize(updated.substr(0))
-  current = ancestorsAsArray(View.elements[index])
+  current = dom._ancestorsAsArray(View.elements[index])
 
   len = Math.min(updated.length, current.length) - 1
   for (i = 0; i < len; i += 1) {
@@ -85,7 +85,7 @@ exports.update = function (View, delta) {
 
       // Splitting before this paragraph probably changed its list
       // of parents; refresh it.
-      current = ancestorsAsArray(View.elements[index])
+      current = dom._ancestorsAsArray(View.elements[index])
     }
   }
 
@@ -93,10 +93,10 @@ exports.update = function (View, delta) {
   View.elements[index] = updated[updated.length - 1]
 
   if (!isStart(View, index))
-    mergeAdjacent(View.elements[index - 1], View.elements[index])
+    dom._merge(View.elements[index - 1], View.elements[index])
 
   if (!isStart(View, index + 1) && View.elements[index + 1])
-    mergeAdjacent(View.elements[index], View.elements[index + 1])
+    dom._merge(View.elements[index], View.elements[index + 1])
 }
 
 /**
@@ -126,26 +126,7 @@ exports.remove = function (View, delta) {
   // element is preceded by a section start and when the removed element
   // is followed by a section start.
   if (!isStart(View, index) && View.elements[index])
-    mergeAdjacent(View.elements[index - 1], View.elements[index])
-}
-
-/**
- * ancestorsAsArray(element) gets the ancestors of the given array,
- * up to the first SECTION, and returns them as an array in descending
- * (“highest” ancestor first) order.
- *
- * @param {Element} element
- * @return {Array}
- */
-function ancestorsAsArray (element) {
-  var ancestors = [element]
-
-  while (element.parentNode && element.parentNode.nodeName !== 'SECTION') {
-    element = element.parentNode
-    ancestors.unshift(element)
-  }
-
-  return ancestors
+    dom._merge(View.elements[index - 1], View.elements[index])
 }
 
 /**
@@ -166,35 +147,6 @@ function joinElements (elements) {
   }
 
   return root
-}
-
-/**
- * mergeAdjacent(before, after) combines the similar ancestors of two
- * adjacent paragraphs.
- *
- * @param {Element} before
- * @param {Element} after
- */
-function mergeAdjacent (before, after) {
-  var len,
-      i
-
-  before = ancestorsAsArray(before)
-  after = ancestorsAsArray(after)
-
-  if (before[0] === after[0])
-    return
-
-  len = Math.min(before.length, after.length) - 1
-  for (i = 0; i < len; i += 1) {
-    if (before[i].nodeName !== after[i].nodeName)
-      break
-
-    while (after[i].lastChild)
-      dom.after(before[i + 1], dom.remove(after[i].lastChild))
-
-    dom.remove(after[i])
-  }
 }
 
 /**

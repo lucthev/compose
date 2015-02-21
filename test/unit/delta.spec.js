@@ -780,7 +780,7 @@ describe('Delta operation', function () {
       setup('<section><hr><p>One</p><p>Two</p><ol><li>Three</li></ol></section>')
 
       p = Serialize.fromText('Two', 'ol')
-      op(0, p)
+      op(1, p)
 
       setTimeout(function () {
         expect(root).to.have.children([{
