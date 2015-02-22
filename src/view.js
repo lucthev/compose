@@ -8,6 +8,7 @@ var resolve = require('./resolve'),
 
 function ViewPlugin (Compose) {
   var Serialize = Compose.require('serialize'),
+      Delta = Compose.require('delta'),
       dom = Compose.require('dom')
 
   function View () {
@@ -244,23 +245,22 @@ function ViewPlugin (Compose) {
     if (index >= 0) {
       element = all[index]
       paragraph = this.handlerForElement(element.nodeName).serialize(element)
-
-      if (!paragraph.equals(this.paragraphs[index]))
-        this.paragraphs[index] = paragraph
+      this.resolve(new Delta('paragraphUpdate', index, paragraph), true)
     }
 
     return this
   }
 
   /**
-   * resolve(deltas) resoves one or more deltas immediately against
-   * the View, and adds them to a queue to be resolved against the
-   * DOM on next tick.
+   * resolve(deltas [, skipRender]) resolves one or more deltas immediately
+   * against the View, and, if ‘skipRender’ is falsy, adds them to a
+   * queue to be resolved against the DOM on next tick.
    *
    * @param {Delta || Array} deltas
+   * @param {Boolean} skipRender
    * @return {Context}
    */
-  View.prototype.resolve = function (deltas) {
+  View.prototype.resolve = function (deltas, skipRender) {
     var i
 
     if (!Array.isArray(deltas))
@@ -274,13 +274,20 @@ function ViewPlugin (Compose) {
         return this
       }
 
+      // If a paragraphUpdate delta would result in an identical paragraph,
+      // skip the work.
+      if (deltas[i].type === Delta.types.paragraphUpdate &&
+          deltas[i].paragraph.equals(this.paragraphs[deltas[i].index]))
+        continue
+
       Compose.emit('delta', deltas[i])
       resolve.inline(this, deltas[i])
+
+      if (!skipRender)
+        this._toRender.push(deltas[i])
     }
 
-    this._toRender = this._toRender.concat(deltas)
-
-    if (!this._isRendering)
+    if (!this._isRendering && this._toRender.length)
       this._isRendering = setImmediate(this._render.bind(this))
 
     // Cancel a sync, if one is scheduled. Otherwise, the sync can
@@ -337,6 +344,5 @@ function ViewPlugin (Compose) {
 
   // Expose the Selection constructor.
   Compose.provide('selection', Selection)
-
   Compose.provide('view', new View())
 }
