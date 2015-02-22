@@ -18,9 +18,9 @@ dist/compose.js: $(all)
 	@mkdir -p dist
 	$(browserify) -s $(name) $(src) | $(uglifyjs) -m -o $@
 
-debug:
+dist/compose.debug.js: $(all)
 	@mkdir -p dist
-	$(browserify) -s $(name) $(src) > dist/compose.js
+	$(browserify) -s $(name) $(src) > $@
 
 lint:
 	$(jshint) src test
