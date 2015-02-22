@@ -8,6 +8,7 @@ var resolve = require('./resolve'),
 
 function ViewPlugin (Compose) {
   var Serialize = Compose.require('serialize'),
+      events = Compose.require('events'),
       Delta = Compose.require('delta'),
       dom = Compose.require('dom')
 
@@ -60,8 +61,17 @@ function ViewPlugin (Compose) {
       if (sel && e.type === 'keydown')
         this._modified = sel.isBackwards() ? sel.end[0] : sel.start[0]
 
-      // Schedule sync/render:
-      this._isSyncing = setImmediate(this.sync.bind(this))
+      this._isSyncing = setImmediate(function scheduleSync () {
+
+        // The selection should always be normalized after a “selection”
+        // key is pressed, to avoid ambiguity with respect to multiple
+        // nested inline markups.
+        if (events.selectKey(e))
+          this.selection = this._choice.getSelection()
+
+        this.sync()
+      }.bind(this))
+
       this._isRendering = setImmediate(this._render.bind(this))
     }.bind(this)
 
@@ -313,6 +323,11 @@ function ViewPlugin (Compose) {
     this._toRender = []
     this._isRendering = 0
 
+    // Don’t render (in particular, don’t restore the selection) unless we
+    // have to; amongst other things, doing so interrupts IME composition.
+    if (!queue.length && !this._selectionChanged)
+      return this
+
     for (i = 0; i < queue.length; i += 1) {
       try {
         resolve.DOM(this, queue[i])
@@ -333,11 +348,6 @@ function ViewPlugin (Compose) {
         Compose.emit('error', err)
       }
     }
-
-    // NOTE: previously, the only real use of a “render” event was to
-    // restore the selection afterwards; now that the selection is
-    // always restored, let’s see if we can do without it.
-    // Compose.emit('render')
 
     return this
   }
