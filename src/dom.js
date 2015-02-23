@@ -196,6 +196,26 @@ exports._ancestorsAsArray = function (element) {
 }
 
 /**
+ * _joinElements(elements) takes an array of DOM elements and returns
+ * those elements appended to each other, with the first element as
+ * topmost parent and last element as “lowest” child.
+ *
+ * @param {Array} elements
+ * @return {Element}
+ */
+exports._joinElements = function (elements) {
+  var root = elements[0],
+      i = 1
+
+  while (elements[i]) {
+    elements[i - 1].appendChild(elements[i])
+    i += 1
+  }
+
+  return root
+}
+
+/**
  * _merge(before, after) combines the similar ancestors of two
  * adjacent paragraphs.
  *

@@ -40,6 +40,7 @@ function Compose (elem) {
   this.use(require('./backspace'))
   this.use(require('./enter'))
   this.use(require('./spacebar'))
+  this.use(require('./copy'))
 
   // Don’t silently swallow errors:
   this.on('error', function onError (err) {

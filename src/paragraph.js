@@ -34,7 +34,7 @@ exports.insert = function (View, delta) {
   if (adjacent[i + 1])
     dom.splitAt(adjacent[i + 1], adjacent[i - 1])
 
-  dom.after(adjacent[i], joinElements(inserted.slice(i)))
+  dom.after(adjacent[i], dom._joinElements(inserted.slice(i)))
 
   if (!isStart(View, index) && index < View.elements.length - 1)
     dom._merge(View.elements[index], View.elements[index + 1])
@@ -89,7 +89,7 @@ exports.update = function (View, delta) {
     }
   }
 
-  dom.replace(current[i], joinElements(updated.slice(i)))
+  dom.replace(current[i], dom._joinElements(updated.slice(i)))
   View.elements[index] = updated[updated.length - 1]
 
   if (!isStart(View, index))
@@ -127,26 +127,6 @@ exports.remove = function (View, delta) {
   // is followed by a section start.
   if (!isStart(View, index) && View.elements[index])
     dom._merge(View.elements[index - 1], View.elements[index])
-}
-
-/**
- * joinElements(elements) takes an array of DOM elements and returns
- * those elements appended to each other, with the first element as
- * topmost parent and last element as “lowest” child.
- *
- * @param {Array} elements
- * @return {Element}
- */
-function joinElements (elements) {
-  var root = elements[0],
-      i = 1
-
-  while (elements[i]) {
-    elements[i - 1].appendChild(elements[i])
-    i += 1
-  }
-
-  return root
 }
 
 /**
