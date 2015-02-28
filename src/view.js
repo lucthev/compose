@@ -213,14 +213,9 @@ function ViewPlugin (Compose) {
    * @return {Boolean}
    */
   View.prototype.isSectionStart = function (index) {
-    var i
-
-    for (i = 0; i < this.sections.length; i += 1) {
-      if (this.sections[i].start === index)
-        return true
-    }
-
-    return false
+    return this.sections.some(function (section) {
+      return section.start === index
+    })
   }
 
   /**
