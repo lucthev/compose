@@ -108,11 +108,11 @@ function ViewPlugin (Compose) {
   })
 
   /**
-   * allow(fns) defines a set of functions which add support for one or
-   * elements. Those elements are specified via two properties, “elements”
-   * and “paragraphs,” representing the nodeNames and Serialize types of
-   * the supported element(s), respectively. The functions, all optional,
-   * are:
+   * addHandler(handler) defines a set of functions which add support
+   * for one or elements. Those elements are specified via two properties,
+   * “elements” and “paragraphs,” representing the nodeNames and Serialize
+   * types of the supported element(s), respectively. The functions,
+   * all optional, are:
    *  - serialize(element) converts an element into an instance of
    *    Serialize
    *  - deserialize(paragraph) performs the opposite of serialize; takes
@@ -121,9 +121,10 @@ function ViewPlugin (Compose) {
    * If any of these functions are not specified, the operations defined
    * for simple <p> elements are used.
    *
-   * @param {Object} params
+   * @param {Object} handler
    * @return {Context}
    */
+  View.prototype.addHandler =
   View.prototype.allow = function (handler) {
     var basic = this.handlerForElement('P')
 
@@ -250,7 +251,9 @@ function ViewPlugin (Compose) {
     if (index >= 0) {
       element = all[index]
       paragraph = this.handlerForElement(element.nodeName).serialize(element)
-      this.resolve(new Delta('paragraphUpdate', index, paragraph), true)
+      this.resolve(new Delta('paragraphUpdate', index, paragraph), {
+        render: false
+      })
     }
 
     return this
@@ -258,16 +261,18 @@ function ViewPlugin (Compose) {
 
   /**
    * resolve(deltas [, skipRender]) resolves one or more deltas immediately
-   * against the View, and, if ‘skipRender’ is falsy, adds them to a
-   * queue to be resolved against the DOM on next tick.
+   * against the View, and against the DOM on next tick. One may optionally
+   * pass in an options object with the “render” property set to false to
+   * not resolve changes against the DOM.
    *
    * @param {Delta || Array} deltas
-   * @param {Boolean} skipRender
+   * @param {Object} opts
    * @return {Context}
    */
-  View.prototype.resolve = function (deltas, skipRender) {
+  View.prototype.resolve = function (deltas, opts) {
     var i
 
+    opts = opts || {}
     if (!Array.isArray(deltas))
       deltas = [deltas]
 
@@ -288,7 +293,7 @@ function ViewPlugin (Compose) {
       Compose.emit('delta', deltas[i])
       resolve.inline(this, deltas[i])
 
-      if (!skipRender)
+      if (opts.render !== false)
         this._toRender.push(deltas[i])
     }
 
