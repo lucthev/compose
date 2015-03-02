@@ -77,8 +77,8 @@ function Sanitizer (Compose) {
 
     // Remove sections starting at the same index, or an invalid index.
     // The former can happen when, for example, the first child of a
-    // <section> is an <hr>; the latter can happen when an <hr> is the
-    // very last element in the sanitized HTML.
+    // SECTION is an HR; the latter can happen when an HR is the very
+    // last element in the sanitized HTML.
     for (i = 0; i < sections.length; i += 1) {
       if (sections[i].start >= paragraphs.length) {
         sections = sections.slice(0, i - 1)
@@ -129,7 +129,7 @@ function firstChild (node) {
 
 /**
  * wrapInParagraph(node, dom) wraps the given node, and all subsequent
- * non-block siblings, in a <p> element. Uses the DOM utilities in 'dom'.
+ * non-block siblings, in a P element. Uses the DOM utilities in 'dom'.
  * Returns the create paragraph.
  *
  * @param {Node} node

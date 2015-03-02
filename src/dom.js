@@ -7,8 +7,8 @@ blocks = blocks.map(function (name) {
   return name.toUpperCase()
 })
 
-// For out purposes, <li>s should be considered block elements;
-// otherwise, the sanitizer will wrap them in a <p>.
+// For our purposes, LIs should be considered block elements;
+// otherwise, the sanitizer will wrap them in a P.
 if (blocks.indexOf('LI') < 0)
   blocks.push('LI')
 

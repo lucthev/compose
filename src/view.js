@@ -119,7 +119,7 @@ function ViewPlugin (Compose) {
    *    an instance of Serialize and turns it into an element.
    *
    * If any of these functions are not specified, the operations defined
-   * for simple <p> elements are used.
+   * for simple P elements are used.
    *
    * @param {Object} handler
    * @return {Context}
