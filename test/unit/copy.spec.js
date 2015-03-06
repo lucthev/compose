@@ -1,5 +1,4 @@
-/* global describe, it, Compose, expect, before, after,
-  listPlugin, formatBlock */
+/* jshint mocha:true *//* global Compose, listPlugin, formatBlock, expect */
 'use strict';
 
 describe('Copy', function () {
@@ -8,8 +7,8 @@ describe('Copy', function () {
       copy,
       elem
 
-  before(setup)
-  after(teardown)
+  before(setupEditor)
+  after(teardownEditor)
 
   describe('html should', function () {
 
@@ -122,7 +121,7 @@ describe('Copy', function () {
     })
   })
 
-  function setup () {
+  function setupEditor () {
     elem = document.createElement('article')
     elem.innerHTML =
       '<section>' +
@@ -168,12 +167,10 @@ describe('Copy', function () {
     })
   }
 
-  function teardown () {
+  function teardownEditor () {
     try {
       editor.destroy()
-    } catch (e) {
-
-    }
+    } catch (e) {}
 
     elem.parentNode.removeChild(elem)
   }

@@ -1,4 +1,4 @@
-/* global describe, it, Compose, before, expect, chai, Superset */
+/* jshint mocha:true *//* global Compose, expect */
 'use strict';
 
 chai.use(Superset)

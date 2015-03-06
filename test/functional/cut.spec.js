@@ -1,4 +1,4 @@
-/* global before, describe, it, beforeEach */
+/* jshint mocha:true */
 'use strict';
 
 var chai = require('chai'),

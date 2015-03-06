@@ -1,4 +1,5 @@
-/* jshint ignore:start */
+/* jshint mocha:true, expr:true *//* global Compose, expect */
+'use strict';
 
 describe('Compose\'s plugin system', function () {
 

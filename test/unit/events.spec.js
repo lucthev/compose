@@ -1,9 +1,10 @@
-/* jshint ignore:start */
+/* jshint mocha:true, expr:true *//* global Compose,chai */
+'use strict';
+
 var expect = chai.expect
 
 describe('The event module', function () {
-
-  var compose
+  var editor
 
   function disabler (Compose) {
     var events = Compose.require('events')
@@ -22,21 +23,21 @@ describe('The event module', function () {
     this.elem.innerHTML = '<section><hr><p><br></p></section>'
     document.body.appendChild(this.elem)
 
-    compose = new Compose(this.elem)
+    editor = new Compose(this.elem)
   })
 
   afterEach(function () {
-    document.body.removeChild(this.elem)
-
     try {
-      compose.destroy()
+      editor.destroy()
     } catch (e) {}
+
+    document.body.removeChild(this.elem)
   })
 
   it('should emit events on Compose', function () {
     var emitted = false
 
-    compose.once('mousedown', function () {
+    editor.once('mousedown', function () {
       emitted = true
     })
 
@@ -48,11 +49,11 @@ describe('The event module', function () {
   it('can stop emitting events on Compose.', function () {
     var emitted = false
 
-    compose.on('keypress', function () {
+    editor.on('keypress', function () {
       emitted = true
     })
 
-    compose.use(disabler)
+    editor.use(disabler)
 
     fireEvent(this.elem, 'keypress')
 
@@ -62,17 +63,17 @@ describe('The event module', function () {
   it('can resume emitting events on Compose', function () {
     var emitted = false
 
-    compose.on('mousedown', function () {
+    editor.on('mousedown', function () {
       emitted = true
     })
 
-    compose.use(disabler)
+    editor.use(disabler)
 
     fireEvent(this.elem, 'mousedown')
 
     expect(emitted).to.not.be.true
 
-    compose.use(enabler)
+    editor.use(enabler)
 
     fireEvent(this.elem, 'mousedown')
 
