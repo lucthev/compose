@@ -2,7 +2,8 @@
 
 module.exports = Sanitizer
 
-var collapseWhitespace = require('collapse-whitespace')
+var collapseWhitespace = require('collapse-whitespace'),
+    dom = require('./dom')
 
 /**
  * The Sanitizer plugin provides a function to turn arbitrary HTML into
@@ -11,8 +12,7 @@ var collapseWhitespace = require('collapse-whitespace')
  * @param {Compose} Compose
  */
 function Sanitizer (Compose) {
-  var View = Compose.require('view'),
-      dom = Compose.require('dom')
+  var View = Compose.require('view')
 
   /**
    * sanitize(html) sanitizes a string of HTML according to the currently
@@ -23,24 +23,28 @@ function Sanitizer (Compose) {
    * @return {Object}
    */
   function sanitize (html) {
-    var container = dom.create('div'),
+    var sandbox = dom.create('div'),
         paragraphs = [],
         sections = [],
         handler,
         result,
-        name,
-        node,
-        i
+        node
 
-    container.innerHTML = html
-    Array.prototype.forEach.call(
-      container.querySelectorAll('script,style'),
-      dom.remove
-    )
+    html = html
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
 
-    collapseWhitespace(container)
+    sandbox.innerHTML = html
+    collapseWhitespace(sandbox)
 
-    node = firstChild(container)
+    // Make all block elements “bubble up” to their nearest block parent;
+    // this is to fix weird markup like <b><p>...</p>></b>
+    toArray(sandbox.querySelectorAll(dom.blockElements.join()))
+      .forEach(bubbleUp)
+
+    node = sandbox.firstChild
     while (node) {
       if (!dom.isText(node) && !dom.isElement(node)) {
         node = nextSibling(node)
@@ -48,46 +52,48 @@ function Sanitizer (Compose) {
       }
 
       if (!dom.isBlock(node))
-        wrapInParagraph(node, dom)
+        node = wrapInParagraph(node, dom)
 
-      name = node.nodeName
       handler = View.handlerForElement(node.nodeName)
 
       if (!handler) {
-        node = unwrap(node, dom)
+        node = firstChild(node)
         continue
       }
 
       result = handler.serialize(node)
 
-      if (name === 'SECTION' || name === 'HR') {
+      if (node.nodeName === 'SECTION' || node.nodeName === 'HR') {
         result.start = paragraphs.length
         sections.push(result)
       } else if (Array.isArray(result)) {
-
-        for (i = 0; i < result.length; i += 1)
-          paragraphs = paragraphs.concat(splitAtNewlines(result[i]))
-
+        result = result.map(splitAtNewlines)
+        paragraphs = [].concat.apply(paragraphs, result)
       } else if (result) {
         paragraphs = paragraphs.concat(splitAtNewlines(result))
       }
 
-      node = nextSibling(node)
+      if (node.nodeName === 'SECTION')
+        node = firstChild(node)
+      else
+        node = nextSibling(node)
     }
+
+    paragraphs.forEach(function (p) {
+      if (!p.text)
+        p.text = '\n'
+    })
 
     // Remove sections starting at the same index, or an invalid index.
     // The former can happen when, for example, the first child of a
     // SECTION is an HR; the latter can happen when an HR is the very
     // last element in the sanitized HTML.
-    for (i = 0; i < sections.length; i += 1) {
-      if (sections[i].start >= paragraphs.length) {
-        sections = sections.slice(0, i - 1)
-        break
-      }
+    sections = sections.filter(function (section, index, arr) {
+      if (section.start >= paragraphs.length)
+        return false
 
-      if (sections[i - 1] && sections[i - 1].start === sections[i].start)
-        sections.splice(i - 1, 1)
-    }
+      return !(index > 0 && arr[index - 1].start === section.start)
+    })
 
     return {
       paragraphs: paragraphs,
@@ -154,23 +160,71 @@ function wrapInParagraph (node, dom) {
 }
 
 /**
- * unwrap(node, dom) replaces an element with its children. Returns the
- * ex-first child of the node, or, if none exist, the next node in document
- * order.
+ * bubbleUp(node) “bubbles up” a block element through the DOM so that
+ * it has only block ancestors.
  *
- * @param {Node} node
- * @param {Object} dom
- * @return {Node}
+ * @param {Element} node
  */
-function unwrap (node, dom) {
-  var next
+function bubbleUp (node) {
+  var children
 
-  while (node.lastChild)
-    dom.after(node, dom.remove(node.lastChild))
+  while (node.parentNode) {
+    while (!dom.isBlock(node.parentNode)) {
+      children = toArray(node.parentNode.childNodes)
+      propagateMarkup(children, unwrap(node.parentNode))
+    }
 
-  next = nextSibling(node)
-  dom.remove(node)
-  return next
+    node = node.parentNode
+  }
+}
+
+/**
+ * unwrap(elem) removes a node from the DOM while keeping its children.
+ * Returns the element being removed.
+ *
+ * @param {Element} elem
+ * @return {Element}
+ */
+function unwrap (elem) {
+  while (elem.lastChild)
+    dom.after(elem, dom.remove(elem.lastChild))
+
+  return dom.remove(elem)
+}
+
+function toArray (thing) {
+  return [].slice.call(thing)
+}
+
+/**
+ * propagateMarkup(children, markup) takes the inline element “markup”
+ * and applies it recursively to the given child nodes.
+ *
+ * @param {Array} children
+ * @param {Element} markup
+ */
+function propagateMarkup (children, markup) {
+  var clone,
+      i
+
+  if (!children.length)
+    return
+
+  for (i = 0; i < children.length; i += 1) {
+    if (dom.isBlock(children[i])) {
+      propagateMarkup(toArray(children[i].childNodes), markup)
+      continue
+    }
+
+    clone = markup.cloneNode(false)
+    dom.before(children[i], clone)
+
+    clone.appendChild(dom.remove(children[i]))
+    while (children[i + 1] && !dom.isBlock(children[i + 1])) {
+      clone.appendChild(dom.remove(children[i + 1]))
+      i += 1
+    }
+  }
 }
 
 /**
