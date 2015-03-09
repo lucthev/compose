@@ -40,7 +40,7 @@ function Sanitizer (Compose) {
     collapseWhitespace(sandbox)
 
     // Make all block elements “bubble up” to their nearest block parent;
-    // this is to fix weird markup like <b><p>...</p>></b>
+    // this is to fix weird markup like <b><p>...</p></b>
     toArray(sandbox.querySelectorAll(dom.blockElements.join()))
       .forEach(bubbleUp)
 
@@ -52,7 +52,7 @@ function Sanitizer (Compose) {
       }
 
       if (!dom.isBlock(node))
-        node = wrapInParagraph(node, dom)
+        node = wrapInParagraph(node)
 
       handler = View.handlerForElement(node.nodeName)
 
@@ -134,7 +134,7 @@ function firstChild (node) {
 }
 
 /**
- * wrapInParagraph(node, dom) wraps the given node, and all subsequent
+ * wrapInParagraph(node) wraps the given node, and all subsequent
  * non-block siblings, in a P element. Uses the DOM utilities in 'dom'.
  * Returns the create paragraph.
  *
@@ -142,7 +142,7 @@ function firstChild (node) {
  * @param {Object} dom
  * @return {Element}
  */
-function wrapInParagraph (node, dom) {
+function wrapInParagraph (node) {
   var p = dom.create('p'),
       next
 
