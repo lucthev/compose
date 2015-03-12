@@ -94,19 +94,6 @@ exports.replace = function (node, other) {
 }
 
 /**
- * prepend(child, parent) is like parent.appendChild(child), but the
- * child will become the parent’s firstChild. Returns the appended
- * child.
- *
- * @param {Node} child
- * @param {Node} parent
- * @return {Node}
- */
-exports.prepend = function (child, parent) {
-  return parent.insertBefore(child, parent.firstChild)
-}
-
-/**
  * create(tag) is a thin wrapper around document.createElement().
  *
  * @param {String} tag
