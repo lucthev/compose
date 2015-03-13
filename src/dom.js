@@ -1,16 +1,11 @@
 'use strict';
 
-var blocks = require('block-elements'),
-    dom = exports
-
-blocks = blocks.map(function (name) {
+var dom = exports
+var blocks = require('block-elements').map(function (name) {
   return name.toUpperCase()
 })
 
-// For our purposes, LIs should be considered block elements;
-// otherwise, the sanitizer will wrap them in a P.
-if (blocks.indexOf('LI') < 0)
-  blocks.push('LI')
+exports.blockElements = blocks
 
 /**
  * isElement(node) determines if a object is an element.
@@ -33,14 +28,13 @@ exports.isText = function (node) {
 }
 
 /**
- * isBlock(elem) determines if an element is a block element
- * according to the above RegExp. Hardly comprehensive.
+ * isBlock(elem) determines if an element is a block element.
  *
  * @param {Node} elem
  * @return {Boolean}
  */
 exports.isBlock = function (elem) {
-  return !!(exports.isElement(elem) && blocks.indexOf(elem.nodeName) >= 0)
+  return !!(dom.isElement(elem) && blocks.indexOf(elem.nodeName) >= 0)
 }
 
 /**
