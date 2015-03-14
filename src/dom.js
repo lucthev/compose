@@ -5,7 +5,14 @@ var blocks = require('block-elements').map(function (name) {
   return name.toUpperCase()
 })
 
-exports.blockElements = blocks
+// This list of block elements represent visual blocks, not actual
+// block elements; as such, it should include LIs and IMGs.
+;['LI', 'IMG'].forEach(function (name) {
+  if (blocks.indexOf(name) < 0)
+    blocks.push(name)
+})
+
+exports._blockElements = blocks
 
 /**
  * isElement(node) determines if a object is an element.

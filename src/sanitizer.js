@@ -37,15 +37,11 @@ function Sanitizer (Compose) {
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
 
     sandbox.innerHTML = html
-
-    // Remove unnecessary whitespace from the sandbox. dom.isBlock is
-    // used to determine which elements are block; plugins may add to
-    // the default list.
     collapseWhitespace(sandbox, dom.isBlock)
 
     // Make all block elements “bubble up” to their nearest block parent;
     // this is to fix weird markup like <b><p>...</p></b>
-    toArray(sandbox.querySelectorAll(dom.blockElements.join()))
+    toArray(sandbox.querySelectorAll(dom._blockElements.join()))
       .forEach(bubbleUp)
 
     node = sandbox.firstChild
