@@ -39,7 +39,7 @@
     "collapse-whitespace": "1.1.0",
     "component-emitter": "1.1.3",
     "has-own-prop": "^1.0.0",
-    "serialize-elem": "2.3.0",
+    "serialize-elem": "2.4.0",
     "setimmediate": "^1.0.2"
   }
 }
