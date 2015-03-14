@@ -154,7 +154,8 @@ describe('Copy', function () {
     var all = [].slice.call(elem.querySelectorAll('section,p,h2,h3,li'))
 
     all.forEach(function (el) {
-      var section
+      var section,
+          p
 
       if (el.nodeName === 'SECTION') {
         section = View.handlerForElement(el.nodeName).serialize(el)
@@ -162,7 +163,8 @@ describe('Copy', function () {
         View.sections.push(section)
       } else {
         View.elements.push(el)
-        View.paragraphs.push(View.handlerForElement(el.nodeName).serialize(el))
+        p = View.handlerForElement(el.nodeName).serialize(el)
+        View.paragraphs.push(el.nodeName === 'LI' ? p[0] : p)
       }
     })
   }

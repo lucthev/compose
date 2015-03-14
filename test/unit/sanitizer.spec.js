@@ -260,7 +260,7 @@ describe('The sanitizer should', function () {
     expect(result.paragraphs[1].type).to.equal('p')
   })
 
-  it('remove consecutive spaces', function () {
+  it.skip('remove consecutive spaces', function () {
     var result = sanitize(
       '<p>One &nbsp; Two</p>'
     )
@@ -270,7 +270,7 @@ describe('The sanitizer should', function () {
     expect(result.paragraphs[0].type).to.equal('p')
   })
 
-  it('leave consecutive spaces in <pre> blocks', function () {
+  it.skip('leave consecutive spaces in <pre> blocks', function () {
     var result = sanitize(
       '<pre>One &nbsp; Two</pre>'
     )
@@ -339,16 +339,6 @@ describe('The sanitizer should', function () {
   it('ignore trailing sections', function () {
     var result = sanitize(
       '<p>One</p><hr>'
-    )
-
-    expect(result.sections.length).to.equal(0)
-  })
-
-  it.skip('ignore empty sections', function () {
-    var result = sanitize(
-      '<p>One</p>' +
-      '<section></section>' +
-      '<p>Two</p>'
     )
 
     expect(result.sections.length).to.equal(0)
