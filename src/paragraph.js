@@ -148,15 +148,9 @@ exports.remove = function (View, delta) {
  * @return {Boolean}
  */
 function isStart (View, index) {
-  var sections = View.elements.map(function (elem) {
+  return View.elements.map(function (elem) {
     return dom.ancestor(elem, 'SECTION')
+  }).some(function (section, i, arr) {
+    return section !== arr[i - 1] && index === i
   })
-
-  for (var i = 0; i < sections.length; i += 1) {
-    if (sections[i] !== sections[i - 1] && index === i) {
-      return true
-    }
-  }
-
-  return false
 }
