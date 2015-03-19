@@ -19,7 +19,7 @@ exports.insert = function (View, delta) {
       len,
       i
 
-  handler = View.handlerForParagraph(inserted.type)
+  handler = View.handlerForParagraph(inserted)
   inserted = handler.deserialize(inserted.substr(0))
   adjacent = dom._ancestorsAsArray(View.elements[index - 1])
 
@@ -67,7 +67,7 @@ exports.update = function (View, delta) {
       len,
       i
 
-  handler = View.handlerForParagraph(updated.type)
+  handler = View.handlerForParagraph(updated)
   updated = handler.deserialize(updated.substr(0))
   current = dom._ancestorsAsArray(View.elements[index])
 

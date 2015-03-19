@@ -1504,12 +1504,12 @@ describe('Delta operation', function () {
           p
 
       if (el.nodeName === 'SECTION') {
-        section = View.handlerForElement(el.nodeName).serialize(el)
+        section = View.handlerForElement(el).serialize(el)
         section.start = View.elements.length
         View.sections.push(section)
       } else {
         View.elements.push(el)
-        p = View.handlerForElement(el.nodeName).serialize(el)
+        p = View.handlerForElement(el).serialize(el)
         View.paragraphs.push(el.nodeName === 'LI' ? p[0] : p)
       }
     })

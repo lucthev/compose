@@ -7,41 +7,12 @@ var resolve = require('./resolve'),
     Selection = Choice.Selection
 
 function ViewPlugin (Compose) {
-  var Serialize = Compose.require('serialize'),
+  var handler = Compose.require('handler'),
       events = Compose.require('events'),
-      Delta = Compose.require('delta'),
-      dom = Compose.require('dom')
+      Delta = Compose.require('delta')
 
   function View () {
-    var handler
-
-    this._choice = new Choice(Compose.root, this._getElements.bind(this))
-
-    // Handlers for various element types. Not much is done with sections
-    // at the moment; if it ever gets more complex, these handlers should
-    // probably be split out into separate files.
-    this._handlers = [{
-      elements: ['P'],
-      paragraphs: ['p'],
-      serialize: function (element) {
-        return new Serialize(element)
-      },
-      deserialize: function (paragraph) {
-        return [paragraph.toElement()]
-      }
-    }, {
-      elements: ['SECTION', 'HR'],
-      paragraphs: [],
-      serialize: function (/*section*/) {
-        return {}
-      },
-      deserialize: function (/*obj*/) {
-        var section = dom.create('section')
-
-        section.appendChild(dom.create('hr'))
-        return section
-      }
-    }]
+    this._choice = new Choice(Compose.root, handler.getElements)
 
     this._selection = null
     this._selectionChanged = false
@@ -55,7 +26,7 @@ function ViewPlugin (Compose) {
     this._isSyncing = 0
     this._modified = -1
 
-    handler = function (e) {
+    var listener = function (e) {
       var sel = this.selection
 
       if (sel && e.type === 'keydown')
@@ -75,10 +46,10 @@ function ViewPlugin (Compose) {
       this._isRendering = setImmediate(this._render.bind(this))
     }.bind(this)
 
-    Compose.on('keydown', handler)
-    Compose.on('mouseup', handler)
-    Compose.on('focus', handler)
-    Compose.on('blur', handler)
+    Compose.on('keydown', listener)
+    Compose.on('mouseup', listener)
+    Compose.on('focus', listener)
+    Compose.on('blur', listener)
   }
 
   /**
@@ -107,103 +78,24 @@ function ViewPlugin (Compose) {
     }
   })
 
-  /**
-   * addHandler(handler) defines a set of functions which add support
-   * for one or elements. Those elements are specified via two properties,
-   * “elements” and “paragraphs,” representing the nodeNames and Serialize
-   * types of the supported element(s), respectively. The functions,
-   * all optional, are:
-   *  - serialize(element) converts an element into an instance of
-   *    Serialize
-   *  - deserialize(paragraph) performs the opposite of serialize; takes
-   *    an instance of Serialize and turns it into an element.
-   *
-   * If any of these functions are not specified, the operations defined
-   * for simple P elements are used.
-   *
-   * @param {Object} handler
-   * @return {Context}
-   */
-  View.prototype.addHandler =
-  View.prototype.allow = function (handler) {
-    var basic = this.handlerForElement('P')
+  // The following few methods are just thin wrappers around various
+  // Handler methods. They’re here because of laziness; it’s convenient
+  // to just pass around the View, instead of the View and Handlers.
+  View.prototype.handlerForElement = function (elem) {
+    return handler.forElement(elem)
+  }
 
-    if (!handler || !handler.elements || !handler.paragraphs)
-      return this
+  View.prototype.handlerForParagraph = function (p) {
+    return handler.forParagraph(p)
+  }
 
-    handler.elements = handler.elements.map(function (elem) {
-      return elem.toUpperCase()
-    })
-
-    handler.serialize = handler.serialize || basic.serialize
-    handler.deserialize = handler.deserialize || basic.deserialize
-
-    this._handlers.push(handler)
-
+  View.prototype.addHandler = function (h) {
+    handler.addHandler(h)
     return this
   }
 
-  /**
-   * handlerForElement(name) returns the handler for elements of the
-   * given name.
-   *
-   * @param {String} name
-   * @return {Object}
-   */
-  View.prototype.handlerForElement = function (name) {
-    var handlers = this._handlers,
-        i
-
-    name = name.toUpperCase()
-
-    for (i = 0; i < handlers.length; i += 1) {
-      if (handlers[i].elements.indexOf(name) >= 0)
-        return handlers[i]
-    }
-
-    return null
-  }
-
-  /**
-   * handlerForParagraph(type) returns the handler for serializations of the
-   * given type.
-   *
-   * @param {String} name
-   * @return {Object}
-   */
-  View.prototype.handlerForParagraph = function (type) {
-    var handlers = this._handlers,
-        i
-
-    type = type.toLowerCase()
-
-    for (i = 0; i < handlers.length; i += 1) {
-      if (handlers[i].paragraphs.indexOf(type) >= 0)
-        return handlers[i]
-    }
-
-    return null
-  }
-
-  /**
-   * _getElements() returns an array containing all “allowed”
-   * children of the editor’s root element.
-   *
-   * @return {Array}
-   */
-  View.prototype._getElements = function () {
-    var sectionHandler = this.handlerForElement('SECTION'),
-        all = [],
-        i
-
-    for (i = 0; i < this._handlers.length; i += 1) {
-      if (this._handlers[i] === sectionHandler)
-        continue
-
-      all = all.concat(this._handlers[i].elements)
-    }
-
-    return [].slice.call(Compose.root.querySelectorAll(all.join(',')))
+  View.prototype.getElements = function () {
+    return handler.getElements()
   }
 
   /**
@@ -224,7 +116,7 @@ function ViewPlugin (Compose) {
    * and updates the View accordingly.
    */
   View.prototype.sync = function () {
-    var all = this._getElements(),
+    var all = handler.getElements(),
         len = this.elements.length,
         index = this._modified,
         paragraph,
@@ -250,7 +142,7 @@ function ViewPlugin (Compose) {
 
     if (index >= 0) {
       element = all[index]
-      paragraph = this.handlerForElement(element.nodeName).serialize(element)
+      paragraph = this.handlerForElement(element).serialize(element)
       this.resolve(new Delta('paragraphUpdate', index, paragraph), {
         render: false
       })

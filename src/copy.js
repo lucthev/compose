@@ -31,7 +31,7 @@ function Copy (Compose) {
       if (/.\n$/.test(selected[i].text))
         selected[i] = selected[i].substr(0, selected[i].length - 1)
 
-      handler = View.handlerForParagraph(selected[i].type)
+      handler = View.handlerForParagraph(selected[i])
       current = handler.deserialize(selected[i].substr(0))
 
       container.appendChild(dom._joinElements(current))

@@ -3,7 +3,7 @@
 var dom = require('./dom')
 
 exports.insert = function (View, delta) {
-  var handler = View.handlerForElement('SECTION'),
+  var handler = View.handlerForElement(dom.create('section')),
       previousSection,
       section,
       start

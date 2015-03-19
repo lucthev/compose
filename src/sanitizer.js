@@ -54,7 +54,7 @@ function Sanitizer (Compose) {
       if (!dom.isBlock(node))
         node = wrapInParagraph(node)
 
-      handler = View.handlerForElement(node.nodeName)
+      handler = View.handlerForElement(node)
 
       if (!handler) {
         node = firstChild(node)
