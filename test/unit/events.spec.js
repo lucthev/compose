@@ -1,5 +1,5 @@
-/* jshint mocha:true, expr:true *//* global Compose,chai */
-'use strict';
+/*eslint-env mocha *//*global Compose, chai */
+'use strict'
 
 var expect = chai.expect
 

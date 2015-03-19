@@ -65,7 +65,6 @@
   <article id="editor"></article>
   <script src="../../dist/compose.js"></script>
   <script>
-    /* jshint strict:false */
     var ends = ['p', 'h2', 'h3', 'pre', 'blockquote', 'li']
 
     function tree (elem) {
@@ -93,7 +92,7 @@
 
     var initialized = false
     window.addEventListener('keydown', function (e) {
-      /* global Compose */
+      /*global Compose */
       var Selection
 
       if (e.keyCode === 9 && !initialized) {

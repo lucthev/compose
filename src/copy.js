@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = Copy
 
@@ -15,21 +15,23 @@ function Copy (Compose) {
    * @return {String}
    */
   function html (sel) {
-    var container = dom.create('section'),
-        selected,
-        previous,
-        current,
-        handler,
-        i
+    var container = dom.create('section')
+    var selected
+    var previous
+    var current
+    var handler
+    var i
 
-    if (sel.isCollapsed())
+    if (sel.isCollapsed()) {
       return ''
+    }
 
     selected = getParagraphs(View, sel)
 
     for (i = 0; i < selected.length; i += 1) {
-      if (/.\n$/.test(selected[i].text))
+      if (/.\n$/.test(selected[i].text)) {
         selected[i] = selected[i].substr(0, selected[i].length - 1)
+      }
 
       handler = View.handlerForParagraph(selected[i])
       current = handler.deserialize(selected[i].substr(0))
@@ -57,17 +59,17 @@ function Copy (Compose) {
    * @return {String}
    */
   function text (sel) {
-    var selected
-
-    if (sel.isCollapsed())
+    if (sel.isCollapsed()) {
       return ''
+    }
 
-    selected = getParagraphs(View, sel)
+    var selected = getParagraphs(View, sel)
 
     // TODO(luc): should Windows get \r\n\r\n?
     return selected.map(function (paragraph) {
-      if (/.\n$/.test(paragraph.text))
+      if (/.\n$/.test(paragraph.text)) {
         paragraph = paragraph.substr(0, paragraph.length - 1)
+      }
 
       return paragraph.text || '\n'
     }).join('\n\n')
@@ -88,10 +90,10 @@ function Copy (Compose) {
  * @return {Array}
  */
 function getParagraphs (View, sel) {
-  var startPair = sel.isBackwards() ? sel.end : sel.start,
-      endPair = sel.isBackwards() ? sel.start : sel.end,
-      selected,
-      last
+  var startPair = sel.isBackwards() ? sel.end : sel.start
+  var endPair = sel.isBackwards() ? sel.start : sel.end
+  var selected
+  var last
 
   selected = View.paragraphs.slice(startPair[0], endPair[0] + 1)
   last = selected.length - 1

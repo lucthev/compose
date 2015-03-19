@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 var dom = exports
 var blocks = require('block-elements').map(function (name) {
@@ -8,8 +8,9 @@ var blocks = require('block-elements').map(function (name) {
 // This list of block elements represent visual blocks, not actual
 // block elements; as such, it should include LIs and IMGs.
 ;['LI', 'IMG'].forEach(function (name) {
-  if (blocks.indexOf(name) < 0)
+  if (blocks.indexOf(name) < 0) {
     blocks.push(name)
+  }
 })
 
 exports._blockElements = blocks
@@ -21,7 +22,7 @@ exports._blockElements = blocks
  * @return {Boolean}
  */
 exports.isElement = function (node) {
-  return node && node.nodeType === Node.ELEMENT_NODE
+  return node && node.nodeType === window.Node.ELEMENT_NODE
 }
 
 /**
@@ -31,7 +32,7 @@ exports.isElement = function (node) {
  * @return {Boolean}
  */
 exports.isText = function (node) {
-  return node && node.nodeType === Node.TEXT_NODE
+  return node && node.nodeType === window.Node.TEXT_NODE
 }
 
 /**
@@ -52,8 +53,9 @@ exports.isBlock = function (elem) {
  * @return {Node}
  */
 exports.remove = function (node) {
-  if (node.parentNode)
+  if (node.parentNode) {
     node.parentNode.removeChild(node)
+  }
 
   return node
 }
@@ -117,11 +119,13 @@ exports.create = function (tag) {
 exports.ancestor = function (child, name) {
   var parent = child.parentNode
 
-  if (!name)
+  if (!name) {
     return parent
+  }
 
-  while (parent && parent.nodeName !== name)
+  while (parent && parent.nodeName !== name) {
     parent = parent.parentNode
+  }
 
   return parent
 }
@@ -136,12 +140,13 @@ exports.ancestor = function (child, name) {
  * @return {Element}
  */
 exports.splitAt = function (node, until) {
-  var parent = node.parentNode,
-      nextParent
+  var parent = node.parentNode
+  var nextParent
 
   until = until || 'SECTION'
-  if (typeof until === 'string')
+  if (typeof until === 'string') {
     until = until.toUpperCase()
+  }
 
   while (parent && parent !== until && parent.nodeName !== until) {
     if (node === parent.lastChild) {
@@ -151,8 +156,9 @@ exports.splitAt = function (node, until) {
     }
 
     nextParent = parent.cloneNode(false)
-    while (node.nextSibling)
+    while (node.nextSibling) {
       nextParent.appendChild(dom.remove(node.nextSibling))
+    }
 
     dom.after(parent, nextParent)
 
@@ -192,8 +198,8 @@ exports._ancestorsAsArray = function (element) {
  * @return {Element}
  */
 exports._joinElements = function (elements) {
-  var root = elements[0],
-      i = 1
+  var root = elements[0]
+  var i = 1
 
   while (elements[i]) {
     elements[i - 1].appendChild(elements[i])
@@ -211,22 +217,22 @@ exports._joinElements = function (elements) {
  * @param {Element} after
  */
 exports._merge = function (before, after) {
-  var len,
-      i
-
   before = ancestorsAsArray(before)
   after = ancestorsAsArray(after)
 
-  if (before[0] === after[0])
+  if (before[0] === after[0]) {
     return
+  }
 
-  len = Math.min(before.length, after.length) - 1
-  for (i = 0; i < len; i += 1) {
-    if (before[i].nodeName !== after[i].nodeName)
+  var len = Math.min(before.length, after.length) - 1
+  for (var i = 0; i < len; i += 1) {
+    if (before[i].nodeName !== after[i].nodeName) {
       break
+    }
 
-    while (after[i].lastChild)
+    while (after[i].lastChild) {
       dom.after(before[i + 1], dom.remove(after[i].lastChild))
+    }
 
     dom.remove(after[i])
   }

@@ -1,5 +1,5 @@
-/* jshint mocha:true *//* global Compose, formatBlock, expect, listPlugin */
-'use strict';
+/*eslint-env mocha *//*global Compose, formatBlock, expect, listPlugin */
+'use strict'
 
 describe('The sanitizer should', function () {
   var Serialize,

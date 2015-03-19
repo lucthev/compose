@@ -1,7 +1,6 @@
-/* jshint ignore:start */
-'use strict';
+'use strict'
 
-function TreeMatcher (_chai, utils) {
+window.TreeMatcher = function (_chai, utils) {
   var Assertion = _chai.Assertion
 
   Assertion.addMethod('tree', function (tree) {
@@ -10,15 +9,16 @@ function TreeMatcher (_chai, utils) {
     new Assertion(elem).to.not.be.undefined
     new Assertion(tree).to.not.be.undefined
 
-    if (tree.name)
+    if (tree.name) {
       new Assertion(elem.nodeName.toLowerCase())
         .to.equal(tree.name.toLowerCase())
+    }
 
     if (tree.classes) {
       tree.classes.forEach(function (className) {
-        var positive = 'expected #{this} to have class #{exp}',
-            negative = 'expected #{this} not to have class #{exp}',
-            not
+        var positive = 'expected #{this} to have class #{exp}'
+        var negative = 'expected #{this} not to have class #{exp}'
+        var not
 
         if (className[0] === '!') {
           not = true
@@ -49,12 +49,13 @@ function TreeMatcher (_chai, utils) {
       })
     }
 
-    if (tree.html)
+    if (tree.html) {
       new Assertion(elem.innerHTML).to.equal(tree.html)
+    }
   })
 }
 
-function ChildMatcher (_chai, utils) {
+window.ChildMatcher = function (_chai, utils) {
   var Assertion = _chai.Assertion
 
   Assertion.addMethod('children', function (arr) {

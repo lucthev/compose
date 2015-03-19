@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 var dom = require('./dom')
 
@@ -12,12 +12,12 @@ var dom = require('./dom')
  * @param {Delta} delta
  */
 exports.insert = function (View, delta) {
-  var inserted = delta.paragraph,
-      index = delta.index,
-      adjacent,
-      handler,
-      len,
-      i
+  var inserted = delta.paragraph
+  var index = delta.index
+  var adjacent
+  var handler
+  var len
+  var i
 
   handler = View.handlerForParagraph(inserted)
   inserted = handler.deserialize(inserted.substr(0))
@@ -25,19 +25,22 @@ exports.insert = function (View, delta) {
 
   len = Math.min(adjacent.length, inserted.length) - 1
   for (i = 0; i < len; i += 1) {
-    if (adjacent[i].nodeName !== inserted[i].nodeName)
+    if (adjacent[i].nodeName !== inserted[i].nodeName) {
       break
+    }
   }
 
   // If, for example, a P is being inserted between two LIs, we have
   // to split the containing OL/UL.
-  if (adjacent[i + 1])
+  if (adjacent[i + 1]) {
     dom.splitAt(adjacent[i + 1], adjacent[i - 1])
+  }
 
   dom.after(adjacent[i], dom._joinElements(inserted.slice(i)))
 
-  if (!isStart(View, index) && index < View.elements.length - 1)
+  if (!isStart(View, index) && index < View.elements.length - 1) {
     dom._merge(View.elements[index], View.elements[index + 1])
+  }
 
   // Note that the insertion of the element has to be done after the
   // isStart check. Consider inserting a paragraph right before a
@@ -60,12 +63,12 @@ exports.insert = function (View, delta) {
  * @param {Delta} delta
  */
 exports.update = function (View, delta) {
-  var updated = delta.paragraph,
-      index = delta.index,
-      current,
-      handler,
-      len,
-      i
+  var updated = delta.paragraph
+  var index = delta.index
+  var current
+  var handler
+  var len
+  var i
 
   handler = View.handlerForParagraph(updated)
   updated = handler.deserialize(updated.substr(0))
@@ -73,8 +76,9 @@ exports.update = function (View, delta) {
 
   len = Math.min(updated.length, current.length) - 1
   for (i = 0; i < len; i += 1) {
-    if (current[i].nodeName !== updated[i].nodeName)
+    if (current[i].nodeName !== updated[i].nodeName) {
       break
+    }
   }
 
   if (current[i + 1]) {
@@ -92,11 +96,13 @@ exports.update = function (View, delta) {
   dom.replace(current[i], dom._joinElements(updated.slice(i)))
   View.elements[index] = updated[updated.length - 1]
 
-  if (!isStart(View, index))
+  if (!isStart(View, index)) {
     dom._merge(View.elements[index - 1], View.elements[index])
+  }
 
-  if (!isStart(View, index + 1) && View.elements[index + 1])
+  if (!isStart(View, index + 1) && View.elements[index + 1]) {
     dom._merge(View.elements[index], View.elements[index + 1])
+  }
 }
 
 /**
@@ -106,17 +112,16 @@ exports.update = function (View, delta) {
  * @param {Delta} delta
  */
 exports.remove = function (View, delta) {
-  var index = delta.index,
-      current
-
-  current = View.elements[index]
+  var index = delta.index
+  var current = View.elements[index]
 
   // If a hierarchy of nodes contains only the paragraph to be removed,
   // remove the entire hierarchy (e.g. removing the only LI in an OL
   // also removes the OL). Note that this will never apply to SECTIONs,
   // as they always have an HR in addition to any paragraphs.
-  while (!current.previousSibling && !current.nextSibling)
+  while (!current.previousSibling && !current.nextSibling) {
     current = current.parentNode
+  }
 
   dom.remove(current)
   View.elements.splice(index, 1)
@@ -125,8 +130,9 @@ exports.remove = function (View, delta) {
   // the isStart check; this covers both the case where the removed
   // element is preceded by a section start and when the removed element
   // is followed by a section start.
-  if (!isStart(View, index) && View.elements[index])
+  if (!isStart(View, index) && View.elements[index]) {
     dom._merge(View.elements[index - 1], View.elements[index])
+  }
 }
 
 /**
@@ -142,16 +148,14 @@ exports.remove = function (View, delta) {
  * @return {Boolean}
  */
 function isStart (View, index) {
-  var sections,
-      i
-
-  sections = View.elements.map(function (elem) {
+  var sections = View.elements.map(function (elem) {
     return dom.ancestor(elem, 'SECTION')
   })
 
-  for (i = 0; i < sections.length; i += 1) {
-    if (sections[i] !== sections[i - 1] && index === i)
+  for (var i = 0; i < sections.length; i += 1) {
+    if (sections[i] !== sections[i - 1] && index === i) {
       return true
+    }
   }
 
   return false

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = Spacebar
 
@@ -9,24 +9,24 @@ module.exports = Spacebar
  * @param {Compose} Compose
  */
 function Spacebar (Compose) {
-  var Serialize = Compose.require('serialize'),
-      Selection = Compose.require('selection'),
-      Delta = Compose.require('delta'),
-      View = Compose.require('view'),
-      spaces = /^[^\S\r\n\v\f]$/,
-      nbsp = '\u00A0'
+  var Serialize = Compose.require('serialize')
+  var Selection = Compose.require('selection')
+  var Delta = Compose.require('delta')
+  var View = Compose.require('view')
+  var spaces = /^[^\S\r\n\v\f]$/
+  var nbsp = '\u00A0'
 
   /**
    * auto() inserts a regular space, a non-breaking space, or neither,
    * depending on the current state of the editor.
    */
   function auto () {
-    var sel = View.selection.clone(),
-        startPair,
-        endPair,
-        start,
-        end,
-        i
+    var sel = View.selection.clone()
+    var startPair
+    var endPair
+    var start
+    var end
+    var i
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -36,15 +36,17 @@ function Spacebar (Compose) {
 
     end = View.paragraphs[endPair[0]]
     end = end.substr(endPair[1])
-    if (spaces.test(end.text[0]))
+    if (spaces.test(end.text[0])) {
       end = end.substr(1)
+    }
 
     start = start.append(end)
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
     for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(i))
+      if (View.isSectionStart(i)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
+      }
 
       View.resolve(new Delta('paragraphDelete', startPair[0] + 1))
     }
@@ -56,12 +58,14 @@ function Spacebar (Compose) {
     // TODO(luc): use backspace.usingSelection()?
     i = startPair[1]
 
-    if (spaces.test(start.text[i - 1]))
+    if (spaces.test(start.text[i - 1])) {
       return
+    }
 
     if (start.text[i - 1] === '\n' || start.text[i] === '\n' ||
-        !start.text[i - 1] || !start.text[i])
+        !start.text[i - 1] || !start.text[i]) {
       return insert(nbsp)
+    }
 
     insert(' ')
   }
@@ -74,12 +78,12 @@ function Spacebar (Compose) {
    * @param {String} space
    */
   function insert (space) {
-    var sel = View.selection.clone(),
-        startPair,
-        endPair,
-        start,
-        end,
-        i
+    var sel = View.selection.clone()
+    var startPair
+    var endPair
+    var start
+    var end
+    var i
 
     // In theory, this function could be used for just about anything;
     // that seems bad.
@@ -112,8 +116,9 @@ function Spacebar (Compose) {
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
     for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(i))
+      if (View.isSectionStart(i)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
+      }
 
       View.resolve(new Delta('paragraphDelete', startPair[0] + 1))
     }

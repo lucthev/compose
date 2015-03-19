@@ -1,17 +1,16 @@
-/* jshint mocha:true *//* global Compose, listPlugin, formatBlock, expect */
-'use strict';
+/*eslint-env mocha *//*global Compose, listPlugin, formatBlock, expect */
+'use strict'
 
 describe('Copy', function () {
-  var Selection,
-      editor,
-      copy,
-      elem
+  var Selection
+  var editor
+  var copy
+  var elem
 
   before(setupEditor)
   after(teardownEditor)
 
   describe('html should', function () {
-
     it('return the HTML of the given selection', function () {
       var sel = new Selection([0, 0], [1, 3])
 
@@ -81,7 +80,6 @@ describe('Copy', function () {
   })
 
   describe('text should', function () {
-
     it('copy the selected text', function () {
       var sel = new Selection([0, 0], [0, 3])
 

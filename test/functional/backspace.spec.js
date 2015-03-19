@@ -1,11 +1,11 @@
-/* jshint mocha:true */
-'use strict';
+/*eslint-env mocha */
+'use strict'
 
-var chai = require('chai'),
-    keys = require('selenium-webdriver').Key,
-    utils = require('./utils'),
-    expect = chai.expect,
-    browser
+var chai = require('chai')
+var keys = require('selenium-webdriver').Key
+var utils = require('./utils')
+var expect = chai.expect
+var browser
 
 utils.chai(chai)
 
@@ -50,7 +50,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -73,7 +73,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -96,7 +96,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -119,7 +119,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -142,7 +142,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -165,7 +165,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -188,7 +188,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -212,7 +212,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -236,7 +236,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -260,7 +260,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'h2',
@@ -284,7 +284,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'h2',
@@ -311,7 +311,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -338,7 +338,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -361,7 +361,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -376,7 +376,7 @@ describe.skip('Deleting text should', function () {
   })
 
   it('insert a <br> when deleting the only character on a line', function () {
-      return utils
+    return utils
       .init('<section><p>One<br>2</p></section>', {
         start: [0, 4]
       })
@@ -384,7 +384,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -408,7 +408,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -432,7 +432,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -455,7 +455,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -478,7 +478,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'ol',
@@ -513,7 +513,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'ol',
@@ -539,7 +539,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -562,7 +562,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'pre',
@@ -585,7 +585,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -608,7 +608,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -631,7 +631,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -654,7 +654,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -677,7 +677,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -700,7 +700,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -725,7 +725,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -753,7 +753,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -781,7 +781,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',
@@ -809,7 +809,7 @@ describe.skip('Deleting text should', function () {
       .result(function (tree, sel) {
         expect(tree).to.resemble([{
           name: 'section',
-          children:[{
+          children: [{
             name: 'hr'
           }, {
             name: 'p',

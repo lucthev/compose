@@ -1,11 +1,11 @@
-/* jshint mocha:true */
-'use strict';
+/*eslint-env mocha */
+'use strict'
 
-var chai = require('chai'),
-    keys = require('selenium-webdriver').Key,
-    utils = require('./utils'),
-    expect = chai.expect,
-    browser
+var chai = require('chai')
+var keys = require('selenium-webdriver').Key
+var utils = require('./utils')
+var expect = chai.expect
+var browser
 
 utils.chai(chai)
 
@@ -38,7 +38,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -69,7 +68,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -97,7 +95,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -121,7 +118,6 @@ describe.skip('Enter key', function () {
             html: '<br>'
           }]
         }])
-
 
         expect(sel).to.deep.equal({
           start: [0, 0],
@@ -157,7 +153,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -185,7 +180,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -212,7 +206,6 @@ describe.skip('Enter key', function () {
             html: '&nbsp;Two'
           }]
         }])
-
 
         expect(sel).to.deep.equal({
           start: [1, 0],
@@ -242,7 +235,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -269,7 +261,6 @@ describe.skip('Enter key', function () {
             html: 'One'
           }]
         }])
-
 
         expect(sel).to.deep.equal({
           start: [1, 0],
@@ -298,7 +289,6 @@ describe.skip('Enter key', function () {
             html: 'Two'
           }]
         }])
-
 
         expect(sel).to.deep.equal({
           start: [1, 0],
@@ -334,7 +324,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -366,7 +355,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -393,7 +381,6 @@ describe.skip('Enter key', function () {
             html: '<br>'
           }]
         }])
-
 
         expect(sel).to.deep.equal({
           start: [1, 0],
@@ -422,7 +409,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -450,7 +436,6 @@ describe.skip('Enter key', function () {
           }]
         }])
 
-
         expect(sel).to.deep.equal({
           start: [1, 0],
           end: [1, 0]
@@ -474,7 +459,6 @@ describe.skip('Enter key', function () {
             html: 'One<br><br>'
           }]
         }])
-
 
         expect(sel).to.deep.equal({
           start: [0, 4],
@@ -502,7 +486,6 @@ describe.skip('Enter key', function () {
             html: '<br>'
           }]
         }])
-
 
         expect(sel).to.deep.equal({
           start: [1, 0],

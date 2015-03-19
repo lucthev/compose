@@ -1,23 +1,22 @@
-/* jshint mocha:true, expr:true *//* global Compose, expect */
-'use strict';
+/*eslint-env mocha *//*global Compose, expect */
+'use strict'
 
 describe('Compose\'s plugin system', function () {
-
-  var compose
+  var editor
 
   beforeEach(function () {
     this.elem = document.createElement('article')
     this.elem.innerHTML = '<section><hr><p><br></p></section>'
     document.body.appendChild(this.elem)
 
-    compose = new Compose(this.elem)
+    editor = new Compose(this.elem)
   })
 
   afterEach(function () {
     document.body.removeChild(this.elem)
 
     try {
-      compose.destroy()
+      editor.destroy()
     } catch (e) {}
   })
 
@@ -30,10 +29,10 @@ describe('Compose\'s plugin system', function () {
       Compose.provide('some', 'thing')
     }
 
-    compose.use(plugin)
+    editor.use(plugin)
 
     expect(checked).to.be.true
-    expect(compose.plugins.some).to.equal('thing')
+    expect(editor.plugins.some).to.equal('thing')
   })
 
   it('should allow plugins to access each other\'s exports via a "require" method', function () {
@@ -51,8 +50,8 @@ describe('Compose\'s plugin system', function () {
       checker()
     }
 
-    compose.use(plugin)
-    compose.use(otherPlugin)
+    editor.use(plugin)
+    editor.use(otherPlugin)
 
     expect(checked).to.be.true
   })
@@ -70,10 +69,10 @@ describe('Compose\'s plugin system', function () {
       Compose.provide('some', 'thing')
     }
 
-    compose.use(plugin)
+    editor.use(plugin)
 
     expect(checked).to.be.true
-    expect(compose.require('some')).to.equal('thing')
+    expect(editor.require('some')).to.equal('thing')
   })
 
   it('should throw an error when requiring a module that doesn\'t exist', function () {
@@ -82,7 +81,7 @@ describe('Compose\'s plugin system', function () {
     }
 
     function willThrow () {
-      compose.use(plugin)
+      editor.use(plugin)
     }
 
     expect(willThrow).to.throw(Error)
@@ -97,10 +96,10 @@ describe('Compose\'s plugin system', function () {
       Compose.provide('some', 'other thing')
     }
 
-    compose.use(plugin)
+    editor.use(plugin)
 
     function willThrow () {
-      compose.use(other)
+      editor.use(other)
     }
 
     expect(willThrow).to.throw(Error)
@@ -117,15 +116,15 @@ describe('Compose\'s plugin system', function () {
       })
     }
 
-    compose.use(plugin)
-    compose.disable('thing')
+    editor.use(plugin)
+    editor.disable('thing')
 
     function checker (Compose) {
       Compose.require('thing')
     }
 
     function willThrow () {
-      compose.use(checker)
+      editor.use(checker)
     }
 
     expect(disabled).to.be.true
@@ -147,8 +146,8 @@ describe('Compose\'s plugin system', function () {
       expect(prop).to.equal('Mwahaha.')
     }
 
-    compose.use(silly)
-    compose.use(other)
+    editor.use(silly)
+    editor.use(other)
 
     expect(checked).to.be.true
   })
@@ -161,7 +160,7 @@ describe('Compose\'s plugin system', function () {
       expect(thing).to.equal('thing')
     }
 
-    compose.use(plugin, 'thing')
+    editor.use(plugin, 'thing')
     expect(checked).to.be.true
   })
 })

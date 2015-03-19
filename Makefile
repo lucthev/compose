@@ -1,6 +1,6 @@
 # Various programs
 browserify := ./node_modules/.bin/browserify
-jshint := ./node_modules/.bin/jshint
+standard := ./node_modules/.bin/standard
 uglifyjs := ./node_modules/.bin/uglifyjs
 mocha := ./node_modules/.bin/mocha
 karma := ./node_modules/.bin/karma
@@ -23,7 +23,7 @@ dist/compose.debug.js: $(all)
 	$(browserify) -s $(name) $(src) > $@
 
 lint:
-	$(jshint) src test
+	$(standard)
 
 unit-test: dist/compose.js
 	$(karma) start test/unit/karma.conf.js

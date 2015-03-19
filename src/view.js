@@ -1,15 +1,15 @@
-'use strict';
+'use strict'
 
 module.exports = ViewPlugin
 
-var resolve = require('./resolve'),
-    Choice = require('choice'),
-    Selection = Choice.Selection
+var resolve = require('./resolve')
+var Choice = require('choice')
+var Selection = Choice.Selection
 
 function ViewPlugin (Compose) {
-  var handler = Compose.require('handler'),
-      events = Compose.require('events'),
-      Delta = Compose.require('delta')
+  var handler = Compose.require('handler')
+  var events = Compose.require('events')
+  var Delta = Compose.require('delta')
 
   function View () {
     this._choice = new Choice(Compose.root, handler.getElements)
@@ -29,16 +29,17 @@ function ViewPlugin (Compose) {
     var listener = function (e) {
       var sel = this.selection
 
-      if (sel && e.type === 'keydown')
+      if (sel && e.type === 'keydown') {
         this._modified = sel.isBackwards() ? sel.end[0] : sel.start[0]
+      }
 
       this._isSyncing = setImmediate(function scheduleSync () {
-
         // The selection should always be normalized after a “selection”
         // key is pressed, to avoid ambiguity with respect to multiple
         // nested inline markups.
-        if (events.selectKey(e))
+        if (events.selectKey(e)) {
           this.selection = this._choice.getSelection()
+        }
 
         this.sync()
       }.bind(this))
@@ -67,14 +68,16 @@ function ViewPlugin (Compose) {
       return this._selection
     },
     set: function (sel) {
-      if (Selection.equals(sel, this._selection))
+      if (Selection.equals(sel, this._selection)) {
         return
+      }
 
       this._selection = sel
       this._selectionChanged = true
 
-      if (!this._isRendering)
+      if (!this._isRendering) {
         this._isRendering = setImmediate(this._render.bind(this))
+      }
     }
   })
 
@@ -116,12 +119,12 @@ function ViewPlugin (Compose) {
    * and updates the View accordingly.
    */
   View.prototype.sync = function () {
-    var all = handler.getElements(),
-        len = this.elements.length,
-        index = this._modified,
-        paragraph,
-        element,
-        sel
+    var all = handler.getElements()
+    var len = this.elements.length
+    var index = this._modified
+    var paragraph
+    var element
+    var sel
 
     this._modified = -1
     this._isSyncing = 0
@@ -162,13 +165,12 @@ function ViewPlugin (Compose) {
    * @return {Context}
    */
   View.prototype.resolve = function (deltas, opts) {
-    var i
-
     opts = opts || {}
-    if (!Array.isArray(deltas))
+    if (!Array.isArray(deltas)) {
       deltas = [deltas]
+    }
 
-    for (i = 0; i < deltas.length; i += 1) {
+    for (var i = 0; i < deltas.length; i += 1) {
       try {
         resolve.validate(this, deltas[i])
       } catch (err) {
@@ -179,18 +181,21 @@ function ViewPlugin (Compose) {
       // If a paragraphUpdate delta would result in an identical paragraph,
       // skip the work.
       if (deltas[i].type === Delta.types.paragraphUpdate &&
-          deltas[i].paragraph.equals(this.paragraphs[deltas[i].index]))
+          deltas[i].paragraph.equals(this.paragraphs[deltas[i].index])) {
         continue
+      }
 
       Compose.emit('delta', deltas[i])
       resolve.inline(this, deltas[i])
 
-      if (opts.render !== false)
+      if (opts.render !== false) {
         this._toRender.push(deltas[i])
+      }
     }
 
-    if (!this._isRendering && this._toRender.length)
+    if (!this._isRendering && this._toRender.length) {
       this._isRendering = setImmediate(this._render.bind(this))
+    }
 
     // Cancel a sync, if one is scheduled. Otherwise, the sync can
     // overwrite changes made via inline resolves.
@@ -209,18 +214,18 @@ function ViewPlugin (Compose) {
    * @return {Context}
    */
   View.prototype._render = function () {
-    var queue = this._toRender,
-        i
+    var queue = this._toRender
 
     this._toRender = []
     this._isRendering = 0
 
     // Don’t render (in particular, don’t restore the selection) unless we
     // have to; amongst other things, doing so interrupts IME composition.
-    if (!queue.length && !this._selectionChanged)
+    if (!queue.length && !this._selectionChanged) {
       return this
+    }
 
-    for (i = 0; i < queue.length; i += 1) {
+    for (var i = 0; i < queue.length; i += 1) {
       try {
         resolve.DOM(this, queue[i])
       } catch (err) {

@@ -1,10 +1,10 @@
-/* jshint mocha:true */
-'use strict';
+/*eslint-env mocha */
+'use strict'
 
-var chai = require('chai'),
-    utils = require('./utils'),
-    expect = chai.expect,
-    browser
+var chai = require('chai')
+var utils = require('./utils')
+var expect = chai.expect
+var browser
 
 utils.chai(chai)
 

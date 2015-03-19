@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
 var dom = require('./dom')
 
 exports.insert = function (View, delta) {
-  var handler = View.handlerForElement(dom.create('section')),
-      previousSection,
-      section,
-      start
+  var handler = View.handlerForElement(dom.create('section'))
+  var previousSection
+  var section
+  var start
 
   start = View.elements[delta.index - 1]
   start = dom.splitAt(start)
@@ -14,8 +14,9 @@ exports.insert = function (View, delta) {
   previousSection = start.parentNode
   section = handler.deserialize(delta.section)
 
-  while (start.nextSibling)
+  while (start.nextSibling) {
     section.appendChild(dom.remove(start.nextSibling))
+  }
 
   dom.after(previousSection, section)
 }
@@ -25,15 +26,16 @@ exports.update = function (/*View, delta*/) {
 }
 
 exports.remove = function (View, delta) {
-  var index = delta.index,
-      previous,
-      section
+  var index = delta.index
+  var previous
+  var section
 
   previous = dom._ancestorsAsArray(View.elements[index - 1])[0]
   section = dom.ancestor(View.elements[index], 'SECTION')
 
-  while (section.lastChild.nodeName !== 'HR')
+  while (section.lastChild.nodeName !== 'HR') {
     dom.after(previous, section.removeChild(section.lastChild))
+  }
 
   dom.remove(section)
 

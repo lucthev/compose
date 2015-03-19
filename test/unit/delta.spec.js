@@ -1,6 +1,6 @@
-/* global describe, it, Compose, expect, chai, TreeMatcher, ChildMatcher,
+/*global describe, it, Compose, expect, chai, TreeMatcher, ChildMatcher,
   afterEach, listPlugin, formatBlock */
-'use strict';
+'use strict'
 
 chai.use(TreeMatcher)
 chai.use(ChildMatcher)
@@ -1517,8 +1517,8 @@ describe('Delta operation', function () {
 
   function makeApplier (type) {
     return function (index, data) {
-      var Delta = editor.plugins.delta,
-          View = editor.plugins.view
+      var Delta = editor.plugins.delta
+      var View = editor.plugins.view
 
       View.resolve(new Delta(type, index, data))
     }

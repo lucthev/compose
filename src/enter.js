@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = Enter
 
@@ -10,12 +10,12 @@ module.exports = Enter
  * @param {Compose} Compose
  */
 function Enter (Compose) {
-  var Selection = Compose.require('selection'),
-      Delta = Compose.require('delta'),
-      View = Compose.require('view'),
-      startSpace = /^[^\S\r\n\v\f]/,
-      endSpace = /[^\S\r\n\v\f]$/,
-      nbsp = '\u00A0'
+  var Selection = Compose.require('selection')
+  var Delta = Compose.require('delta')
+  var View = Compose.require('view')
+  var startSpace = /^[^\S\r\n\v\f]/
+  var endSpace = /[^\S\r\n\v\f]$/
+  var nbsp = '\u00A0'
 
   /**
    * newline() inserts a newline. If inserting a newline would result
@@ -23,12 +23,12 @@ function Enter (Compose) {
    * semantic paragraph break.
    */
   function newline () {
-    var sel = View.selection.clone(),
-        startPair,
-        endPair,
-        start,
-        end,
-        i
+    var sel = View.selection.clone()
+    var startPair
+    var endPair
+    var start
+    var end
+    var i
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -57,8 +57,9 @@ function Enter (Compose) {
       .substr(endPair[1])
       .replace(startSpace, nbsp)
 
-    if (!end.text)
+    if (!end.text) {
       end.text = '\n'
+    }
 
     // += is used to add the newline rather than append, because markups
     // probably shouldn’t be extended across newlines.
@@ -67,8 +68,9 @@ function Enter (Compose) {
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
     for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(i))
+      if (View.isSectionStart(i)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
+      }
 
       View.resolve(new Delta('paragraphDelete', startPair[0] + 1))
     }
@@ -80,12 +82,12 @@ function Enter (Compose) {
    * newParagraph() creates a new paragraph.
    */
   function newParagraph () {
-    var sel = View.selection.clone(),
-        startPair,
-        endPair,
-        start,
-        end,
-        i
+    var sel = View.selection.clone()
+    var startPair
+    var endPair
+    var start
+    var end
+    var i
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -95,8 +97,9 @@ function Enter (Compose) {
       .substr(0, startPair[1])
       .replace(endSpace, nbsp)
 
-    if (!start.text)
+    if (!start.text) {
       start.text = '\n'
+    }
 
     end = View.paragraphs[endPair[0]]
     end = end
@@ -111,8 +114,9 @@ function Enter (Compose) {
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
 
     for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(i))
+      if (View.isSectionStart(i)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
+      }
 
       View.resolve(new Delta('paragraphDelete', startPair[0] + 1))
     }
@@ -127,11 +131,9 @@ function Enter (Compose) {
    * paragraph.
    */
   function newSection () {
-    var sel
-
     newParagraph()
 
-    sel = View.selection
+    var sel = View.selection
     View.resolve(new Delta('sectionInsert', sel.start[0], {
       start: sel.start[0]
     }))

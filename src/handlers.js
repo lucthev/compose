@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = Handlers
 
@@ -44,8 +44,9 @@ function Handlers (Compose) {
    */
   function forElement (elem) {
     for (var i = 0; i < handlers.length; i += 1) {
-      if (handlers[i].elements.indexOf(elem.nodeName) >= 0)
+      if (handlers[i].elements.indexOf(elem.nodeName) >= 0) {
         return handlers[i]
+      }
     }
 
     return null
@@ -60,8 +61,9 @@ function Handlers (Compose) {
    */
   function forParagraph (p) {
     for (var i = 0; i < handlers.length; i += 1) {
-      if (handlers[i].paragraphs.indexOf(p.type) >= 0)
+      if (handlers[i].paragraphs.indexOf(p.type) >= 0) {
         return handlers[i]
+      }
     }
 
     var err = TypeError('No handler for paragraphs of type ' + p.type)
@@ -84,8 +86,9 @@ function Handlers (Compose) {
    */
   function getElements () {
     var names = handlers.reduce(function (list, handler) {
-      if (handler._isSectionHandler)
+      if (handler._isSectionHandler) {
         return list
+      }
 
       return list.concat(handler.elements)
     }, [])

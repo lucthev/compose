@@ -1,32 +1,30 @@
-/* jshint node:true */
-/* global before, after */
-'use strict';
+/*global before, after */
+'use strict'
 
-var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer,
-    webdriver = require('selenium-webdriver'),
-    http = require('http'),
-    path = require('path'),
-    st = require('st'),
-    httpServer,
-    browser,
-    desired,
-    address,
-    server,
-    local
+var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer
+var webdriver = require('selenium-webdriver')
+var http = require('http')
+var path = require('path')
+var st = require('st')
+var httpServer
+var browser
+var desired
+var address
+var server
+var local
 
 exports.init = function (html, sel) {
   browser.executeScript(function (html, sel) {
-    /* global Compose */
-    var elem = document.querySelector('#editor'),
-        Selection
-
+    var elem = document.querySelector('#editor')
     elem.innerHTML = html
-    window.editor = new Compose(elem)
-    Selection = window.editor.plugins.selection
+
+    window.editor = new window.Compose(elem)
+    var Selection = window.editor.plugins.selection
 
     elem.focus()
-    if (sel)
+    if (sel) {
       Selection.set(new Selection(sel.start, sel.end))
+    }
   }, html, sel)
 
   return exports
@@ -45,13 +43,12 @@ exports.keys = function () {
 exports.result = function (fn) {
   return browser.executeAsyncScript(function (cb) {
     setTimeout(function () {
-      /* global tree */
-      var elem = window.editor.root,
-          children = [],
-          sel
+      var elem = window.editor.root
+      var children = []
+      var sel
 
       Array.prototype.forEach.call(elem.childNodes, function (child) {
-        this.push(tree(child))
+        this.push(window.tree(child))
       }, children)
 
       sel = window.editor.plugins.selection.get()
@@ -70,8 +67,6 @@ exports.result = function (fn) {
 }
 
 exports.chai = function (chai) {
-  chai.config.includeStack = true
-
   chai.use(function (_chai) {
     var Assertion = _chai.Assertion
 
@@ -135,65 +130,11 @@ exports.chai = function (chai) {
   })
 }
 
-exports.bold = function () {
-  browser.executeScript(function () {
-    window.editor.use(function (Compose) {
-      var formatter = Compose.require('formatter')
-
-      formatter.inline.exec('bold')
-    })
-  })
-
-  return exports
-}
-
-exports.italics = function () {
-  browser.executeScript(function () {
-    window.editor.use(function (Compose) {
-      var formatter = Compose.require('formatter')
-
-      formatter.inline.exec('italic')
-    })
-  })
-
-  return exports
-}
-
-exports.code = function () {
-  browser.executeScript(function () {
-    window.editor.use(function (Compose) {
-      var formatter = Compose.require('formatter')
-
-      formatter.inline.exec('code')
-    })
-  })
-
-  return exports
-}
-
-exports.link = function (href) {
-  browser.executeScript(function (href) {
-    window.editor.use(function (Compose) {
-      var formatter = Compose.require('formatter')
-
-      formatter.inline.exec('link', href)
-    })
-  }, href)
-
-  return exports
-}
-
-exports.status = function (type, cb) {
-  return browser.executeScript(function (type) {
-    return window.editor.plugins.formatter.inline.status(type)
-  }, type).then(cb)
-}
-
 exports.cut = function (cb) {
   browser.executeScript(function () {
-    var evt = {},
-        data = {},
-        elem
+    var evt = {}
+    var data = {}
+    var elem
 
     // There doesn’t seem to be a good way to mimick the cut event.
     evt.preventDefault = function () {}
@@ -202,10 +143,11 @@ exports.cut = function (cb) {
     evt.clipboardData = {
       clearData: function () {},
       setData: function (type, toCopy) {
-        if (/plain/.test(type))
+        if (/plain/.test(type)) {
           type = 'text'
-        else if (/html/.test(type))
+        } else if (/html/.test(type)) {
           type = 'html'
+        }
 
         data[type] = toCopy
       }
@@ -217,7 +159,7 @@ exports.cut = function (cb) {
       elem.innerHTML = data.html.replace(/<meta charset="UTF-8">/i, '')
       data.children = []
       Array.prototype.forEach.call(elem.childNodes, function (child) {
-        this.push(tree(child))
+        this.push(window.tree(child))
       }, data.children)
     }
 
@@ -228,18 +170,19 @@ exports.cut = function (cb) {
 }
 
 exports.url = function () {
-  var address = httpServer.address(),
-      url = 'http://'
+  var address = httpServer.address()
+  var url = 'http://'
 
   if (!address) {
     console.log('Server not listening.')
     process.exit(1)
   }
 
-  if (address.address === '0.0.0.0')
+  if (address.address === '0.0.0.0') {
     url += 'localhost'
-  else
+  } else {
     url += address.address
+  }
 
   url += (':' + address.port + '/test/functional/test.html')
 
@@ -255,20 +198,23 @@ before(function (done) {
   httpServer.listen(0, done)
 })
 
-if (local) before(function () {
-  server = new SeleniumServer(
-    path.join(__dirname, '../../vendor/selenium-2.43.1.jar'),
-    { port: 4444 }
-  )
+if (local) {
+  before(function () {
+    server = new SeleniumServer(
+      path.join(__dirname, '../../vendor/selenium-2.43.1.jar'),
+      { port: 4444 }
+    )
 
-  return server.start()
-})
+    return server.start()
+  })
+}
 
 before(function () {
-  if (local)
+  if (local) {
     address = server.address()
-  else
+  } else {
     address = 'http://ondemand.saucelabs.com:80/wd/hub'
+  }
 
   if (local) {
     desired = {

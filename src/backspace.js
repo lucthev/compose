@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = Backspace
 
@@ -9,25 +9,26 @@ module.exports = Backspace
  * @param {Compose} Compose
  */
 function Backspace (Compose) {
-  var Selection = Compose.require('selection'),
-      Delta = Compose.require('delta'),
-      View = Compose.require('view'),
-      startSpace = /^[^\S\r\n\v\f]/,
-      endSpace = /[^\S\r\n\v\f]$/,
-      nbsp = '\u00A0'
+  var Selection = Compose.require('selection')
+  var Delta = Compose.require('delta')
+  var View = Compose.require('view')
+  var startSpace = /^[^\S\r\n\v\f]/
+  var endSpace = /[^\S\r\n\v\f]$/
+  var nbsp = '\u00A0'
 
   /**
    * forwardDelete() performs the equivalent of a forward delete on
    * the editor.
    */
   function forwardDelete () {
-    var sel = View.selection.clone(),
-        startPair,
-        endPair,
-        end
+    var sel = View.selection.clone()
+    var startPair
+    var endPair
+    var end
 
-    if (!sel.isCollapsed())
+    if (!sel.isCollapsed()) {
       return usingSelection(sel)
+    }
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -47,13 +48,14 @@ function Backspace (Compose) {
    * backspace() performs the equivalent of a backspace on the editor.
    */
   function backspace () {
-    var sel = View.selection.clone(),
-        startPair,
-        endPair,
-        start
+    var sel = View.selection.clone()
+    var startPair
+    var endPair
+    var start
 
-    if (!sel.isCollapsed())
+    if (!sel.isCollapsed()) {
       return usingSelection(sel)
+    }
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -65,10 +67,11 @@ function Backspace (Compose) {
       // Place the cursor behind a potential trailing newline; this also
       // accounts for the case that the previous paragraph ends in a double
       // newline.
-      if (start.text[start.length - 1] === '\n')
+      if (start.text[start.length - 1] === '\n') {
         startPair[1] = start.length - 1
-      else
+      } else {
         startPair[1] = start.length
+      }
     } else if (endPair[1] > 0) {
       startPair[1] -= 1
     }
@@ -84,15 +87,16 @@ function Backspace (Compose) {
    * @param {Selection} sel
    */
   function usingSelection (sel) {
-    var startPair,
-        endPair,
-        start,
-        end,
-        i
+    var startPair
+    var endPair
+    var start
+    var end
+    var i
 
     sel = sel || View.selection.clone()
-    if (sel.isCollapsed())
+    if (sel.isCollapsed()) {
       return
+    }
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -104,10 +108,11 @@ function Backspace (Compose) {
     // remove one of them. If one of the spaces is “exotic” (not a
     // regular space, not a non-breaking space), keep that one.
     if (endSpace.test(start.text) && startSpace.test(end.text)) {
-      if (/[ \u00A0]$/.test(start.text))
+      if (/[ \u00A0]$/.test(start.text)) {
         start = start.substr(0, start.length - 1)
-      else
+      } else {
         end = end.substr(1)
+      }
     }
 
     start = start
@@ -115,13 +120,15 @@ function Backspace (Compose) {
       .replace(startSpace, nbsp)
       .replace(endSpace, nbsp)
 
-    if (!start.text)
+    if (!start.text) {
       start.text = '\n'
+    }
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
     for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(i))
+      if (View.isSectionStart(i)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
+      }
 
       View.resolve(new Delta('paragraphDelete', startPair[0] + 1))
     }

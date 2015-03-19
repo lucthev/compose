@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-var EventEmitter = require('component-emitter'),
-    hasOwnProp = require('has-own-prop')
+var EventEmitter = require('component-emitter')
+var hasOwnProp = require('has-own-prop')
 
 // Shim setImmediate/clearImmediate
 require('setimmediate')
@@ -15,14 +15,17 @@ require('setimmediate')
  * @return {Compose}
  */
 function Compose (elem) {
-  if (!(this instanceof Compose))
+  if (!(this instanceof Compose)) {
     return new Compose(elem)
+  }
 
-  if (typeof elem === 'string')
+  if (typeof elem === 'string') {
     elem = document.querySelector(elem)
+  }
 
-  if (!elem)
+  if (!elem) {
     throw new Error('Invalid element or query string provided to Compose.')
+  }
 
   this.root = elem
   elem.setAttribute('contenteditable', true)
@@ -45,8 +48,9 @@ function Compose (elem) {
 
   // Don’t silently swallow errors:
   this.on('error', function onError (err) {
-    if (this.listeners('error').length === 1)
+    if (this.listeners('error').length === 1) {
       throw err
+    }
   }.bind(this))
 }
 
@@ -60,8 +64,9 @@ EventEmitter(Compose.prototype)
  * @return {*}
  */
 Compose.prototype.require = function (module) {
-  if (!hasOwnProp(this.plugins, module))
+  if (!hasOwnProp(this.plugins, module)) {
     throw new Error('Could not find module: ' + module)
+  }
 
   return this.plugins[module]
 }
@@ -75,8 +80,9 @@ Compose.prototype.require = function (module) {
  * @param {*} exports
  */
 Compose.prototype.provide = function (name, exports) {
-  if (hasOwnProp(this.plugins, name))
+  if (hasOwnProp(this.plugins, name)) {
     throw new Error('The module "' + name + '" already exists.')
+  }
 
   this.plugins[name] = exports
 
@@ -91,14 +97,12 @@ Compose.prototype.provide = function (name, exports) {
  * @return {Context}
  */
 Compose.prototype.use = function (plugin) {
-  var args
-
-  if (typeof plugin !== 'function')
+  if (typeof plugin !== 'function') {
     throw new TypeError('Plugins must be functions.')
+  }
 
-  args = Array.prototype.slice.call(arguments)
+  var args = [].slice.call(arguments)
   args[0] = this
-
   plugin.apply(undefined, args)
 
   return this
@@ -112,17 +116,16 @@ Compose.prototype.use = function (plugin) {
  * @return {Context}
  */
 Compose.prototype.disable = function (module) {
-  var plugin
-
-  if (!hasOwnProp(this.plugins, module))
+  if (!hasOwnProp(this.plugins, module)) {
     throw new Error('Cannot disable non-existant module "' + module + '"')
+  }
 
-  plugin = this.plugins[module]
-  if (plugin && typeof plugin.disable === 'function')
+  var plugin = this.plugins[module]
+  if (plugin && typeof plugin.disable === 'function') {
     plugin.disable()
+  }
 
   delete this.plugins[module]
-
   return this
 }
 

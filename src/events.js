@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 var listenTo = [
   'keydown',
@@ -37,11 +37,9 @@ var selectionKeys = {
 }
 
 function Events (Compose) {
-  var events = {},
-      handlers,
-      modKey
+  var events = {}
 
-  handlers = listenTo.map(function (name) {
+  var handlers = listenTo.map(function (name) {
     return {
       event: name,
       fn: function (e) {
@@ -57,9 +55,10 @@ function Events (Compose) {
    * @param {Event} e
    * @return {Boolean}
    */
-  modKey = events.modKey = function (e) {
-    if (/Mac/.test(navigator.platform))
+  var modKey = events.modKey = function (e) {
+    if (/Mac/.test(navigator.platform)) {
       return e.metaKey
+    }
 
     return e.ctrlKey
   }
@@ -102,7 +101,6 @@ function Events (Compose) {
   }
 
   events.spacebar = function (e) {
-
     if (e.type === 'keypress') {
       return /[\u0020\u00A0\u180E\u2000-\u200B\u202F\u205F\u3000\uFEFF]/
         .test(String.fromCharCode(e.which))

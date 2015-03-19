@@ -21,7 +21,6 @@
     "chai": "1.10.0",
     "compose-formatblock": "0.1.0",
     "compose-lists": "0.1.0",
-    "jshint": "2.6.0",
     "karma": "0.12.31",
     "karma-chai": "0.1.0",
     "karma-cli": "0.0.4",
@@ -31,7 +30,13 @@
     "mocha": "2.1.0",
     "selenium-webdriver": "2.44.0",
     "st": "0.5.2",
+    "standard": "3.2.0",
     "uglify-js": "2.4.16"
+  },
+  "standard": {
+    "ignore": [
+      "dist/**/*.js"
+    ]
   },
   "dependencies": {
     "block-elements": "^1.0.0",

@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
 module.exports = Sanitizer
 
-var collapseWhitespace = require('collapse-whitespace'),
-    dom = require('./dom')
+var collapseWhitespace = require('collapse-whitespace')
+var dom = require('./dom')
 
 /**
  * The Sanitizer plugin provides a function to turn arbitrary HTML into
@@ -23,12 +23,12 @@ function Sanitizer (Compose) {
    * @return {Object}
    */
   function sanitize (html) {
-    var sandbox = dom.create('div'),
-        paragraphs = [],
-        sections = [],
-        handler,
-        result,
-        node
+    var sandbox = dom.create('div')
+    var paragraphs = []
+    var sections = []
+    var handler
+    var result
+    var node
 
     html = html
       .replace(/<!--[\s\S]*?-->/g, '')
@@ -51,8 +51,9 @@ function Sanitizer (Compose) {
         continue
       }
 
-      if (!dom.isBlock(node))
+      if (!dom.isBlock(node)) {
         node = wrapInParagraph(node)
+      }
 
       handler = View.handlerForElement(node)
 
@@ -73,15 +74,17 @@ function Sanitizer (Compose) {
         paragraphs = paragraphs.concat(splitAtNewlines(result))
       }
 
-      if (node.nodeName === 'SECTION')
+      if (node.nodeName === 'SECTION') {
         node = firstChild(node)
-      else
+      } else {
         node = nextSibling(node)
+      }
     }
 
     paragraphs.forEach(function (p) {
-      if (!p.text)
+      if (!p.text) {
         p.text = '\n'
+      }
     })
 
     // Remove sections starting at the same index, or an invalid index.
@@ -89,8 +92,9 @@ function Sanitizer (Compose) {
     // SECTION is an HR; the latter can happen when an HR is the very
     // last element in the sanitized HTML.
     sections = sections.filter(function (section, index, arr) {
-      if (section.start >= paragraphs.length)
+      if (section.start >= paragraphs.length) {
         return false
+      }
 
       return !(index > 0 && arr[index - 1].start === section.start)
     })
@@ -113,8 +117,9 @@ function Sanitizer (Compose) {
  */
 function nextSibling (node) {
   while (node) {
-    if (node.nextSibling)
+    if (node.nextSibling) {
       return node.nextSibling
+    }
 
     node = node.parentNode
   }
@@ -143,17 +148,19 @@ function firstChild (node) {
  * @return {Element}
  */
 function wrapInParagraph (node) {
-  var p = dom.create('p'),
-      next
+  var p = dom.create('p')
 
   dom.replace(node, p)
   p.appendChild(node)
 
-  while (next = p.nextSibling) {
-    if (dom.isBlock(next))
+  var next = p.nextSibling
+  while (next) {
+    if (dom.isBlock(next)) {
       break
+    }
 
     p.appendChild(dom.remove(next))
+    next = p.nextSibling
   }
 
   return p
@@ -186,8 +193,9 @@ function bubbleUp (node) {
  * @return {Element}
  */
 function unwrap (elem) {
-  while (elem.lastChild)
+  while (elem.lastChild) {
     dom.after(elem, dom.remove(elem.lastChild))
+  }
 
   return dom.remove(elem)
 }
@@ -204,13 +212,13 @@ function toArray (thing) {
  * @param {Element} markup
  */
 function propagateMarkup (children, markup) {
-  var clone,
-      i
+  var clone
 
-  if (!children.length)
+  if (!children.length) {
     return
+  }
 
-  for (i = 0; i < children.length; i += 1) {
+  for (var i = 0; i < children.length; i += 1) {
     if (dom.isBlock(children[i])) {
       propagateMarkup(toArray(children[i].childNodes), markup)
       continue
@@ -235,17 +243,18 @@ function propagateMarkup (children, markup) {
  * @return {Array}
  */
 function splitAtNewlines (paragraph) {
-  var split = [],
-      substr,
-      i
+  var split = []
+  var substr
 
-  for (i = 0; i < paragraph.length - 2; i += 1) {
-    if (paragraph.text[i] !== '\n' || paragraph.text[i + 1] !== '\n')
+  for (var i = 0; i < paragraph.length - 2; i += 1) {
+    if (paragraph.text[i] !== '\n' || paragraph.text[i + 1] !== '\n') {
       continue
+    }
 
     substr = paragraph.substr(0, i)
-    if (!substr.text)
+    if (!substr.text) {
       substr.text = '\n'
+    }
 
     split.push(substr)
     paragraph = paragraph.substr(i + 2)

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = Delta
 
@@ -10,16 +10,18 @@ module.exports = Delta
  * @param {*} data
  */
 function Delta (type, index, data) {
-  if (!(this instanceof Delta))
+  if (!(this instanceof Delta)) {
     return new Delta(type, index, data)
+  }
 
   this.index = index
   this.type = typeof type !== 'number' ? Delta.types[type] : type
 
-  if (this.type <= Delta.types.paragraphDelete)
+  if (this.type <= Delta.types.paragraphDelete) {
     this.paragraph = data || null
-  else
+  } else {
     this.section = data || null
+  }
 }
 
 // Expose types.
