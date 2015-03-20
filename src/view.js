@@ -97,8 +97,8 @@ function ViewPlugin (Compose) {
     return this
   }
 
-  View.prototype.getElements = function () {
-    return handler.getElements()
+  View.prototype.getElements = function (opts) {
+    return handler.getElements(opts)
   }
 
   /**

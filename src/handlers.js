@@ -84,9 +84,15 @@ function Handlers (Compose) {
    *
    * @return {Array}
    */
-  function getElements () {
+  function getElements (opts) {
+    opts = opts || {}
+
     var names = handlers.reduce(function (list, handler) {
       if (handler._isSectionHandler) {
+        if (opts.withSections) {
+          list.push('SECTION')
+        }
+
         return list
       }
 
