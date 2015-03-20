@@ -44,7 +44,7 @@ function Spacebar (Compose) {
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
     for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(i)) {
+      if (View.isSectionStart(startPair[0] + 1)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
       }
 
@@ -116,7 +116,7 @@ function Spacebar (Compose) {
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
     for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(i)) {
+      if (View.isSectionStart(startPair[0] + 1)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
       }
 
