@@ -130,45 +130,6 @@ exports.chai = function (chai) {
   })
 }
 
-exports.cut = function (cb) {
-  browser.executeScript(function () {
-    var evt = {}
-    var data = {}
-    var elem
-
-    // There doesn’t seem to be a good way to mimick the cut event.
-    evt.preventDefault = function () {}
-    evt.type = 'cut'
-    evt.currentTarget = evt.target = window.editor.root
-    evt.clipboardData = {
-      clearData: function () {},
-      setData: function (type, toCopy) {
-        if (/plain/.test(type)) {
-          type = 'text'
-        } else if (/html/.test(type)) {
-          type = 'html'
-        }
-
-        data[type] = toCopy
-      }
-    }
-
-    window.editor.emit('cut', evt)
-    if (data.html) {
-      elem = document.createElement('div')
-      elem.innerHTML = data.html.replace(/<meta charset="UTF-8">/i, '')
-      data.children = []
-      Array.prototype.forEach.call(elem.childNodes, function (child) {
-        this.push(window.tree(child))
-      }, data.children)
-    }
-
-    return data
-  }).then(cb)
-
-  return exports
-}
-
 exports.url = function () {
   var address = httpServer.address()
   var url = 'http://'
