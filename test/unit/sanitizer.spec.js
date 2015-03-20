@@ -1,9 +1,11 @@
-/*eslint-env mocha *//*global Compose, formatBlock, expect, listPlugin */
+/*eslint-env mocha */
 'use strict'
 
+var expect = window.expect
+
 describe('The sanitizer should', function () {
-  var Serialize,
-      sanitize
+  var Serialize
+  var sanitize
 
   before(init)
 
@@ -348,9 +350,9 @@ describe('The sanitizer should', function () {
     var elem = document.createElement('article')
 
     document.body.appendChild(elem)
-    var editor = new Compose(elem)
-    editor.use(formatBlock)
-    editor.use(listPlugin)
+    var editor = new window.Compose(elem)
+    editor.use(window.formatBlock)
+    editor.use(window.listPlugin)
 
     sanitize = editor.require('sanitizer')
     Serialize = editor.require('serialize')

@@ -1,5 +1,7 @@
-/*eslint-env mocha *//*global Compose, expect */
+/*eslint-env mocha */
 'use strict'
+
+var expect = window.expect
 
 describe('Compose\'s plugin system', function () {
   var editor
@@ -9,7 +11,7 @@ describe('Compose\'s plugin system', function () {
     this.elem.innerHTML = '<section><hr><p><br></p></section>'
     document.body.appendChild(this.elem)
 
-    editor = new Compose(this.elem)
+    editor = new window.Compose(this.elem)
   })
 
   afterEach(function () {

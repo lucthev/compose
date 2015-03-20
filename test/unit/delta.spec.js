@@ -1,16 +1,18 @@
-/*global describe, it, Compose, expect, chai, TreeMatcher, ChildMatcher,
-  afterEach, listPlugin, formatBlock */
+/*eslint-env mocha */
 'use strict'
 
-chai.use(TreeMatcher)
-chai.use(ChildMatcher)
+var chai = window.chai
+var expect = window.expect
+
+chai.use(window.TreeMatcher)
+chai.use(window.ChildMatcher)
 
 describe('Delta operation', function () {
-  var Serialize,
-      editor,
-      View,
-      root,
-      p
+  var Serialize
+  var editor
+  var View
+  var root
+  var p
 
   describe('paragraphInsert should', function () {
     var op = makeApplier('paragraphInsert')
@@ -1490,9 +1492,9 @@ describe('Delta operation', function () {
     root.innerHTML = html
     document.body.appendChild(root)
 
-    editor = new Compose(root)
-    editor.use(listPlugin)
-    editor.use(formatBlock)
+    editor = new window.Compose(root)
+    editor.use(window.listPlugin)
+    editor.use(window.formatBlock)
     Serialize = editor.require('serialize')
     View = editor.require('view')
 
@@ -1500,8 +1502,8 @@ describe('Delta operation', function () {
     var all = [].slice.call(root.querySelectorAll('section,p,h2,li'))
 
     all.forEach(function (el) {
-      var section,
-          p
+      var section
+      var p
 
       if (el.nodeName === 'SECTION') {
         section = View.handlerForElement(el).serialize(el)

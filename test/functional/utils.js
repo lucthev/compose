@@ -1,4 +1,4 @@
-/*global before, after */
+/*eslint-env mocha */
 'use strict'
 
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer

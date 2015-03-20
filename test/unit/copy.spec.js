@@ -1,7 +1,8 @@
-/*eslint-env mocha *//*global Compose, listPlugin, formatBlock, expect */
+/*eslint-env mocha */
 'use strict'
 
 describe('Copy', function () {
+  var expect = window.expect // Because linting
   var Selection
   var editor
   var copy
@@ -141,9 +142,9 @@ describe('Copy', function () {
 
     document.body.appendChild(elem)
 
-    editor = new Compose(elem)
-    editor.use(formatBlock)
-    editor.use(listPlugin)
+    editor = new window.Compose(elem)
+    editor.use(window.formatBlock)
+    editor.use(window.listPlugin)
 
     Selection = editor.require('selection')
     copy = editor.require('copy')
@@ -152,8 +153,8 @@ describe('Copy', function () {
     var all = [].slice.call(elem.querySelectorAll('section,p,h2,h3,li'))
 
     all.forEach(function (el) {
-      var section,
-          p
+      var section
+      var p
 
       if (el.nodeName === 'SECTION') {
         section = View.handlerForElement(el).serialize(el)

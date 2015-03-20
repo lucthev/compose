@@ -1,7 +1,7 @@
-/*eslint-env mocha *//*global Compose, chai */
+/*eslint-env mocha */
 'use strict'
 
-var expect = chai.expect
+var expect = window.expect
 
 describe('The event module', function () {
   var editor
@@ -23,7 +23,7 @@ describe('The event module', function () {
     this.elem.innerHTML = '<section><hr><p><br></p></section>'
     document.body.appendChild(this.elem)
 
-    editor = new Compose(this.elem)
+    editor = new window.Compose(this.elem)
   })
 
   afterEach(function () {
