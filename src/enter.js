@@ -28,7 +28,6 @@ function Enter (Compose) {
     var endPair
     var start
     var end
-    var i
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -43,7 +42,7 @@ function Enter (Compose) {
       startPair[1] -= 1
       View.selection = sel
       return newParagraph()
-    } else if (end.text[endPair[1]] === '\n') {
+    } else if (endPair[1] < end.length - 1 && end.text[endPair[1]] === '\n') {
       endPair[1] += 1
       View.selection = sel
       return newParagraph()
@@ -67,7 +66,7 @@ function Enter (Compose) {
     start = start.append(end)
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
-    for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
+    for (var i = startPair[0] + 1; i <= endPair[0]; i += 1) {
       if (View.isSectionStart(startPair[0] + 1)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
       }
@@ -87,7 +86,6 @@ function Enter (Compose) {
     var endPair
     var start
     var end
-    var i
 
     startPair = sel.isBackwards() ? sel.end : sel.start
     endPair = sel.isBackwards() ? sel.start : sel.end
@@ -97,8 +95,8 @@ function Enter (Compose) {
       .substr(0, startPair[1])
       .replace(endSpace, nbsp)
 
-    if (!start.text) {
-      start.text = '\n'
+    if (!start.text || start.text[start.length - 1] === '\n') {
+      start.text += '\n'
     }
 
     end = View.paragraphs[endPair[0]]
@@ -113,7 +111,7 @@ function Enter (Compose) {
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
 
-    for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
+    for (var i = startPair[0] + 1; i <= endPair[0]; i += 1) {
       if (View.isSectionStart(startPair[0] + 1)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
       }
