@@ -25,7 +25,7 @@ dist/compose.debug.js: $(all)
 lint:
 	$(standard)
 
-unit-test: dist/compose.js
+test: dist/compose.js
 	$(karma) start test/unit/karma.conf.js
 
 integration-test: dist/compose.js
@@ -35,12 +35,10 @@ integration-test: dist/compose.js
 		http://selenium-release.storage.googleapis.com/$(minor)/selenium-server-standalone-$(patch).jar
 	$(mocha) -t 120000 test/functional/*.spec.js
 
-test: lint unit-test integration-test
-
 publish: dist/compose.js
 	npm publish
 
 clean:
 	rm -rf dist vendor
 
-.PHONY: clean watch test debug lint unit-test integration-test publish
+.PHONY: clean watch test debug lint integration-test publish
