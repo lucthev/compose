@@ -38,7 +38,6 @@ function Compose (elem) {
   }
 
   this.use(require('./events'))
-  this.use(require('./handlers'))
   this.use(require('./view'))
   this.use(require('./sanitizer'))
   this.use(require('./backspace'))

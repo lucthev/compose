@@ -4,12 +4,13 @@ module.exports = ViewPlugin
 
 var resolve = require('./resolve')
 var Choice = require('choice')
+var Handlers = require('./handlers')
 var Selection = Choice.Selection
 
 function ViewPlugin (Compose) {
-  var handler = Compose.require('handler')
   var events = Compose.require('events')
   var Delta = Compose.require('delta')
+  var handler = Handlers(Compose)
 
   function View () {
     this._choice = new Choice(Compose.root, handler.getElements)

@@ -102,10 +102,10 @@ function Handlers (Compose) {
     return [].slice.call(Compose.root.querySelectorAll(names.join()))
   }
 
-  Compose.provide('handler', {
+  return {
     forElement: forElement,
     forParagraph: forParagraph,
     addHandler: addHandler,
     getElements: getElements
-  })
+  }
 }
