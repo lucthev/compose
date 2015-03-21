@@ -11,6 +11,7 @@ module.exports = Spacebar
 function Spacebar (Compose) {
   var Serialize = Compose.require('serialize')
   var Selection = Compose.require('selection')
+  var rm = Compose.require('backspace')
   var Delta = Compose.require('delta')
   var View = Compose.require('view')
   var spaces = /^[^\S\r\n\v\f]$/
@@ -21,49 +22,23 @@ function Spacebar (Compose) {
    * depending on the current state of the editor.
    */
   function auto () {
+    rm.usingSelection()
+
     var sel = View.selection.clone()
-    var startPair
-    var endPair
-    var start
-    var end
-    var i
+    var index = sel.start[1]
+    var start = View.paragraphs[sel.start[0]]
 
-    startPair = sel.isBackwards() ? sel.end : sel.start
-    endPair = sel.isBackwards() ? sel.start : sel.end
-
-    start = View.paragraphs[startPair[0]]
-    start = start.substr(0, startPair[1])
-
-    end = View.paragraphs[endPair[0]]
-    end = end.substr(endPair[1])
-    if (spaces.test(end.text[0])) {
-      end = end.substr(1)
-    }
-
-    start = start.append(end)
-
-    View.resolve(new Delta('paragraphUpdate', startPair[0], start))
-    for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
-      if (View.isSectionStart(startPair[0] + 1)) {
-        View.resolve(new Delta('sectionDelete', startPair[0] + 1))
-      }
-
-      View.resolve(new Delta('paragraphDelete', startPair[0] + 1))
-    }
-
-    View.selection = sel = new Selection(startPair.slice())
-
-    // What we just did is essentially the equivalent of a backspace;
-    // now, insert the appropriate space.
-    // TODO(luc): use backspace.usingSelection()?
-    i = startPair[1]
-
-    if (spaces.test(start.text[i - 1])) {
+    if (spaces.test(start.text[index - 1])) {
       return
     }
 
-    if (start.text[i - 1] === '\n' || start.text[i] === '\n' ||
-        !start.text[i - 1] || !start.text[i]) {
+    if (spaces.test(start.text[index])) {
+      View.selection = new Selection([sel.start[0], index + 1])
+      return
+    }
+
+    if (start.text[index - 1] === '\n' || start.text[index] === '\n' ||
+        !start.text[index - 1] || !start.text[index]) {
       return insert(nbsp)
     }
 
@@ -83,7 +58,6 @@ function Spacebar (Compose) {
     var endPair
     var start
     var end
-    var i
 
     // In theory, this function could be used for just about anything;
     // that seems bad.
@@ -115,7 +89,7 @@ function Spacebar (Compose) {
     start = start.append(end)
 
     View.resolve(new Delta('paragraphUpdate', startPair[0], start))
-    for (i = startPair[0] + 1; i <= endPair[0]; i += 1) {
+    for (var i = startPair[0] + 1; i <= endPair[0]; i += 1) {
       if (View.isSectionStart(startPair[0] + 1)) {
         View.resolve(new Delta('sectionDelete', startPair[0] + 1))
       }
