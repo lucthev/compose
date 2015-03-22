@@ -30,8 +30,8 @@ function Backspace (Compose) {
       return usingSelection(sel)
     }
 
-    startPair = sel.isBackwards() ? sel.end : sel.start
-    endPair = sel.isBackwards() ? sel.start : sel.end
+    startPair = sel.absoluteStart()
+    endPair = sel.absoluteEnd()
     end = View.paragraphs[endPair[0]]
 
     if (isAtEnd(endPair[1], end) && View.isSectionStart(endPair[0] + 1)) {
@@ -69,8 +69,8 @@ function Backspace (Compose) {
       return usingSelection(sel)
     }
 
-    startPair = sel.isBackwards() ? sel.end : sel.start
-    endPair = sel.isBackwards() ? sel.start : sel.end
+    startPair = sel.absoluteStart()
+    endPair = sel.absoluteEnd()
 
     var isAtStart = endPair[1] === 0 && endPair[0] > 0
     if (isAtStart && View.isSectionStart(endPair[0])) {
@@ -115,8 +115,8 @@ function Backspace (Compose) {
       return
     }
 
-    startPair = sel.isBackwards() ? sel.end : sel.start
-    endPair = sel.isBackwards() ? sel.start : sel.end
+    startPair = sel.absoluteStart()
+    endPair = sel.absoluteEnd()
 
     start = View.paragraphs[startPair[0]].substr(0, startPair[1])
     end = View.paragraphs[endPair[0]].substr(endPair[1])

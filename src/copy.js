@@ -90,8 +90,8 @@ function Copy (Compose) {
  * @return {Array}
  */
 function getParagraphs (View, sel) {
-  var startPair = sel.isBackwards() ? sel.end : sel.start
-  var endPair = sel.isBackwards() ? sel.start : sel.end
+  var startPair = sel.absoluteStart()
+  var endPair = sel.absoluteEnd()
   var selected
   var last
 
