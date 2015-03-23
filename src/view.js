@@ -138,18 +138,18 @@ function ViewPlugin (Compose) {
 
     this.elements = all
 
-    sel = this._choice.getSelection()
-    if (!this._selectionChanged && !Selection.equals(sel, this._selection)) {
-      this._selection = sel
-      Compose.emit('selectionchange')
-    }
-
     if (index >= 0) {
       element = all[index]
       paragraph = this.handlerForElement(element).serialize(element)
       this.resolve(new Delta('paragraphUpdate', index, paragraph), {
         render: false
       })
+    }
+
+    sel = this._choice.getSelection()
+    if (!this._selectionChanged && !Selection.equals(sel, this._selection)) {
+      this._selection = sel
+      Compose.emit('selectionchange')
     }
 
     return this
