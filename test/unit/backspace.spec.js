@@ -18,15 +18,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
@@ -40,15 +32,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
@@ -62,15 +46,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
@@ -84,15 +60,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
@@ -106,15 +74,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One&nbsp;'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One&nbsp;</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -128,15 +88,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '&nbsp;One'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>&nbsp;One</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
@@ -150,15 +102,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -172,15 +116,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -194,15 +130,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 2], [0, 2]))
       done()
@@ -216,15 +144,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 2], [0, 2]))
       done()
@@ -238,15 +158,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'h2',
-          html: 'Oree'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><h2>Oree</h2></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
@@ -260,15 +172,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'h2',
-          html: 'Oree'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><h2>Oree</h2></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
@@ -286,15 +190,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Our'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>Our</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
@@ -311,15 +207,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Our'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>Our</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
@@ -333,15 +221,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br><br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -355,15 +235,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br><br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -377,15 +249,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br><br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -399,15 +263,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br><br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -421,18 +277,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'ol',
-          children: [{
-            name: 'li',
-            html: 'OneTwo'
-          }]
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><ol><li>OneTwo</li></ol></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
@@ -446,15 +291,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'OneTwo'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>OneTwo</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
@@ -468,15 +305,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'OneTwo'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>OneTwo</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
@@ -490,15 +319,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'OneTwo'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>OneTwo</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
@@ -512,15 +333,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'OneTwo'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>OneTwo</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
@@ -534,15 +347,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br>Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br>Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -556,15 +361,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br><br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -578,15 +375,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br>Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br>Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -600,15 +389,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br><br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br><br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -624,18 +405,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One'
-        }, {
-          name: 'p',
-          html: 'Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([1, 0], [1, 0]))
       done()
@@ -651,18 +421,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One'
-        }, {
-          name: 'p',
-          html: 'Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
@@ -678,18 +437,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-            html: 'One<br>' // FIXME: should the <br> be removed?
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br></p><p>Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
@@ -705,18 +453,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br><br>'
-        }, {
-          name: 'p',
-          html: 'Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br><br></p><p>Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
@@ -730,15 +467,7 @@ describe('Deleting text should', function () {
     rm.forwardDelete()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<em>13</em>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><em>13</em></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
@@ -752,15 +481,7 @@ describe('Deleting text should', function () {
     rm.backspace()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<em>13</em>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><em>13</em></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()

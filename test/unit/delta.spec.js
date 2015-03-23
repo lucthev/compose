@@ -1,11 +1,7 @@
 /*eslint-env mocha */
 'use strict'
 
-var chai = window.chai
 var expect = window.expect
-
-chai.use(window.TreeMatcher)
-chai.use(window.ChildMatcher)
 
 describe('Delta operation', function () {
   var Serialize
@@ -26,18 +22,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p></section>')
 
         done()
       }, 0)
@@ -53,26 +38,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p></section><section><hr><p>Three</p></section>')
 
         done()
       }, 0)
@@ -132,29 +98,10 @@ describe('Delta operation', function () {
       p = Serialize.fromText('Two')
       op(1, p)
 
-      expect(root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One'
-        }]
-      }])
+      expect(root.innerHTML).to.equal('<section><hr><p>One</p></section>')
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p></section>')
 
         done()
       }, 0)
@@ -167,21 +114,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p><p>Three</p></section>')
 
         done()
       }, 0)
@@ -194,18 +127,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'h2',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><h2>Two</h2></section>')
 
         done()
       }, 0)
@@ -218,21 +140,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'h2',
-            html: 'Two'
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><h2>Two</h2><p>Three</p></section>')
 
         done()
       }, 0)
@@ -245,21 +153,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><ol><li>Two</li></ol></section>')
 
         done()
       }, 0)
@@ -272,24 +166,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }]
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><ol><li>Two</li></ol><p>Three</p></section>')
 
         done()
       }, 0)
@@ -302,27 +179,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }, {
-            name: 'p',
-            html: 'Two'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Three'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol><p>Two</p><ol><li>Three</li></ol></section>')
 
         done()
       }, 0)
@@ -335,21 +192,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol><p>Two</p></section>')
 
         done()
       }, 0)
@@ -362,21 +205,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li><li>Two</li></ol></section>')
 
         done()
       }, 0)
@@ -389,24 +218,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }, {
-              name: 'li',
-              html: 'Three'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li><li>Two</li><li>Three</li></ol></section>')
 
         done()
       }, 0)
@@ -419,24 +231,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }, {
-            name: 'ul',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol><ul><li>Two</li></ul></section>')
 
         done()
       }, 0)
@@ -449,30 +244,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }, {
-            name: 'ul',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }]
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Three'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol><ul><li>Two</li></ul><ol><li>Three</li></ol></section>')
 
         done()
       }, 0)
@@ -488,32 +260,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Three'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><ol><li>Two</li></ol></section><section><hr><ol><li>Three</li></ol></section>')
 
         done()
       }, 0)
@@ -532,21 +279,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: '2'
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>2</p><p>Three</p></section>')
 
         done()
       }, 0)
@@ -559,18 +292,7 @@ describe('Delta operation', function () {
       op(0, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>1</p><p>Two</p></section>')
 
         done()
       }, 0)
@@ -583,18 +305,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>2</p></section>')
 
         done()
       }, 0)
@@ -607,15 +318,7 @@ describe('Delta operation', function () {
       op(0, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>1</p></section>')
 
         done()
       }, 0)
@@ -633,15 +336,7 @@ describe('Delta operation', function () {
       op(0, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'O<strong>n</strong>e'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>O<strong>n</strong>e</p></section>')
 
         done()
       }, 0)
@@ -657,26 +352,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>2</p></section><section><hr><p>Three</p></section>')
 
         done()
       }, 0)
@@ -713,15 +389,7 @@ describe('Delta operation', function () {
       op(0, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'h2',
-            html: 'One'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><h2>One</h2></section>')
 
         done()
       }, 0)
@@ -734,21 +402,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'h2',
-            html: 'Two'
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><h2>Two</h2><p>Three</p></section>')
 
         done()
       }, 0)
@@ -761,18 +415,7 @@ describe('Delta operation', function () {
       op(0, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol></section>')
 
         done()
       }, 0)
@@ -785,24 +428,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }, {
-              name: 'li',
-              html: 'Three'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><ol><li>Two</li><li>Three</li></ol></section>')
 
         done()
       }, 0)
@@ -815,21 +441,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li><li>Two</li></ol></section>')
 
         done()
       }, 0)
@@ -842,24 +454,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }, {
-              name: 'li',
-              html: 'Three'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li><li>Two</li><li>Three</li></ol></section>')
 
         done()
       }, 0)
@@ -872,15 +467,7 @@ describe('Delta operation', function () {
       op(0, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section>')
 
         done()
       }, 0)
@@ -893,24 +480,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }, {
-            name: 'p',
-            html: 'Two'
-          }, {
-            name: 'p',
-            html: 'Three'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol><p>Two</p><p>Three</p></section>')
 
         done()
       }, 0)
@@ -923,27 +493,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }, {
-            name: 'p',
-            html: 'Two'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Three'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol><p>Two</p><ol><li>Three</li></ol></section>')
 
         done()
       }, 0)
@@ -959,23 +509,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'h2',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section><section><hr><h2>Two</h2></section>')
 
         done()
       }, 0)
@@ -991,26 +525,7 @@ describe('Delta operation', function () {
       op(1, p)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section><section><hr><ol><li>Two</li></ol></section>')
 
         done()
       }, 0)
@@ -1028,15 +543,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section>')
 
         done()
       }, 0)
@@ -1048,15 +555,7 @@ describe('Delta operation', function () {
       op(0)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section>')
 
         done()
       }, 0)
@@ -1071,23 +570,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section><section><hr><p>Two</p></section>')
 
         done()
       }, 0)
@@ -1102,23 +585,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section><section><hr><p>Two</p></section>')
 
         done()
       }, 0)
@@ -1130,18 +597,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p></section>')
 
         done()
       }, 0)
@@ -1183,21 +639,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li><li>Two</li></ol></section>')
 
         done()
       }, 0)
@@ -1209,21 +651,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li><li>Two</li></ol></section>')
 
         done()
       }, 0)
@@ -1235,21 +663,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ul',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ul><li>One</li><li>Two</li></ul></section>')
 
         done()
       }, 0)
@@ -1261,15 +675,7 @@ describe('Delta operation', function () {
       op(0)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section>')
 
         done()
       }, 0)
@@ -1320,23 +726,7 @@ describe('Delta operation', function () {
       op(1, { start: 1 })
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p></section><section><hr><p>Two</p></section>')
 
         done()
       }, 0)
@@ -1348,29 +738,7 @@ describe('Delta operation', function () {
       op(1, { start: 1 })
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }]
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li></ol></section><section><hr><ol><li>Two</li></ol></section>')
 
         done()
       }, 0)
@@ -1440,18 +808,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: 'One'
-          }, {
-            name: 'p',
-            html: 'Two'
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><p>One</p><p>Two</p></section>')
 
         done()
       }, 0)
@@ -1466,21 +823,7 @@ describe('Delta operation', function () {
       op(1)
 
       setTimeout(function () {
-        expect(root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: 'One'
-            }, {
-              name: 'li',
-              html: 'Two'
-            }]
-          }]
-        }])
+        expect(root.innerHTML).to.equal('<section><hr><ol><li>One</li><li>Two</li></ol></section>')
 
         done()
       }, 0)

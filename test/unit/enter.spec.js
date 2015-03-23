@@ -19,15 +19,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br><br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p><br><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 1]))
         done()
@@ -41,15 +33,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br><br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 2]))
         done()
@@ -63,15 +47,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>1'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p><br>1</p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 1]))
         done()
@@ -85,15 +61,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br><br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 2]))
         done()
@@ -107,15 +75,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br><br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 2]))
         done()
@@ -129,15 +89,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br>2'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br>2</p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 2]))
         done()
@@ -151,15 +103,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br>3'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br>3</p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 2]))
         done()
@@ -173,18 +117,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p>2</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -198,18 +131,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '4'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p>4</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -223,18 +145,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p>2</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -248,18 +159,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '4'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p>4</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -273,18 +173,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -298,15 +187,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'h2',
-            html: '1<br>3'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><h2>1<br>3</h2></section>')
 
         expect(View.selection).to.eql(new Selection([0, 2]))
         done()
@@ -324,15 +205,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br>6'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br>6</p></section>')
 
         expect(View.selection).to.eql(new Selection([0, 2]))
         done()
@@ -346,21 +219,7 @@ describe('Enter', function () {
       enter.newline()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '12'
-          }, {
-            name: 'p',
-            html: '34'
-          }, {
-            name: 'p',
-            html: '567<br>8'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>12</p><p>34</p><p>567<br>8</p></section>')
 
         expect(View.selection).to.eql(new Selection([2, 4]))
         done()
@@ -376,18 +235,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -401,18 +249,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p>2</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -426,18 +263,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -451,18 +277,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -476,18 +291,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '3'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p>3</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -501,21 +305,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: '1'
-            }, {
-              name: 'li',
-              html: '2'
-            }]
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><ol><li>1</li><li>2</li></ol></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -529,18 +319,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p><p>1</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -554,18 +333,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p><p>2</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -582,26 +350,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p><br></p></section><section><hr><p>2</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -615,18 +364,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br><br>'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br><br></p><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -640,18 +378,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br><br>'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br><br></p><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -665,18 +392,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'h2',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '6'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><h2>1</h2><p>6</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -694,18 +410,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }, {
-            name: 'p',
-            html: '6'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p><p>6</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -719,24 +424,7 @@ describe('Enter', function () {
       enter.newParagraph()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '12'
-          }, {
-            name: 'p',
-            html: '34'
-          }, {
-            name: 'p',
-            html: '567'
-          }, {
-            name: 'p',
-            html: '8'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>12</p><p>34</p><p>567</p><p>8</p></section>')
 
         expect(View.selection).to.eql(new Selection([3, 0]))
         done()
@@ -752,23 +440,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p></section><section><hr><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -782,23 +454,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p></section><section><hr><p>2</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -812,23 +468,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p></section><section><hr><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -842,23 +482,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p></section><section><hr><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -872,29 +496,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: '1'
-            }]
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'ol',
-            children: [{
-              name: 'li',
-              html: '2'
-            }]
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><ol><li>1</li></ol></section><section><hr><ol><li>2</li></ol></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -908,23 +510,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p><br></p></section><section><hr><p>1</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -941,31 +527,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '2'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '34'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p></section><section><hr><p>2</p></section><section><hr><p>34</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -982,31 +544,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '12'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '3'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '4'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>12</p></section><section><hr><p>3</p></section><section><hr><p>4</p></section>')
 
         expect(View.selection).to.eql(new Selection([2, 0]))
         done()
@@ -1020,23 +558,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br><br>'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br><br></p></section><section><hr><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -1050,23 +572,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1<br><br>'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '<br>'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br><br></p></section><section><hr><p><br></p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -1080,23 +586,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'h2',
-            html: '1'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '6'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><h2>1</h2></section><section><hr><p>6</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -1114,23 +604,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '1'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '6'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p></section><section><hr><p>6</p></section>')
 
         expect(View.selection).to.eql(new Selection([1, 0]))
         done()
@@ -1144,29 +618,7 @@ describe('Enter', function () {
       enter.newSection()
 
       setTimeout(function () {
-        expect(editor.root).to.have.children([{
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '12'
-          }, {
-            name: 'p',
-            html: '34'
-          }, {
-            name: 'p',
-            html: '567'
-          }]
-        }, {
-          name: 'section',
-          children: [{
-            name: 'hr'
-          }, {
-            name: 'p',
-            html: '8'
-          }]
-        }])
+        expect(editor.root.innerHTML).to.equal('<section><hr><p>12</p><p>34</p><p>567</p></section><section><hr><p>8</p></section>')
 
         expect(View.selection).to.eql(new Selection([3, 0]))
         done()

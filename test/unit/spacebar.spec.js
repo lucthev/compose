@@ -18,15 +18,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '1&nbsp;'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>1&nbsp;</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
@@ -40,15 +32,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '1&nbsp;<br>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>1&nbsp;<br></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
@@ -62,15 +46,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'Everlasting Light'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>Everlasting Light</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 12]))
       done()
@@ -84,15 +60,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '&nbsp;El Camino'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>&nbsp;El Camino</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1]))
       done()
@@ -106,15 +74,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One&nbsp;<br>Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One&nbsp;<br>Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -128,15 +88,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One<br>&nbsp;Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br>&nbsp;Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 5]))
       done()
@@ -150,15 +102,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -172,15 +116,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'A sly fox.'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>A sly fox.</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
@@ -194,15 +130,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -216,15 +144,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One&nbsp;'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One&nbsp;</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -238,15 +158,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '&nbsp;One'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>&nbsp;One</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1]))
       done()
@@ -268,15 +180,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'On our'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>On our</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3]))
       done()
@@ -294,15 +198,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'On our'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>On our</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 3]))
       done()
@@ -316,15 +212,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -338,15 +226,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -360,15 +240,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One Two'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -382,15 +254,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: 'One&nbsp;'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>One&nbsp;</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
@@ -404,15 +268,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '&nbsp;One'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>&nbsp;One</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 1]))
       done()
@@ -426,15 +282,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<strong><em>1&nbsp;</em></strong>'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><strong><em>1&nbsp;</em></strong></p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
@@ -448,15 +296,7 @@ describe('Spacebar.auto()', function () {
     spacebar.auto()
 
     setTimeout(function () {
-      expect(editor.root).to.have.children([{
-        name: 'section',
-        children: [{
-          name: 'hr'
-        }, {
-          name: 'p',
-          html: '<a href="/x">1</a>&nbsp;'
-        }]
-      }])
+      expect(editor.root.innerHTML).to.equal('<section><hr><p><a href="/x">1</a>&nbsp;</p></section>')
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
