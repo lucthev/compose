@@ -17,13 +17,14 @@
       content: '';
       width: 260px;
       height: 1px;
-      background: #aaa;
+      background: #AAA;
       display: block;
       visibility: visible;
       margin: 22px auto;
     }
 
     #editor {
+      margin: 40px 0 120px;
       width: 100%;
       height: 100%;
       outline: none;
@@ -36,23 +37,7 @@
       margin: 0 auto;
     }
 
-    #editor strong {
-      font-weight: bold;
-    }
-
-    #editor em {
-      font-style: italic;
-    }
-
-    .section-first {
-      margin-top: 22px;
-    }
-
-    .section-last {
-      margin-bottom: 22px;
-    }
-
-    .section-first hr {
+    #editor section:first-child hr {
       display: none;
     }
 
@@ -62,47 +47,95 @@
   </style>
 </head>
 <body>
-  <article id="editor"></article>
+  <div id="editor">
+    <section>
+      <hr>
+      <p><br></p>
+    </section>
+  </div>
+
   <script src="../../dist/compose.js"></script>
   <script>
-    var ends = ['p', 'h2', 'h3', 'pre', 'blockquote', 'li']
+    function setup (html) {
+      var elem = document.querySelector('#editor')
 
-    function tree (elem) {
-      var obj = {
-        name: elem.nodeName.toLowerCase()
+      if (html) {
+        elem.innerHTML = html
       }
 
-      if (obj.name === 'hr')
-        return obj
+      window.editor = new Compose(elem)
+      var View = editor.require('view')
 
-      obj.classes = elem.className ? elem.className.split(/\s+/) : []
+      View.getElements({ withSections: true }).forEach(function (el) {
+        var section
+        var p
 
-      if (ends.indexOf(obj.name) >= 0) {
-        obj.html = elem.innerHTML
-        return obj
-      }
-
-      obj.children = []
-      Array.prototype.forEach.call(elem.childNodes, function (child) {
-        obj.children.push(tree(child))
+        if (el.nodeName === 'SECTION') {
+          section = View.handlerForElement(el).serialize(el)
+          section.start = View.elements.length
+          View.sections.push(section)
+        } else {
+          View.elements.push(el)
+          p = View.handlerForElement(el).serialize(el)
+          View.paragraphs.push(el.nodeName === 'LI' ? p[0] : p)
+        }
       })
 
-      return obj
+      var events = editor.require('events')
+      var enter = editor.require('enter')
+      var rm = editor.require('backspace')
+      var spacebar = editor.require('spacebar')
+      var Selection = editor.require('selection')
+      editor.on('keydown', function onKeydown (e) {
+        if (events.selectall(e)) {
+          e.preventDefault()
+
+          var len = View.paragraphs.length - 1
+          var paragraph = View.paragraphs[len]
+
+          if (/\n$/.test(paragraph.text)) {
+            View.selection = new Selection([0, 0], [len, paragraph.length - 1])
+          } else {
+            View.selection = new Selection([0, 0], [len, paragraph.length])
+          }
+        } else if (events.enterKey(e)) {
+          e.preventDefault()
+
+          if (e.shiftKey) {
+            enter.newline()
+          } else {
+            enter.newParagraph()
+          }
+        } else if (events.backspace(e)) {
+          e.preventDefault()
+          rm.backspace()
+
+        } else if (events.forwardDelete(e)) {
+          e.preventDefault()
+          rm.forwardDelete()
+        }
+      })
+
+      editor.on('keypress', function onKeypress (e) {
+        if (events.spacebar(e)) {
+          e.preventDefault()
+          spacebar.auto()
+        }
+      })
     }
 
-    var initialized = false
     window.addEventListener('keydown', function (e) {
-      var Selection
-
-      if (e.keyCode === 9 && !initialized) {
-        e.preventDefault()
-
-        editor = new Compose('#editor')
-        Selection = editor.plugins.selection
-        Selection.set(new Selection([0, 0]))
-
-        initialized = true
+      if (e.keyCode !== 9 || window.editor instanceof Compose) {
+        return
       }
+
+      e.preventDefault()
+      setup()
+
+      var View = editor.require('view')
+      var Selection = editor.require('selection')
+
+      View.selection = new Selection([0, 0])
     })
   </script>
 </body>
