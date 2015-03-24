@@ -22,7 +22,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
-    })
+    }, 0)
   })
 
   it('do nothing when deleting in an empty first section', function (done) {
@@ -36,7 +36,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
-    })
+    }, 0)
   })
 
   it('insert a <br> when backspacing the only character', function (done) {
@@ -50,7 +50,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
-    })
+    }, 0)
   })
 
   it('insert a <br> when deleting the only character', function (done) {
@@ -64,7 +64,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
-    })
+    }, 0)
   })
 
   it('it convert a trailing space to an &nbsp;', function (done) {
@@ -78,7 +78,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('convert a leading space to an &nbsp;', function (done) {
@@ -92,7 +92,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 0], [0, 0]))
       done()
-    })
+    }, 0)
   })
 
   it('remove adjacent spaces when backspacing', function (done) {
@@ -106,7 +106,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('remove adjacent spaces when deleting', function (done) {
@@ -120,7 +120,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('remove selected text when backspacing', function (done) {
@@ -134,7 +134,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 2], [0, 2]))
       done()
-    })
+    }, 0)
   })
 
   it('remove selected text when deleting', function (done) {
@@ -148,7 +148,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 2], [0, 2]))
       done()
-    })
+    }, 0)
   })
 
   it('remove paragraphs when backspacing over multiple', function (done) {
@@ -162,7 +162,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('remove paragraphs when deleting over multiple', function (done) {
@@ -176,7 +176,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('remove sections when backspacing over multiple', function (done) {
@@ -194,7 +194,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('remove sections when deleting over multiple', function (done) {
@@ -211,7 +211,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('insert a <br> when backspacing after the only character on a line', function (done) {
@@ -225,7 +225,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('insert a <br> when deleting the only character on a line', function (done) {
@@ -239,7 +239,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('insert a <br> when backspacing over all text on a line', function (done) {
@@ -253,7 +253,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('insert a <br> when deleting all text on a line', function (done) {
@@ -267,7 +267,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('merge lists when deleting at the end of one', function (done) {
@@ -281,7 +281,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('merge paragraphs when backspacing at the start of one', function (done) {
@@ -295,7 +295,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('merge paragraphs when deleting at the end of one', function (done) {
@@ -309,7 +309,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('ignore trailing <br>s when deleting at the end of a paragraph', function (done) {
@@ -323,7 +323,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('ignore trailing <br>s when backspacing at the start of a paragraph', function (done) {
@@ -337,7 +337,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('respect newlines when backspacing at the start of a paragraph', function (done) {
@@ -351,7 +351,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('preserve <br>s if necessary when backspacing', function (done) {
@@ -365,7 +365,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('respect newlines when deleting at the end of a paragraph', function (done) {
@@ -379,7 +379,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('preserve <br>s if necessary when deleting', function (done) {
@@ -393,7 +393,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('remove sections when backspacing collapsed at the start of one', function (done) {
@@ -409,7 +409,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([1, 0], [1, 0]))
       done()
-    })
+    }, 0)
   })
 
   it('remove sections when deleting collapsed at the end of one', function (done) {
@@ -425,7 +425,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('ignore trailing <br>s when deleting collapsed at the end of a section', function (done) {
@@ -441,7 +441,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3], [0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('be able to delete sections after newlines', function (done) {
@@ -457,7 +457,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4], [0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('merge markups it brings together when deleting', function (done) {
@@ -471,7 +471,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('merge markups it brings together when backspacing', function (done) {
@@ -485,7 +485,7 @@ describe('Deleting text should', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1], [0, 1]))
       done()
-    })
+    }, 0)
   })
 
   function setup (html) {

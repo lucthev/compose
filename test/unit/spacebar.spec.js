@@ -22,7 +22,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
-    })
+    }, 0)
   })
 
   it('end of paragraph with trailing BR, nbsp', function (done) {
@@ -36,7 +36,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
-    })
+    }, 0)
   })
 
   it('middle of paragraph, regular', function (done) {
@@ -50,7 +50,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 12]))
       done()
-    })
+    }, 0)
   })
 
   it('start of paragraph, nbsp', function (done) {
@@ -64,7 +64,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('before BR, nbsp', function (done) {
@@ -78,7 +78,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('after BR, nbsp', function (done) {
@@ -92,7 +92,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 5]))
       done()
-    })
+    }, 0)
   })
 
   it('before space, move caret', function (done) {
@@ -106,7 +106,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('after space, nothing', function (done) {
@@ -120,7 +120,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
-    })
+    }, 0)
   })
 
   it('over text', function (done) {
@@ -134,7 +134,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('selected text at end of paragraph, nbsp', function (done) {
@@ -148,7 +148,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('selected text at start of paragraph, nbsp', function (done) {
@@ -162,7 +162,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('over multiple paragraphs', function (done) {
@@ -184,7 +184,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('over multiple sections', function (done) {
@@ -202,7 +202,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 3]))
       done()
-    })
+    }, 0)
   })
 
   it('after space, text selected', function (done) {
@@ -216,7 +216,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('before space, text selected', function (done) {
@@ -230,7 +230,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('in between spaces, text selected', function (done) {
@@ -244,7 +244,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('after space, text selected at end', function (done) {
@@ -258,7 +258,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 4]))
       done()
-    })
+    }, 0)
   })
 
   it('before space, text selected at start', function (done) {
@@ -272,7 +272,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 1]))
       done()
-    })
+    }, 0)
   })
 
   it('extend non-link markups', function (done) {
@@ -286,7 +286,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
-    })
+    }, 0)
   })
 
   it('not extend links', function (done) {
@@ -300,7 +300,7 @@ describe('Spacebar.auto()', function () {
 
       expect(View.selection).to.eql(new Selection([0, 2]))
       done()
-    })
+    }, 0)
   })
 
   function setup (html) {
