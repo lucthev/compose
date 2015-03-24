@@ -26,6 +26,8 @@ function ViewPlugin (Compose) {
     this._toRender = []
     this._isRendering = 0
 
+    this._contentChanged = false
+
     var listener = this._tick.bind(this)
     Compose.on('keydown', listener)
     Compose.on('mouseup', listener)
@@ -195,6 +197,8 @@ function ViewPlugin (Compose) {
 
       if (opts.render !== false) {
         this._toRender.push(deltas[i])
+      } else {
+        this._contentChanged = true
       }
     }
 
@@ -210,7 +214,9 @@ function ViewPlugin (Compose) {
    */
   View.prototype._render = function () {
     var queue = this._toRender
+    var contentChanged = this._contentChanged || Boolean(queue.length)
     this._toRender = []
+    this._contentChanged = false
 
     for (var i = 0; i < queue.length; i += 1) {
       try {
@@ -236,6 +242,10 @@ function ViewPlugin (Compose) {
 
     if (didChange) {
       Compose.emit('selectionchange')
+    }
+
+    if (contentChanged) {
+      Compose.emit('contentchange')
     }
 
     return this
