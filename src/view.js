@@ -17,6 +17,7 @@ function ViewPlugin (Compose) {
 
     this._selection = null
     this._selectionChanged = false
+    this._needsRestoring = false
 
     this.paragraphs = []
     this.elements = []
@@ -24,30 +25,8 @@ function ViewPlugin (Compose) {
 
     this._toRender = []
     this._isRendering = 0
-    this._isSyncing = 0
-    this._modified = -1
 
-    var listener = function (e) {
-      var sel = this.selection
-
-      if (sel && e.type === 'keydown') {
-        this._modified = sel.isBackwards() ? sel.end[0] : sel.start[0]
-      }
-
-      this._isSyncing = setImmediate(function scheduleSync () {
-        // The selection should always be normalized after a “selection”
-        // key is pressed, to avoid ambiguity with respect to multiple
-        // nested inline markups.
-        if (events.selectKey(e)) {
-          this.selection = this._choice.getSelection()
-        }
-
-        this.sync()
-      }.bind(this))
-
-      this._isRendering = setImmediate(this._render.bind(this))
-    }.bind(this)
-
+    var listener = this._tick.bind(this)
     Compose.on('keydown', listener)
     Compose.on('mouseup', listener)
     Compose.on('focus', listener)
@@ -69,16 +48,13 @@ function ViewPlugin (Compose) {
       return this._selection
     },
     set: function (sel) {
-      if (Selection.equals(sel, this._selection)) {
-        return
-      }
+      var equal = Selection.equals(sel, this._selection)
 
       this._selection = sel
-      this._selectionChanged = true
+      this._needsRestoring = !equal
+      this._selectionChanged = !equal
 
-      if (!this._isRendering) {
-        this._isRendering = setImmediate(this._render.bind(this))
-      }
+      this._tick()
     }
   })
 
@@ -116,27 +92,55 @@ function ViewPlugin (Compose) {
   }
 
   /**
-   * sync() reflects changes made to the editor or the selection,
-   * and updates the View accordingly.
+   * _tick([event]) syncs and renders deltas on next tick.
+   *
+   * @param {Event} event
    */
-  View.prototype.sync = function () {
-    var all = handler.getElements()
-    var len = this.elements.length
-    var index = this._modified
+  View.prototype._tick = function (event) {
+    if (this._isRendering) return
+
+    event = event || {}
+
+    var modified = -1
+    if (event.type === 'keydown' && this.selection) {
+      modified = this.selection.absoluteStart()[0]
+    }
+
+    this._isRendering = setImmediate(function syncAndRender () {
+      if (!this._toRender.length) {
+        // Force restoration of the selection after arrow key presses
+        // and other selection-modifying actions.
+        if (event.type !== 'keydown' || events.selectKey(event)) {
+          this._needsRestoring = true
+        }
+
+        this._sync(modified)
+      }
+
+      // Clear _isRendering after syncing; deltas resolved as a result
+      // of syncing should still be resolved this turn.
+      this._isRendering = 0
+      this._render()
+    }.bind(this))
+
+    return this
+  }
+
+  /**
+   * _sync(index) ensures that the selection, and the paragraph at the
+   * given index, are up-to-date.
+   *
+   * @param {Int} index
+   */
+  View.prototype._sync = function (index) {
     var paragraph
     var element
-    var sel
 
-    this._modified = -1
-    this._isSyncing = 0
-
-    len = this.elements.length
-    if (all.length !== len) {
+    var all = handler.getElements()
+    if (all.length !== this.elements.length) {
       Compose.emit('error', Error('View and DOM are out of sync'))
       return this
     }
-
-    this.elements = all
 
     if (index >= 0) {
       element = all[index]
@@ -146,17 +150,17 @@ function ViewPlugin (Compose) {
       })
     }
 
-    sel = this._choice.getSelection()
+    var sel = this._choice.getSelection()
     if (!this._selectionChanged && !Selection.equals(sel, this._selection)) {
       this._selection = sel
-      Compose.emit('selectionchange')
+      this._selectionChanged = true
     }
 
     return this
   }
 
   /**
-   * resolve(deltas [, skipRender]) resolves one or more deltas immediately
+   * resolve(deltas [, opts]) resolves one or more deltas immediately
    * against the View, and against the DOM on next tick. One may optionally
    * pass in an options object with the “render” property set to false to
    * not resolve changes against the DOM.
@@ -194,17 +198,7 @@ function ViewPlugin (Compose) {
       }
     }
 
-    if (!this._isRendering && this._toRender.length) {
-      this._isRendering = setImmediate(this._render.bind(this))
-    }
-
-    // Cancel a sync, if one is scheduled. Otherwise, the sync can
-    // overwrite changes made via inline resolves.
-    if (this._isSyncing) {
-      clearImmediate(this._isSyncing)
-      this._isSyncing = 0
-    }
-
+    this._tick()
     return this
   }
 
@@ -216,15 +210,7 @@ function ViewPlugin (Compose) {
    */
   View.prototype._render = function () {
     var queue = this._toRender
-
     this._toRender = []
-    this._isRendering = 0
-
-    // Don’t render (in particular, don’t restore the selection) unless we
-    // have to; amongst other things, doing so interrupts IME composition.
-    if (!queue.length && !this._selectionChanged) {
-      return this
-    }
 
     for (var i = 0; i < queue.length; i += 1) {
       try {
@@ -235,16 +221,21 @@ function ViewPlugin (Compose) {
       }
     }
 
-    if (this.selection) {
+    var didChange = this._selectionChanged
+    var needsRestoring = this._needsRestoring
+    this._selectionChanged = false
+    this._needsRestoring = false
+
+    if (needsRestoring && this.selection) {
       try {
         this._choice.restore(this.selection)
-        if (this._selectionChanged) {
-          this._selectionChanged = false
-          Compose.emit('selectionchange')
-        }
       } catch (err) {
         Compose.emit('error', err)
       }
+    }
+
+    if (didChange) {
+      Compose.emit('selectionchange')
     }
 
     return this
