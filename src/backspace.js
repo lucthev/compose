@@ -34,15 +34,16 @@ function Backspace (Compose) {
     endPair = sel.absoluteEnd()
     end = View.paragraphs[endPair[0]]
 
-    if (isAtEnd(endPair[1], end) && View.isSectionStart(endPair[0] + 1)) {
+    var atEnd = isAtEnd(endPair[1], end)
+    if (atEnd && View.isSectionStart(endPair[0] + 1)) {
       View.resolve(new Delta('sectionDelete', endPair[0] + 1))
       return
     }
 
-    if (isAtEnd(endPair[1], end) && endPair[0] < View.paragraphs.length - 1) {
+    if (atEnd && endPair[0] < View.paragraphs.length - 1) {
       endPair[0] += 1
       endPair[1] = 0
-    } else if (endPair[1] < end.length) {
+    } else if (!atEnd) {
       endPair[1] += 1
     }
 
