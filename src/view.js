@@ -187,8 +187,9 @@ function ViewPlugin (Compose) {
 
       // If a paragraphUpdate delta would result in an identical paragraph,
       // skip the work.
-      if (deltas[i].type === Delta.types.paragraphUpdate &&
-          deltas[i].paragraph.equals(this.paragraphs[deltas[i].index])) {
+      var other = this.paragraphs[deltas[i].index]
+      if (deltas[i].type === 'paragraphUpdate' &&
+          deltas[i].paragraph.equals(other)) {
         continue
       }
 

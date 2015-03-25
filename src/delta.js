@@ -14,22 +14,27 @@ function Delta (type, index, data) {
     return new Delta(type, index, data)
   }
 
-  this.index = index
-  this.type = typeof type !== 'number' ? Delta.types[type] : type
+  validateType(type)
 
-  if (this.type <= Delta.types.paragraphDelete) {
+  this.index = index
+  this.type = type
+
+  if (type[0] === 'p') {
     this.paragraph = data || null
   } else {
     this.section = data || null
   }
 }
 
-// Expose types.
-Delta.types = {
-  paragraphInsert: 1,
-  paragraphUpdate: 2,
-  paragraphDelete: 3,
-  sectionInsert: 4,
-  sectionUpdate: 5,
-  sectionDelete: 6
+function validateType (type) {
+  if (typeof type !== 'string' || (
+    type !== 'paragraphInsert' &&
+    type !== 'paragraphUpdate' &&
+    type !== 'paragraphDelete' &&
+    type !== 'sectionInsert' &&
+    type !== 'sectionUpdate' &&
+    type !== 'sectionDelete'
+  )) {
+    throw TypeError(type + 'is not a valid delta type')
+  }
 }

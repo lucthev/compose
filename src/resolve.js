@@ -17,21 +17,21 @@ exports.validate = function (View, delta) {
   var index = delta.index
 
   switch (delta.type) {
-    case Delta.types.paragraphInsert:
+    case 'paragraphInsert':
       if (index <= 0 || index > paragraphs.length) {
         throw RangeError('Cannot insert a paragraph at index ' + index)
       }
 
       break
 
-    case Delta.types.paragraphUpdate:
+    case 'paragraphUpdate':
       if (index < 0 || index >= paragraphs.length) {
         throw RangeError('Cannot update a paragraph at index ' + index)
       }
 
       break
 
-    case Delta.types.paragraphDelete:
+    case 'paragraphDelete':
       if (index < 0 || index >= paragraphs.length) {
         throw RangeError('Cannot remove paragraph at index ' + index)
       }
@@ -43,7 +43,7 @@ exports.validate = function (View, delta) {
 
       break
 
-    case Delta.types.sectionInsert:
+    case 'sectionInsert':
       if (index < 0 || index >= paragraphs.length) {
         throw RangeError('Cannot create section starting at index ' + index)
       }
@@ -54,14 +54,14 @@ exports.validate = function (View, delta) {
 
       break
 
-    case Delta.types.sectionUpdate:
+    case 'sectionUpdate':
       if (!View.isSectionStart(index)) {
         throw Error('Cannot update non-existant section at index ' + index)
       }
 
       break
 
-    case Delta.types.sectionDelete:
+    case 'sectionDelete':
       if (index === 0) {
         throw Error('The first section cannot be removed.')
       }
@@ -91,7 +91,7 @@ exports.inline = function (View, delta) {
   var i
 
   switch (delta.type) {
-    case Delta.types.paragraphInsert:
+    case 'paragraphInsert':
       paragraphs.splice(index, 0, delta.paragraph.substr(0))
       for (i = 0; i < sections.length; i += 1) {
         if (sections[i].start >= delta.index) {
@@ -100,11 +100,11 @@ exports.inline = function (View, delta) {
       }
       break
 
-    case Delta.types.paragraphUpdate:
+    case 'paragraphUpdate':
       paragraphs[index] = delta.paragraph.substr(0)
       break
 
-    case Delta.types.paragraphDelete:
+    case 'paragraphDelete':
       paragraphs.splice(index, 1)
       for (i = 0; i < sections.length; i += 1) {
         if (sections[i].start > index) {
@@ -113,7 +113,7 @@ exports.inline = function (View, delta) {
       }
       break
 
-    case Delta.types.sectionInsert:
+    case 'sectionInsert':
       for (i = 0; i < sections.length; i += 1) {
         if (sections[i].start > delta.index) {
           break
@@ -123,7 +123,7 @@ exports.inline = function (View, delta) {
       sections.splice(i, 0, delta.section)
       break
 
-    case Delta.types.sectionUpdate:
+    case 'sectionUpdate':
       for (i = 0; i < sections.length; i += 1) {
         if (sections[i].start !== index) {
           continue
@@ -134,7 +134,7 @@ exports.inline = function (View, delta) {
       }
       break
 
-    case Delta.types.sectionDelete:
+    case 'sectionDelete':
       for (i = 0; i < sections.length; i += 1) {
         if (sections[i].start !== delta.index) {
           continue
@@ -155,27 +155,27 @@ exports.inline = function (View, delta) {
  */
 exports.DOM = function (View, delta) {
   switch (delta.type) {
-    case Delta.types.paragraphInsert:
+    case 'paragraphInsert':
       paragraph.insert(View, delta)
       break
 
-    case Delta.types.paragraphUpdate:
+    case 'paragraphUpdate':
       paragraph.update(View, delta)
       break
 
-    case Delta.types.paragraphDelete:
+    case 'paragraphDelete':
       paragraph.remove(View, delta)
       break
 
-    case Delta.types.sectionInsert:
+    case 'sectionInsert':
       section.insert(View, delta)
       break
 
-    case Delta.types.sectionUpdate:
+    case 'sectionUpdate':
       section.update(View, delta)
       break
 
-    case Delta.types.sectionDelete:
+    case 'sectionDelete':
       section.remove(View, delta)
       break
   }
