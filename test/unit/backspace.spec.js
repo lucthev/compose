@@ -340,6 +340,34 @@ describe('Deleting text should', function () {
     }, 0)
   })
 
+  it('not create trailing BRs', function (done) {
+    setup('<section><hr><p>1</p><p><br></p></section>')
+    View.selection = new Selection([1, 0])
+
+    rm.backspace()
+
+    setTimeout(function () {
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>1</p></section>')
+
+      expect(View.selection).to.eql(new Selection([0, 1]))
+      done()
+    }, 0)
+  })
+
+  it('before a leading newline, backspace', function (done) {
+    setup('<section><hr><p>1</p><p><br>2</p></section>')
+    View.selection = new Selection([1, 0])
+
+    rm.backspace()
+
+    setTimeout(function () {
+      expect(editor.root.innerHTML).to.equal('<section><hr><p>1<br>2</p></section>')
+
+      expect(View.selection).to.eql(new Selection([0, 1]))
+      done()
+    }, 0)
+  })
+
   it('respect newlines when backspacing at the start of a paragraph', function (done) {
     setup('<section><hr><p>One<br><br></p><p>Two</p></section>')
     View.selection = new Selection([1, 0])

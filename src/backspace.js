@@ -133,6 +133,8 @@ function Backspace (Compose) {
       }
     } else if (start.text[start.length - 1] === '\n' && !end.text) {
       end.text = '\n'
+    } else if (start.text[start.length - 1] !== '\n' && end.text === '\n') {
+      end = end.substr(1)
     }
 
     start = start
