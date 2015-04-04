@@ -874,3 +874,58 @@ describe('Delta operation', function () {
     p = null
   }
 })
+
+describe('Delta#reduce', function () {
+  var editor
+  var Serialize
+  var Delta
+
+  before(setup)
+  after(teardown)
+
+  it('update + update -> update', function () {
+    var deltas = [
+      new Delta('paragraphDelete', 5),
+      new Delta('paragraphUpdate', 2, Serialize.fromText('1')),
+      new Delta('paragraphUpdate', 2, Serialize.fromText('2')),
+      new Delta('paragraphUpdate', 2, Serialize.fromText('3')),
+      new Delta('paragraphUpdate', 4, Serialize.fromText('foo'))
+    ]
+
+    expect(Delta.reduce(deltas)).to.eql([
+      new Delta('paragraphDelete', 5),
+      new Delta('paragraphUpdate', 2, Serialize.fromText('3')),
+      new Delta('paragraphUpdate', 4, Serialize.fromText('foo'))
+    ])
+  })
+
+  it('insert + update -> insert', function () {
+    var deltas = [
+      new Delta('paragraphUpdate', 2, Serialize.fromText('foo')),
+      new Delta('paragraphInsert', 4, Serialize.fromText('1')),
+      new Delta('paragraphUpdate', 4, Serialize.fromText('2')),
+      new Delta('paragraphUpdate', 4, Serialize.fromText('3')),
+      new Delta('paragraphUpdate', 3, Serialize.fromText('bar'))
+    ]
+
+    expect(Delta.reduce(deltas)).to.eql([
+      new Delta('paragraphUpdate', 2, Serialize.fromText('foo')),
+      new Delta('paragraphInsert', 4, Serialize.fromText('3')),
+      new Delta('paragraphUpdate', 3, Serialize.fromText('bar'))
+    ])
+  })
+
+  function setup () {
+    var elem = document.createElement('div')
+    elem.innerHTML = '<section><hr><p><br></p></section>'
+    document.body.appendChild(elem)
+
+    editor = new window.Compose(elem)
+    Delta = editor.require('delta')
+    Serialize = editor.require('serialize')
+  }
+
+  function teardown () {
+    document.body.removeChild(editor.root)
+  }
+})

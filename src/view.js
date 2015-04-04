@@ -214,7 +214,7 @@ function ViewPlugin (Compose) {
    * @return {Context}
    */
   View.prototype._render = function () {
-    var queue = this._toRender
+    var queue = Delta.reduce(this._toRender)
     var contentChanged = this._contentChanged || Boolean(queue.length)
     this._toRender = []
     this._contentChanged = false

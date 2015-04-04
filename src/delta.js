@@ -38,3 +38,31 @@ function validateType (type) {
     throw TypeError(type + 'is not a valid delta type')
   }
 }
+
+/**
+ * Delta.reduce(deltas) takes an array of deltas and removes unnecessary
+ * ones. Returns a new array, but may mutate the original one or its deltas.
+ *
+ * @param {Array} deltas
+ * @return {Array} deltas
+ */
+Delta.reduce = function (deltas) {
+  return deltas.reduce(reducer, [])
+}
+
+function reducer (array, delta) {
+  var last = array[array.length - 1] || {}
+
+  if (last.index !== delta.index || delta.type !== 'paragraphUpdate') {
+    array.push(delta)
+    return array
+  }
+
+  if (last.type === 'paragraphInsert' || last.type === 'paragraphUpdate') {
+    last.paragraph = delta.paragraph
+  } else {
+    array.push(delta)
+  }
+
+  return array
+}
