@@ -2,7 +2,6 @@ browserify := ./node_modules/.bin/browserify
 babel := ./node_modules/.bin/babel
 standard := ./node_modules/.bin/standard
 uglifyjs := ./node_modules/.bin/uglifyjs
-mocha := ./node_modules/.bin/mocha
 karma := ./node_modules/.bin/karma
 
 srcfiles := $(wildcard src/*.js)
@@ -22,14 +21,7 @@ lint:
 	$(standard) src/**/*.js
 
 test: compose.min.js
-	$(karma) start test/unit/karma.conf.js
-
-integration-test: compose.min.js
-	@test -f vendor/selenium-$(patch).jar || echo "Downloading Selenium server…"
-	@test -f vendor/selenium-$(patch).jar || curl --create-dirs -o \
-		vendor/selenium-$(patch).jar \
-		http://selenium-release.storage.googleapis.com/$(minor)/selenium-server-standalone-$(patch).jar
-	$(mocha) -t 120000 test/functional/*.spec.js
+	$(karma) start test/karma.conf.js
 
 publish: lint compose.min.js
 	npm publish
