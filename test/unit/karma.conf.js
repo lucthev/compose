@@ -9,7 +9,7 @@ module.exports = function (config) {
     files: [
       require.resolve('compose-lists/dist/listPlugin.js'),
       require.resolve('compose-formatblock/dist/formatBlock.js'),
-      '../../dist/compose.js',
+      '../../compose.min.js',
       './**/*.spec.js'
     ],
     singleRun: true

@@ -1,6 +1,4 @@
 node_modules/
-.DS_Store
+lib/
+*.min.js
 *.log
-dist/
-temp.*
-vendor/

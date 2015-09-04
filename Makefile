@@ -1,44 +1,40 @@
-# Various programs
 browserify := ./node_modules/.bin/browserify
+babel := ./node_modules/.bin/babel
 standard := ./node_modules/.bin/standard
 uglifyjs := ./node_modules/.bin/uglifyjs
 mocha := ./node_modules/.bin/mocha
 karma := ./node_modules/.bin/karma
 
-# Build options
-name := Compose
-src := src/compose.js
-all := $(shell $(browserify) --list $(src))
+srcfiles := $(wildcard src/*.js)
+libfiles := $(patsubst src/%.js,lib/%.js,$(srcfiles))
 
-# Things for testing:
-minor := 2.43
-patch := 2.43.1
+compose.min.js: $(libfiles)
+	$(browserify) -s Compose lib/compose.js | $(uglifyjs) -m -o $@
 
-dist/compose.js: $(all)
-	@mkdir -p dist
-	$(browserify) -s $(name) $(src) | $(uglifyjs) -m -o $@
+debug: $(libfiles)
+	$(browserify) -s Compose lib/compose.js -o compose.min.js
 
-dist/compose.debug.js: $(all)
-	@mkdir -p dist
-	$(browserify) -s $(name) $(src) > $@
+lib/%.js: src/%.js
+	@mkdir -p lib
+	$(babel) $< -o $@
 
 lint:
-	$(standard)
+	$(standard) src/**/*.js
 
-test: dist/compose.js
+test: compose.min.js
 	$(karma) start test/unit/karma.conf.js
 
-integration-test: dist/compose.js
+integration-test: compose.min.js
 	@test -f vendor/selenium-$(patch).jar || echo "Downloading Selenium server…"
 	@test -f vendor/selenium-$(patch).jar || curl --create-dirs -o \
 		vendor/selenium-$(patch).jar \
 		http://selenium-release.storage.googleapis.com/$(minor)/selenium-server-standalone-$(patch).jar
 	$(mocha) -t 120000 test/functional/*.spec.js
 
-publish: dist/compose.js
+publish: lint compose.min.js
 	npm publish
 
 clean:
-	rm -rf dist vendor
+	rm -rf lib/ compose.min.js
 
-.PHONY: clean watch test debug lint integration-test publish
+.PHONY: debug lint test integration-test publish clean
