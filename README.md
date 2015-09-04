@@ -6,7 +6,7 @@ Compose is a rich text editor for the web. It’s still under development — it
 
 If you like what you see, and would like to contribute, please do! Claim [an issue][issues] as your own by commenting on it — see [below](#how-it-works-the-basics) for the very basics of how Compose works, and, beyond that, I’d be happy to answer any questions you may have.
 
-[Node.js](http://nodejs.org/) and [npm](https://github.com/npm/npm) are needed for development on Compose. Clone the repository, then run `npm install -D` wherever you cloned Compose to, and you should good to go. Some useful shortcuts for once you’re all set up:
+[Node.js](http://nodejs.org/) and [npm](https://github.com/npm/npm) are needed for development on Compose. Clone the repository, then run `npm install -D` wherever you cloned Compose to, and you should be good to go. Some useful shortcuts for once you’re all set up:
 
 `npm run dev`: watches files and rebuilds Compose when they change. You can play around with your changes by opening `test/functional/test.html` in a browser; hitting the tab key will initialize an empty editor and focus it.
 
