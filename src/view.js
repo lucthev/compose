@@ -105,7 +105,7 @@ function ViewPlugin (Compose) {
 
     var modified = -1
     if (event.type === 'keydown' && this.selection) {
-      modified = this.selection.absoluteStart()[0]
+      modified = this.selection.absoluteStart[0]
     }
 
     this._isRendering = setImmediate(function syncAndRender () {

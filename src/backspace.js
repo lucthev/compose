@@ -26,12 +26,12 @@ function Backspace (Compose) {
     var endPair
     var end
 
-    if (!sel.isCollapsed()) {
+    if (!sel.isCollapsed) {
       return usingSelection(sel)
     }
 
-    startPair = sel.absoluteStart()
-    endPair = sel.absoluteEnd()
+    startPair = sel.absoluteStart
+    endPair = sel.absoluteEnd
     end = View.paragraphs[endPair[0]]
 
     var atEnd = isAtEnd(endPair[1], end)
@@ -66,12 +66,12 @@ function Backspace (Compose) {
     var endPair
     var start
 
-    if (!sel.isCollapsed()) {
+    if (!sel.isCollapsed) {
       return usingSelection(sel)
     }
 
-    startPair = sel.absoluteStart()
-    endPair = sel.absoluteEnd()
+    startPair = sel.absoluteStart
+    endPair = sel.absoluteEnd
 
     var isAtStart = endPair[1] === 0 && endPair[0] > 0
     if (isAtStart && View.isSectionStart(endPair[0])) {
@@ -112,12 +112,12 @@ function Backspace (Compose) {
     var end
 
     sel = sel || View.selection.clone()
-    if (sel.isCollapsed()) {
+    if (sel.isCollapsed) {
       return
     }
 
-    startPair = sel.absoluteStart()
-    endPair = sel.absoluteEnd()
+    startPair = sel.absoluteStart
+    endPair = sel.absoluteEnd
 
     start = View.paragraphs[startPair[0]].substr(0, startPair[1])
     end = View.paragraphs[endPair[0]].substr(endPair[1])

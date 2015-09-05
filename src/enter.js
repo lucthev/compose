@@ -29,8 +29,8 @@ function Enter (Compose) {
     var start
     var end
 
-    startPair = sel.absoluteStart()
-    endPair = sel.absoluteEnd()
+    startPair = sel.absoluteStart
+    endPair = sel.absoluteEnd
 
     start = View.paragraphs[startPair[0]]
     end = View.paragraphs[endPair[0]]
@@ -87,8 +87,8 @@ function Enter (Compose) {
     var start
     var end
 
-    startPair = sel.absoluteStart()
-    endPair = sel.absoluteEnd()
+    startPair = sel.absoluteStart
+    endPair = sel.absoluteEnd
 
     start = View.paragraphs[startPair[0]]
     start = start

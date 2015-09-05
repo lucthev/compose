@@ -22,7 +22,7 @@ function Copy (Compose) {
     var handler
     var i
 
-    if (sel.isCollapsed()) {
+    if (sel.isCollapsed) {
       return ''
     }
 
@@ -59,7 +59,7 @@ function Copy (Compose) {
    * @return {String}
    */
   function text (sel) {
-    if (sel.isCollapsed()) {
+    if (sel.isCollapsed) {
       return ''
     }
 
@@ -90,8 +90,8 @@ function Copy (Compose) {
  * @return {Array}
  */
 function getParagraphs (View, sel) {
-  var startPair = sel.absoluteStart()
-  var endPair = sel.absoluteEnd()
+  var startPair = sel.absoluteStart
+  var endPair = sel.absoluteEnd
   var selected
   var last
 

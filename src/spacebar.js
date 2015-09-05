@@ -66,8 +66,8 @@ function Spacebar (Compose) {
       return
     }
 
-    startPair = sel.absoluteStart()
-    endPair = sel.absoluteEnd()
+    startPair = sel.absoluteStart
+    endPair = sel.absoluteEnd
 
     start = View.paragraphs[startPair[0]]
     end = View.paragraphs[endPair[0]]
