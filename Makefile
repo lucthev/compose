@@ -11,11 +11,11 @@ compose.min.js: $(libfiles)
 	$(browserify) -s Compose lib/compose.js | $(uglifyjs) -m -o $@
 
 debug: $(libfiles)
-	$(browserify) -s Compose lib/compose.js -o compose.min.js
+	$(browserify) --debug -s Compose lib/compose.js -o compose.min.js
 
 lib/%.js: src/%.js
 	@mkdir -p lib
-	$(babel) $< -o $@
+	$(babel) --presets=es2015 --source-maps=inline $< -o $@
 
 lint:
 	$(standard) src/**/*.js
