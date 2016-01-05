@@ -30,8 +30,7 @@
     "karma-mocha": "0.1.10",
     "karma-sauce-launcher": "0.2.10",
     "mocha": "^2.3.4",
-    "standard": "3.2.0",
-    "uglify-js": "^2.6.1"
+    "standard": "^5.4.1"
   },
   "dependencies": {
     "block-elements": "^1.0.0",

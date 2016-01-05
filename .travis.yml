@@ -1,8 +1,7 @@
-notifications:
-  email: false
+sudo: false
 language: node_js
 node_js:
-- '0.10'
+  - 'stable'
 env:
   matrix:
     - BROWSER=Chrome PLATFORM='Windows 8' VERSION=38
@@ -14,6 +13,3 @@ env:
     - SAUCE_ACCESS_KEY=60671366-2ef6-4ed3-8de0-cc95f065a41f
 addons:
   sauce_connect: true
-install:
-  - npm config set spin false
-  - npm install -d --quiet

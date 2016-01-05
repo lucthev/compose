@@ -1,17 +1,13 @@
 browserify := ./node_modules/.bin/browserify
 babel := ./node_modules/.bin/babel
 standard := ./node_modules/.bin/standard
-uglifyjs := ./node_modules/.bin/uglifyjs
 karma := ./node_modules/.bin/karma
 
 srcfiles := $(wildcard src/*.js)
 libfiles := $(patsubst src/%.js,lib/%.js,$(srcfiles))
 
-compose.min.js: $(libfiles)
-	$(browserify) -s Compose lib/compose.js | $(uglifyjs) -m -o $@
-
-debug: $(libfiles)
-	$(browserify) --debug -s Compose lib/compose.js -o compose.min.js
+compose.js: $(libfiles)
+	$(browserify) --debug -s Compose lib/compose.js -o compose.js
 
 lib/%.js: src/%.js
 	@mkdir -p lib
@@ -20,13 +16,13 @@ lib/%.js: src/%.js
 lint:
 	$(standard) src/**/*.js
 
-test: compose.min.js
+test: compose.js
 	$(karma) start test/karma.conf.js
 
-publish: lint compose.min.js
+publish: lint compose.js
 	npm publish
 
 clean:
-	rm -rf lib/ compose.min.js
+	rm -rf lib/ compose.js
 
-.PHONY: debug lint test integration-test publish clean
+.PHONY: lint test publish clean

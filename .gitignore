@@ -1,4 +1,3 @@
 node_modules/
 lib/
-*.min.js
-*.log
+compose.js
