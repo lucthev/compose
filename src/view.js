@@ -1,6 +1,8 @@
 'use strict'
 
 import {Choice, Selection} from 'choice'
+import diff from 'generic-diff'
+import diffDelta from 'diff-delta'
 import Paragraph from './model'
 import {selectionKeys} from './events'
 
@@ -85,25 +87,77 @@ class View {
     this._tick()
   }
 
+  /**
+   * insert(index, paragraph) inserts the given paragraph at the given index,
+   * and schedules a render to propagate these changes to the DOM.
+   *
+   * @param {Int} index
+   * @param {Paragraph} paragraph
+   */
   insert (index, paragraph) {
+    if (index <= 0 || index > this.paragraphs.length) {
+      throw RangeError(`Cannot insert a paragraph at index ${index}.`)
+    }
 
-  }
+    if (!this._oldParagraphs) {
+      this._oldParagraphs = this.paragraphs.slice()
+    }
 
-  update (index, paragraph) {
-
-  }
-
-  remove (index) {
-
+    this.paragraphs.splice(index, 0, paragraph)
+    this._tick()
   }
 
   /**
-   * _tick([forceRestore]) schedules a sync/render, optionally forcing
-   * a restoration of the synced selection.
+   * update(index, paragraph) sets the paragraph at the given index to
+   * the given paragraph, and schedules a render to propagate these changes
+   * to the DOM.
    *
-   * @param {Boolean} forceRestore
+   * @param {Int} index
+   * @param {Paragraph} paragraph
    */
-  _tick (forceRestore = false) {
+  update (index, paragraph) {
+    if (index < 0 || index >= this.paragraphs.length) {
+      throw RangeError(`Cannot update a paragraph at index ${index}.`)
+    }
+
+    if (!this._oldParagraphs) {
+      this._oldParagraphs = this.paragraphs.slice()
+    }
+
+    this.paragraphs[index] = paragraph
+    this._tick()
+  }
+
+  /**
+   * remove(index) removes the paragraph at the given index, and
+   * schedules a render to propagate these changes to the DOM.
+   *
+   * @param {Int} index
+   */
+  remove (index) {
+    let len = this.paragraphs.length
+
+    if (index < 0 || index >= len) {
+      throw RangeError(`Cannot remove paragraph at index ${index}.`)
+    } else if (len === 1) {
+      throw Error('Cannot remove the only paragraph.')
+    }
+
+    if (!this._oldParagraphs) {
+      this._oldParagraphs = this.paragraphs.slice()
+    }
+
+    this.paragraphs.splice(index, 1)
+    this._tick()
+  }
+
+  /**
+   * _tick([normalizeSel]) schedules a sync/render; if `normalizeSel` is true,
+   * the selection will be normalized after syncing, when applicable.
+   *
+   * @param {Boolean} normalizeSel
+   */
+  _tick (normalizeSel = false) {
     if (this._rendering) return
 
     // TODO: look at requestAnimationFrame
@@ -115,15 +169,13 @@ class View {
         if (!Selection.equals(sel, this._selection)) {
           this._selection = sel
           this.editor.emit('selectionchanged', sel)
-          console.log('Selection is %o %o', sel.start, sel.end)
         }
 
         // Force-restore the selection after a selection key was pressed
         // to "normalize" it.
-        if (sel && forceRestore) {
+        if (sel && normalizeSel) {
           try {
             this._choice.restore(sel)
-            console.log('Restored selection')
           } catch (e) {
             this.editor.emit('error', e)
           }
@@ -136,7 +188,6 @@ class View {
           if (!paragraph.equals(maybeUpdated)) {
             maybeUpdated.element = paragraph.element
             this.editor.emit('paragraphupdated', index, maybeUpdated)
-            console.log('Synced paragraph at index %d', index)
             this.paragraphs[index] = maybeUpdated
           }
         }
@@ -166,6 +217,37 @@ class View {
     }
 
     this._selectionSet = false
+
+    if (!this._oldParagraphs) return
+
+    let d = diff(this._oldParagraphs, this.paragraphs, (a, b) => a.equals(b))
+    let deltas = diffDelta(d)
+
+    deltas.forEach((delta) => {
+      if (delta.added && delta.removed) {
+        delta.items.forEach((p, index) => {
+          let el = this._oldParagraphs[delta.index + index].element
+          el.parentNode.replaceChild(p.toElement(), el)
+          this._oldParagraphs[delta.index + index] = p
+        })
+      } else if (delta.added) {
+        this._oldParagraphs.splice(delta.index, 0, delta.items)
+        delta.items.forEach((p, index) => {
+          let el = this._oldParagraphs[delta.index + index - 1].element
+          let ref = el.nextSibling
+          el.parentNode.insertBefore(p.toElement(), ref)
+        })
+      } else {
+        this._oldParagraphs.splice(delta.index, delta.items.length)
+        delta.items.forEach((p) => {
+          let el = p.element
+          el.parentNode.removeChild(el)
+        })
+      }
+    })
+
+    // TODO: is it actually necessary to nullify this?
+    this._oldParagraphs = null
   }
 }
 
