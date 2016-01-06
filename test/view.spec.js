@@ -1,11 +1,11 @@
-/*eslint-env mocha */
+/* eslint-env mocha */
 'use strict'
 
 /**
  * Manual tests to be run when the view code is changed. Testing
  * these is hard, and various Selenium oddities make it unreliable.
  */
-describe('The view should', function () {
+describe.skip('The view should', function () {
   it('emit selectionchange events on input')
   it('emit selectionchange events when arrow keys result in caret movement')
   it('not emit selectionchange events when arrow keys do not cause movement')

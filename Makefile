@@ -13,13 +13,13 @@ lib/%.js: src/%.js
 	@mkdir -p lib
 	$(babel) --presets=es2015 --source-maps=inline $< -o $@
 
-lint:
-	$(standard) src/**/*.js
-
-test: compose.js
+test: lint compose.js
 	$(karma) start test/karma.conf.js
 
-publish: lint compose.js
+lint:
+	$(standard)
+
+publish: test
 	npm publish
 
 clean:

@@ -1,9 +1,7 @@
-/*eslint-env mocha */
+/* eslint-env mocha */
 'use strict'
 
-var expect = window.expect
-
-describe('Deleting text should', function () {
+describe.skip('Deleting text should', function () {
   var editor
   var Selection
   var View

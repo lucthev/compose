@@ -1,9 +1,7 @@
-/*eslint-env mocha */
+/* eslint-env mocha */
 'use strict'
 
-var expect = window.expect
-
-describe('Spacebar.auto()', function () {
+describe.skip('Spacebar.auto()', function () {
   var editor
   var Selection
   var View
@@ -337,4 +335,5 @@ describe('Spacebar.auto()', function () {
   function teardown () {
     document.body.removeChild(editor.root)
     editor = Selection = View = spacebar = null
-  }})
+  }
+})

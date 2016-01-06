@@ -1,9 +1,7 @@
-/*eslint-env mocha */
+/* eslint-env mocha */
 'use strict'
 
-var expect = window.expect
-
-describe('The event module', function () {
+describe.skip('The event module', function () {
   var editor
 
   function disabler (Compose) {

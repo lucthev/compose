@@ -1,9 +1,7 @@
-/*eslint-env mocha */
+/* eslint-env mocha */
 'use strict'
 
-var expect = window.expect
-
-describe('The sanitizer should', function () {
+describe.skip('The sanitizer should', function () {
   var Serialize
   var sanitize
 

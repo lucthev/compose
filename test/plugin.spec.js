@@ -1,9 +1,7 @@
-/*eslint-env mocha */
+/* eslint-env mocha */
 'use strict'
 
-var expect = window.expect
-
-describe('Compose\'s plugin system', function () {
+describe.skip('Compose\'s plugin system', function () {
   var editor
 
   beforeEach(function () {

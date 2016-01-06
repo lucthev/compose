@@ -1,9 +1,7 @@
-/*eslint-env mocha */
+/* eslint-env mocha */
 'use strict'
 
-var expect = window.expect
-
-describe('Enter', function () {
+describe.skip('Enter', function () {
   var editor
   var Selection
   var View
