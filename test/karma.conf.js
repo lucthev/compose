@@ -10,6 +10,15 @@ module.exports = function (config) {
       '../compose.js',
       '**/*.spec.js'
     ],
+    preprocessors: {
+      '**/*.spec.js': ['babel']
+    },
+    babelPreprocessor: {
+      options: {
+        presets: ['es2015'],
+        sourceMap: 'inline'
+      }
+    },
     singleRun: true
   })
 

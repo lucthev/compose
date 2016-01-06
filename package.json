@@ -7,7 +7,9 @@
     "test": "make test"
   },
   "standard": {
-    "globals": ["expect"]
+    "globals": [
+      "expect"
+    ]
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
     "browserify": "^13.0.0",
     "chai": "^3.4.1",
     "karma": "^0.13.19",
+    "karma-babel-preprocessor": "^6.0.1",
     "karma-chai": "^0.1.0",
     "karma-cli": "^0.1.2",
     "karma-firefox-launcher": "^0.1.7",
