@@ -105,6 +105,8 @@ class View {
 
     this.paragraphs.splice(index, 0, paragraph)
     this._tick()
+
+    return this
   }
 
   /**
@@ -126,6 +128,8 @@ class View {
 
     this.paragraphs[index] = paragraph
     this._tick()
+
+    return this
   }
 
   /**
@@ -149,6 +153,8 @@ class View {
 
     this.paragraphs.splice(index, 1)
     this._tick()
+
+    return this
   }
 
   /**
@@ -231,7 +237,7 @@ class View {
           this._oldParagraphs[delta.index + index] = p
         })
       } else if (delta.added) {
-        this._oldParagraphs.splice(delta.index, 0, delta.items)
+        this._oldParagraphs.splice(delta.index, 0, ...delta.items)
         delta.items.forEach((p, index) => {
           let el = this._oldParagraphs[delta.index + index - 1].element
           let ref = el.nextSibling
@@ -247,6 +253,9 @@ class View {
     })
 
     // TODO: is it actually necessary to nullify this?
+    // Since _oldParagraphs is updated in the code above, it should
+    // in theory be the same as paragraphs; we can probably just
+    // keep _oldParagraphs as-is instead of creating a new slice later.
     this._oldParagraphs = null
   }
 }
