@@ -69,7 +69,7 @@ class View {
    * @return {Selection}
    */
   getSelection () {
-    return this._selection
+    return this._selection ? this._selection.clone() : null
   }
 
   /**
@@ -209,6 +209,48 @@ class View {
    * to the DOM.
    */
   render () {
+    if (this._oldParagraphs) {
+      let d = diff(this._oldParagraphs, this.paragraphs, (a, b) => a.equals(b))
+      let deltas = diffDelta(d)
+
+      deltas.forEach((delta) => {
+        if (delta.added && delta.removed) {
+          delta.items.forEach((p, index) => {
+            let el = this._oldParagraphs[delta.index + index].element
+            el.parentNode.replaceChild(p.toElement(), el)
+            this._oldParagraphs[delta.index + index] = p
+          })
+        } else if (delta.added) {
+          // In rare cases, delta.index can be 0; the normal method
+          // of inserting paragraphs fails in that case.
+          if (delta.index === 0) {
+            let p = delta.items.shift()
+            let ref = this._oldParagraphs[0].element
+            ref.parentNode.insertBefore(p.toElement(), ref)
+
+            this._oldParagraphs.unshift(p)
+            delta.index += 1
+          }
+
+          this._oldParagraphs.splice(delta.index, 0, ...delta.items)
+          delta.items.forEach((p, index) => {
+            let el = this._oldParagraphs[delta.index + index - 1].element
+            let ref = el.nextSibling
+            el.parentNode.insertBefore(p.toElement(), ref)
+          })
+        } else {
+          this._oldParagraphs.splice(delta.index, delta.items.length)
+          delta.items.forEach((p) => {
+            let el = p.element
+            el.parentNode.removeChild(el)
+          })
+        }
+      })
+
+      this.paragraphs = this._oldParagraphs
+      this._oldParagraphs = null
+    }
+
     if (this._selectionSet && !this._selection) {
       this.editor.root.blur()
     } else if (this._selectionSet) {
@@ -223,40 +265,6 @@ class View {
     }
 
     this._selectionSet = false
-
-    if (!this._oldParagraphs) return
-
-    let d = diff(this._oldParagraphs, this.paragraphs, (a, b) => a.equals(b))
-    let deltas = diffDelta(d)
-
-    deltas.forEach((delta) => {
-      if (delta.added && delta.removed) {
-        delta.items.forEach((p, index) => {
-          let el = this._oldParagraphs[delta.index + index].element
-          el.parentNode.replaceChild(p.toElement(), el)
-          this._oldParagraphs[delta.index + index] = p
-        })
-      } else if (delta.added) {
-        this._oldParagraphs.splice(delta.index, 0, ...delta.items)
-        delta.items.forEach((p, index) => {
-          let el = this._oldParagraphs[delta.index + index - 1].element
-          let ref = el.nextSibling
-          el.parentNode.insertBefore(p.toElement(), ref)
-        })
-      } else {
-        this._oldParagraphs.splice(delta.index, delta.items.length)
-        delta.items.forEach((p) => {
-          let el = p.element
-          el.parentNode.removeChild(el)
-        })
-      }
-    })
-
-    // TODO: is it actually necessary to nullify this?
-    // Since _oldParagraphs is updated in the code above, it should
-    // in theory be the same as paragraphs; we can probably just
-    // keep _oldParagraphs as-is instead of creating a new slice later.
-    this._oldParagraphs = null
   }
 }
 
