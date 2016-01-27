@@ -24,8 +24,9 @@
     }
 
     #editor {
-      margin: 40px 0 120px;
-      width: 100%;
+      margin: 40px auto;
+      width: 960px;
+      max-width: 100%;
       height: 100%;
       outline: none;
       font-family: Georgia;
@@ -47,90 +48,16 @@
   </style>
 </head>
 <body>
-  <div id="editor">
-    <section>
-      <hr>
-      <p><br></p>
-    </section>
-  </div>
+  <div id="editor"><p><br></p></div>
 
-  <script src="./compose.min.js"></script>
+  <script src="./compose.js"></script>
   <script>
-    function setup (html) {
-      var elem = document.querySelector('#editor')
-
-      if (html) {
-        elem.innerHTML = html
-      }
-
-      window.editor = new Compose(elem)
-      var View = editor.require('view')
-
-      View.getElements({ withSections: true }).forEach(function (el) {
-        var section
-        var p
-
-        if (el.nodeName === 'SECTION') {
-          section = View.handlerForElement(el).serialize(el)
-          section.start = View.elements.length
-          View.sections.push(section)
-        } else {
-          View.elements.push(el)
-          p = View.handlerForElement(el).serialize(el)
-          View.paragraphs.push(el.nodeName === 'LI' ? p[0] : p)
-        }
-      })
-
-      var events = editor.require('events')
-      var enter = editor.require('enter')
-      var rm = editor.require('backspace')
-      var spacebar = editor.require('spacebar')
-      var Selection = editor.require('selection')
-      editor.on('keydown', function onKeydown (e) {
-        if (events.selectall(e)) {
-          e.preventDefault()
-
-          var len = View.paragraphs.length - 1
-          var paragraph = View.paragraphs[len]
-
-          if (/\n$/.test(paragraph.text)) {
-            View.selection = new Selection([0, 0], [len, paragraph.length - 1])
-          } else {
-            View.selection = new Selection([0, 0], [len, paragraph.length])
-          }
-        } else if (events.enterKey(e)) {
-          e.preventDefault()
-
-          if (e.shiftKey) {
-            enter.newline()
-          } else if (e.metaKey || e.ctrlKey) {
-            enter.newSection()
-          } else {
-            enter.newParagraph()
-          }
-        } else if (events.backspace(e)) {
-          e.preventDefault()
-          rm.backspace()
-
-        } else if (events.forwardDelete(e)) {
-          e.preventDefault()
-          rm.forwardDelete()
-        }
-      })
-
-      editor.on('keypress', function onKeypress (e) {
-        if (events.spacebar(e)) {
-          e.preventDefault()
-          spacebar.auto()
-        }
-      })
-    }
-
-    setup()
-    var View = editor.require('view')
+    window.editor = new Compose('#editor').init()
+    var view = editor.require('view')
     var Selection = editor.require('selection')
+    view.setSelection(new Selection([0, 0]))
 
-    View.selection = new Selection([0, 0])
+    editor.use(Compose.defaultKeyBindings)
   </script>
 </body>
 </html>

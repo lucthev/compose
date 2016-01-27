@@ -5,6 +5,7 @@ import hasOwnProp from 'has-own-prop'
 import {setupEvents} from './events'
 import View from './view'
 import enterPlugin from './enter'
+import keyBindings from './keybindings'
 
 // Shim setImmediate/clearImmediate
 require('setimmediate')
@@ -94,6 +95,8 @@ class Compose extends EventEmitter {
     plugin(this, ...args)
   }
 }
+
+Compose.defaultKeyBindings = keyBindings
 
 // FIXME: ES modules + Babel doesn't seem to play nice with Browserify?
 // export default Compose
