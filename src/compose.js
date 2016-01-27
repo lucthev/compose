@@ -4,6 +4,7 @@ import EventEmitter from 'component-emitter'
 import hasOwnProp from 'has-own-prop'
 import {setupEvents} from './events'
 import View from './view'
+import enterPlugin from './enter'
 
 // Shim setImmediate/clearImmediate
 require('setimmediate')
@@ -33,6 +34,7 @@ class Compose extends EventEmitter {
 
     this.plugins = {}
     this.use(View)
+    this.use(enterPlugin)
 
     setupEvents(this)
 
