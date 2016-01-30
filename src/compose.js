@@ -3,8 +3,9 @@
 import EventEmitter from 'component-emitter'
 import hasOwnProp from 'has-own-prop'
 import {setupEvents} from './events'
-import View from './view'
+import viewPlugin from './view'
 import enterPlugin from './enter'
+import backspacePlugin from './backspace'
 import keyBindings from './keybindings'
 
 // Shim setImmediate/clearImmediate
@@ -34,8 +35,9 @@ class Compose extends EventEmitter {
     this.root.setAttribute('contenteditable', true)
 
     this.plugins = {}
-    this.use(View)
+    this.use(viewPlugin)
     this.use(enterPlugin)
+    this.use(backspacePlugin)
 
     setupEvents(this)
 
