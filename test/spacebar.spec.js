@@ -1,339 +1,187 @@
 /* eslint-env mocha */
 'use strict'
 
-describe.skip('Spacebar.auto()', function () {
-  var editor
-  var Selection
-  var View
-  var spacebar
-
-  afterEach(teardown)
-
-  it('end of paragraph, nbsp', function (done) {
-    setup('<section><hr><p>1</p></section>')
-    View.selection = new Selection([0, 1])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>1&nbsp;</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 2]))
-      done()
-    }, 0)
-  })
-
-  it('end of paragraph with trailing BR, nbsp', function (done) {
-    setup('<section><hr><p>1<br></p></section>')
-    View.selection = new Selection([0, 1])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>1&nbsp;<br></p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 2]))
-      done()
-    }, 0)
-  })
-
-  it('middle of paragraph, regular', function (done) {
-    setup('<section><hr><p>EverlastingLight</p></section>')
-    View.selection = new Selection([0, 11])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>Everlasting Light</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 12]))
-      done()
-    }, 0)
-  })
-
-  it('start of paragraph, nbsp', function (done) {
-    setup('<section><hr><p>El Camino</p></section>')
-    View.selection = new Selection([0, 0])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>&nbsp;El Camino</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 1]))
-      done()
-    }, 0)
-  })
-
-  it('before BR, nbsp', function (done) {
-    setup('<section><hr><p>One<br>Two</p></section>')
-    View.selection = new Selection([0, 3])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One&nbsp;<br>Two</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('after BR, nbsp', function (done) {
-    setup('<section><hr><p>One<br>Two</p></section>')
-    View.selection = new Selection([0, 4])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One<br>&nbsp;Two</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 5]))
-      done()
-    }, 0)
-  })
-
-  it('before space, move caret', function (done) {
-    setup('<section><hr><p>One Two</p></section>')
-    View.selection = new Selection([0, 3])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('after space, nothing', function (done) {
-    setup('<section><hr><p>A sly fox.</p></section>')
-    View.selection = new Selection([0, 2])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>A sly fox.</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 2]))
-      done()
-    }, 0)
-  })
-
-  it('over text', function (done) {
-    setup('<section><hr><p>OneABCTwo</p></section>')
-    View.selection = new Selection([0, 6], [0, 3])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('selected text at end of paragraph, nbsp', function (done) {
-    setup('<section><hr><p>OneABC</p></section>')
-    View.selection = new Selection([0, 3], [0, 6])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One&nbsp;</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('selected text at start of paragraph, nbsp', function (done) {
-    setup('<section><hr><p>ABCOne</p></section>')
-    View.selection = new Selection([0, 0], [0, 3])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>&nbsp;One</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 1]))
-      done()
-    }, 0)
-  })
-
-  it('over multiple paragraphs', function (done) {
-    setup(
-      '<section>' +
-        '<hr>' +
-        '<p>One</p>' +
-        '<h2>Two</h2>' +
-        '<p>Three</p>' +
-        '<p>Four</p>' +
-      '</section>'
-    )
-    View.selection = new Selection([3, 1], [0, 2])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>On our</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 3]))
-      done()
-    }, 0)
-  })
-
-  it('over multiple sections', function (done) {
-    setup(
-      '<section><hr><p>One</p></section>' +
-      '<section><hr><h2>Two</h2><p>Three</p></section>' +
-      '<section><hr><p>Four</p></section>'
-    )
-    View.selection = new Selection([0, 2], [3, 1])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>On our</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 3]))
-      done()
-    }, 0)
-  })
-
-  it('after space, text selected', function (done) {
-    setup('<section><hr><p>One ABCTwo</p></section>')
-    View.selection = new Selection([0, 4], [0, 7])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('before space, text selected', function (done) {
-    setup('<section><hr><p>OneABC Two</p></section>')
-    View.selection = new Selection([0, 3], [0, 6])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('in between spaces, text selected', function (done) {
-    setup('<section><hr><p>One ABC Two</p></section>')
-    View.selection = new Selection([0, 4], [0, 7])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One Two</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('after space, text selected at end', function (done) {
-    setup('<section><hr><p>One ABC</p></section>')
-    View.selection = new Selection([0, 4], [0, 7])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>One&nbsp;</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 4]))
-      done()
-    }, 0)
-  })
-
-  it('before space, text selected at start', function (done) {
-    setup('<section><hr><p>ABC One</p></section>')
-    View.selection = new Selection([0, 3], [0, 0])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p>&nbsp;One</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 1]))
-      done()
-    }, 0)
-  })
-
-  it('extend non-link markups', function (done) {
-    setup('<section><hr><p><strong><em>1</em></strong></p></section>')
-    View.selection = new Selection([0, 1])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p><strong><em>1&nbsp;</em></strong></p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 2]))
-      done()
-    }, 0)
-  })
-
-  it('not extend links', function (done) {
-    setup('<section><hr><p><a href="/x">1</a></p></section>')
-    View.selection = new Selection([0, 1])
-
-    spacebar.auto()
-
-    setTimeout(function () {
-      expect(editor.root.innerHTML).to.equal('<section><hr><p><a href="/x">1</a>&nbsp;</p></section>')
-
-      expect(View.selection).to.eql(new Selection([0, 2]))
-      done()
-    }, 0)
-  })
-
-  function setup (html) {
-    var elem = document.createElement('div')
-    elem.innerHTML = html
-    document.body.appendChild(elem)
-
-    editor = new window.Compose(elem)
-    editor.use(window.listPlugin)
-    editor.use(window.formatBlock)
-    View = editor.require('view')
-    Selection = editor.require('selection')
-    spacebar = editor.require('spacebar')
-
-    // Perform some setup.
-    var all = [].slice.call(elem.querySelectorAll('section,p,h2,li'))
-
-    all.forEach(function (el) {
-      var section
-      var p
-
-      if (el.nodeName === 'SECTION') {
-        section = View.handlerForElement(el).serialize(el)
-        section.start = View.elements.length
-        View.sections.push(section)
-      } else {
-        View.elements.push(el)
-        p = View.handlerForElement(el).serialize(el)
-        View.paragraphs.push(el.nodeName === 'LI' ? p[0] : p)
-      }
+const tests = [
+  {
+    desc: 'end of paragraph, nbsp',
+    html: '<p>1</p>',
+    sel: [[0, 1]],
+    action: 'auto',
+    resultHTML: '<p>1&nbsp;</p>',
+    resultSel: [[0, 2]]
+  },
+  {
+    desc: 'end of paragraph with trailing BR, nbsp',
+    html: '<p>1<br></p>',
+    sel: [[0, 1]],
+    action: 'auto',
+    resultHTML: '<p>1&nbsp;<br></p>',
+    resultSel: [[0, 2]]
+  },
+  {
+    desc: 'middle of paragraph, regular',
+    html: '<p>EverlastingLight</p>',
+    sel: [[0, 11]],
+    action: 'auto',
+    resultHTML: '<p>Everlasting Light</p>',
+    resultSel: [[0, 12]]
+  },
+  {
+    desc: 'start of paragraph, nbsp',
+    html: '<p>El Camino</p>',
+    sel: [[0, 0]],
+    action: 'auto',
+    resultHTML: '<p>&nbsp;El Camino</p>',
+    resultSel: [[0, 1]]
+  },
+  {
+    desc: 'before BR, nbsp',
+    html: '<p>One<br>Two</p>',
+    sel: [[0, 3]],
+    action: 'auto',
+    resultHTML: '<p>One&nbsp;<br>Two</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'after BR, nbsp',
+    html: '<p>One<br>Two</p>',
+    sel: [[0, 4]],
+    action: 'auto',
+    resultHTML: '<p>One<br>&nbsp;Two</p>',
+    resultSel: [[0, 5]]
+  },
+  {
+    desc: 'before space, move caret',
+    html: '<p>One Two</p>',
+    sel: [[0, 3]],
+    action: 'auto',
+    resultHTML: '<p>One Two</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'after space, nothing',
+    html: '<p>A sly fox.</p>',
+    sel: [[0, 2]],
+    action: 'auto',
+    resultHTML: '<p>A sly fox.</p>',
+    resultSel: [[0, 2]]
+  },
+  {
+    desc: 'over text',
+    html: '<p>OneABCTwo</p>',
+    sel: [[0, 6], [0, 3]],
+    action: 'auto',
+    resultHTML: '<p>One Two</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'selected text at end of paragraph, nbsp',
+    html: '<p>OneABC</p>',
+    sel: [[0, 3], [0, 6]],
+    action: 'auto',
+    resultHTML: '<p>One&nbsp;</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'selected text at start of paragraph, nbsp',
+    html: '<p>ABCOne</p>',
+    sel: [[0, 0], [0, 3]],
+    action: 'auto',
+    resultHTML: '<p>&nbsp;One</p>',
+    resultSel: [[0, 1]]
+  },
+  {
+    desc: 'over multiple paragraphs',
+    html: '<p>One</p><p>Two</p><p>Three</p><p>Four</p>',
+    sel: [[3, 1], [0, 2]],
+    action: 'auto',
+    resultHTML: '<p>On our</p>',
+    resultSel: [[0, 3]]
+  },
+  {
+    desc: 'after space, text selected',
+    html: '<p>One ABCTwo</p>',
+    sel: [[0, 4], [0, 7]],
+    action: 'auto',
+    resultHTML: '<p>One Two</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'before space, text selected',
+    html: '<p>OneABC Two</p>',
+    sel: [[0, 3], [0, 6]],
+    action: 'auto',
+    resultHTML: '<p>One Two</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'in between spaces, text selected',
+    html: '<p>One ABC Two</p>',
+    sel: [[0, 4], [0, 7]],
+    action: 'auto',
+    resultHTML: '<p>One Two</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'after space, text selected at end',
+    html: '<p>One ABC</p>',
+    sel: [[0, 4], [0, 7]],
+    action: 'auto',
+    resultHTML: '<p>One&nbsp;</p>',
+    resultSel: [[0, 4]]
+  },
+  {
+    desc: 'before space, text selected at start',
+    html: '<p>ABC One</p>',
+    sel: [[0, 3], [0, 0]],
+    action: 'auto',
+    resultHTML: '<p>&nbsp;One</p>',
+    resultSel: [[0, 1]]
+  },
+  {
+    desc: 'extend non-link markups',
+    html: '<p><strong><em>1</em></strong></p>',
+    sel: [[0, 1]],
+    action: 'auto',
+    resultHTML: '<p><strong><em>1&nbsp;</em></strong></p>',
+    resultSel: [[0, 2]]
+  },
+  {
+    desc: 'not extend links',
+    html: '<p><a href="/x">1</a></p>',
+    sel: [[0, 1]],
+    action: 'auto',
+    resultHTML: '<p><a href="/x">1</a>&nbsp;</p>',
+    resultSel: [[0, 2]]
+  }
+]
+
+describe('Spacebar', function () {
+  const TIMEOUT = 10
+
+  tests.forEach(function ({ desc, html, sel, action, resultHTML, resultSel }) {
+    // Skip incomplete tests
+    if (!desc) return
+
+    it(`${action} ${desc}`, function (done) {
+      let el = document.createElement('div')
+      el.innerHTML = html
+      document.body.appendChild(el)
+
+      let editor = new window.Compose(el).init()
+      let Selection = editor.require('selection')
+      let view = editor.require('view')
+      let spacebar = editor.require('spacebar')
+
+      view.setSelection(new Selection(...sel))
+      spacebar[action]()
+
+      setTimeout(function () {
+        expect(editor.root.innerHTML).to.equal(resultHTML)
+        expect(view.getSelection()).to.eql(new Selection(...resultSel))
+        document.body.removeChild(editor.root)
+        done()
+      }, TIMEOUT)
     })
-  }
-
-  function teardown () {
-    document.body.removeChild(editor.root)
-    editor = Selection = View = spacebar = null
-  }
+  })
 })

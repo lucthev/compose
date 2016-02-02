@@ -6,6 +6,7 @@ import {setupEvents} from './events'
 import viewPlugin from './view'
 import enterPlugin from './enter'
 import backspacePlugin from './backspace'
+import spacebarPlugin from './spacebar'
 import keyBindings from './keybindings'
 
 // Shim setImmediate/clearImmediate
@@ -38,6 +39,7 @@ class Compose extends EventEmitter {
     this.use(viewPlugin)
     this.use(enterPlugin)
     this.use(backspacePlugin)
+    this.use(spacebarPlugin)
 
     setupEvents(this)
 
