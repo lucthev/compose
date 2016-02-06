@@ -250,6 +250,7 @@ describe('Backspace/delete', function () {
         expect(el.innerHTML).to.equal(resultHTML)
         expect(view.getSelection()).to.eql(new Selection(...resultSel))
 
+        document.body.removeChild(editor.root)
         done()
       }, 10)
     })
