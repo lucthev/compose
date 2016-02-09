@@ -4,6 +4,7 @@ import EventEmitter from 'component-emitter'
 import hasOwnProp from 'has-own-prop'
 import {setupEvents} from './events'
 import viewPlugin from './view'
+import copyPlugin from './copy'
 import enterPlugin from './enter'
 import backspacePlugin from './backspace'
 import spacebarPlugin from './spacebar'
@@ -37,6 +38,7 @@ class Compose extends EventEmitter {
 
     this.plugins = {}
     this.use(viewPlugin)
+    this.use(copyPlugin)
     this.use(enterPlugin)
     this.use(backspacePlugin)
     this.use(spacebarPlugin)
